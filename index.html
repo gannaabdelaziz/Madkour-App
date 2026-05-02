@@ -3,131 +3,344 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maddkour Cashflow Generator v3.0</title>
+<title>Madkour Cashflow Generator</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg: #0f1923; --surface: #1a2736; --surface2: #243447;
-  --text: #e2e8f0; --text2: #94a3b8;
-  --accent: #3b82f6; --accent2: #10b981; --accent3: #f59e0b;
-  --success: #10b981; --border: #2a3548;
+  --brand-blue: #1E3FE5;
+  --brand-blue-deep: #1633C7;
+  --navy: #0A1F44;
+  --navy-2: #102855;
+  --cream: #ECECF4;
+  --cream-2: #F6F6FB;
+  --white: #FFFFFF;
+  --orange: #FF8C2B;
+  --orange-deep: #F07415;
+  --ink: #0A1F44;
+  --ink-2: #4A5678;
+  --ink-3: #8A93AB;
+  --line: #DCDFEC;
+  --success: #16A34A;
+  --error: #DC2626;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
+html, body { height: 100%; }
 body {
-  font-family: 'IBM Plex Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
   min-height: 100vh;
-  padding: 40px 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.container { max-width: 1200px; margin: 0 auto; }
-header { text-align: center; margin-bottom: 40px; }
-h1 {
-  font-size: 2rem; font-weight: 700; letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-header p { color: var(--text2); font-size: 0.95rem; font-weight: 300; }
 
-.upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-.upload-card {
-  position: relative; padding: 30px 20px; text-align: center;
-  border: 2px dashed var(--border);
-  border-radius: 12px;
-  cursor: pointer; transition: all 0.3s;
+/* ─────────── TOP NAV ─────────── */
+.topbar {
+  background: var(--brand-blue);
+  padding: 18px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
 }
-.upload-card:hover { border-color: var(--accent); background: var(--surface2); }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--white); }
+.brand .logomark { width: 36px; height: 28px; }
+.brand .wordmark {
+  display: flex; align-items: baseline; gap: 8px;
+  font-weight: 800; font-size: 1.35rem; letter-spacing: 0.5px;
+}
+.brand .wordmark .sub {
+  font-weight: 400; font-size: 0.95rem; letter-spacing: 0.2px; opacity: 0.95;
+}
+.topbar nav { display: flex; gap: 32px; }
+.topbar nav a {
+  color: var(--white); text-decoration: none; font-weight: 500; font-size: 0.92rem;
+  padding: 6px 2px; border-bottom: 2px solid transparent; transition: border-color .2s;
+}
+.topbar nav a.active, .topbar nav a:hover { border-bottom-color: var(--white); }
+
+/* ─────────── HERO ─────────── */
+.hero {
+  background: var(--navy);
+  color: var(--white);
+  padding: 72px 48px 96px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(30,63,229,0.35), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(255,140,43,0.18), transparent 50%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 1200px; margin: 0 auto; position: relative; }
+.eyebrow {
+  display: inline-block; padding: 6px 14px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px; font-size: 0.78rem; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: clamp(2.4rem, 4.6vw, 3.6rem);
+  font-weight: 800; line-height: 1.05; letter-spacing: -1.2px;
+  max-width: 780px;
+}
+.hero h1 .accent { color: #6B8AFF; }
+.hero p.lead {
+  margin-top: 18px; max-width: 620px;
+  font-size: 1.05rem; line-height: 1.55; color: rgba(255,255,255,0.78); font-weight: 400;
+}
+
+/* ─────────── MAIN PANEL ─────────── */
+.workspace {
+  max-width: 1200px; margin: -56px auto 0; padding: 0 32px 64px;
+  position: relative; z-index: 1;
+}
+.panel {
+  background: var(--white);
+  border-radius: 28px;
+  padding: 40px;
+  box-shadow: 0 24px 60px -24px rgba(10,31,68,0.25), 0 2px 8px rgba(10,31,68,0.04);
+}
+.panel-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+.panel-head h2 {
+  font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; color: var(--navy);
+}
+.panel-head .step-counter {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+  color: var(--ink-3); letter-spacing: 1px; text-transform: uppercase;
+}
+.panel-sub { color: var(--ink-2); font-size: 0.95rem; margin-top: -16px; margin-bottom: 28px; }
+
+/* ─────────── UPLOAD CARDS ─────────── */
+.upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.upload-card {
+  position: relative; padding: 28px 24px;
+  background: var(--cream-2);
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  cursor: pointer; transition: all 0.25s ease;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.upload-card::after {
+  content: ''; position: absolute; top: 18px; right: 20px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--white); border: 1.5px solid var(--line);
+  transition: all 0.25s ease;
+}
+.upload-card:hover {
+  border-color: var(--brand-blue);
+  background: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -16px rgba(30,63,229,0.35);
+}
 .upload-card.loaded {
-  border-color: var(--success); border-style: solid;
+  border-color: var(--brand-blue);
+  background: var(--white);
+}
+.upload-card.loaded::after {
+  background: var(--brand-blue); border-color: var(--brand-blue);
+  box-shadow: inset 0 0 0 4px var(--white);
+}
+.upload-card .step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; color: var(--ink-3); letter-spacing: 1px;
 }
 .upload-card .icon {
-  width: 50px; height: 50px; margin: 0 auto 15px;
-  border-radius: 10px;
+  width: 52px; height: 52px;
+  border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  margin-top: 4px;
 }
-.upload-card:nth-child(1) .icon { background: rgba(59,130,246,0.15); color: var(--accent); }
-.upload-card:nth-child(2) .icon { background: rgba(245,158,11,0.15); color: var(--accent3); }
-.upload-card:nth-child(3) .icon { background: rgba(16,185,129,0.15); color: var(--accent2); }
+.upload-card:nth-child(1) .icon { background: rgba(30,63,229,0.10); color: var(--brand-blue); }
+.upload-card:nth-child(2) .icon { background: rgba(255,140,43,0.12); color: var(--orange-deep); }
+.upload-card:nth-child(3) .icon { background: rgba(10,31,68,0.08); color: var(--navy); }
 
-.upload-card h3 { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
-.upload-card .desc { font-size: 0.75rem; color: var(--text2); margin-bottom: 12px; }
+.upload-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-top: 6px; }
+.upload-card .desc { font-size: 0.85rem; color: var(--ink-2); }
 .upload-card .status {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.7rem; color: var(--text2);
-  padding: 4px 8px; border-radius: 4px;
-  background: var(--surface);
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; color: var(--ink-3);
+  padding: 8px 12px; border-radius: 10px;
+  background: var(--white); border: 1px solid var(--line);
+  word-break: break-all; line-height: 1.4;
 }
-.upload-card.loaded .status { color: var(--success); background: rgba(16,185,129,0.1); }
+.upload-card.loaded .status {
+  color: var(--brand-blue);
+  background: rgba(30,63,229,0.06);
+  border-color: rgba(30,63,229,0.25);
+}
 .upload-card input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
-#generateBtn {
-  display: block; width: 100%; padding: 16px;
-  background: var(--accent);
-  color: white; border: none; border-radius: 10px;
-  font-family: inherit; font-size: 1rem; font-weight: 600;
-  cursor: pointer; transition: all 0.3s;
+/* ─────────── ACTION BAR ─────────── */
+.action-bar {
+  margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
 }
-#generateBtn:hover { filter: brightness(1.1); }
-#generateBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.action-bar .hint { color: var(--ink-2); font-size: 0.9rem; }
+.action-bar .hint b { color: var(--navy); font-weight: 700; }
 
-#progress { height: 4px; background: var(--surface); border-radius: 2px; margin: 15px 0; overflow: hidden; }
-#progressBar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.3s; }
+#generateBtn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 16px 32px;
+  background: var(--orange);
+  color: var(--white); border: none;
+  border-radius: 999px;
+  font-family: inherit; font-size: 1rem; font-weight: 700; letter-spacing: 0.2px;
+  cursor: pointer; transition: all 0.2s ease;
+  box-shadow: 0 8px 20px -8px rgba(255,140,43,0.6);
+}
+#generateBtn:hover:not(:disabled) {
+  background: var(--orange-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -8px rgba(255,140,43,0.7);
+}
+#generateBtn:disabled {
+  background: #CFD3E2; color: #8A93AB;
+  cursor: not-allowed; box-shadow: none;
+}
+#generateBtn .arrow {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  font-size: 0.85rem;
+}
+#generateBtn:disabled .arrow { background: rgba(255,255,255,0.4); }
 
+/* ─────────── PROGRESS ─────────── */
+#progress {
+  height: 6px; background: var(--cream); border-radius: 999px;
+  margin-top: 24px; overflow: hidden;
+}
+#progressBar {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--brand-blue), var(--orange));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* ─────────── LOG ─────────── */
 #log {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 20px;
-  max-height: 400px; overflow-y: auto; display: none;
-  margin-top: 15px;
+  margin-top: 20px;
+  background: var(--navy);
+  border-radius: 16px; padding: 22px 24px;
+  max-height: 360px; overflow-y: auto;
+  display: none;
+  border: 1px solid var(--navy-2);
 }
 #log .entry {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.75rem;
-  padding: 3px 0; color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  padding: 4px 0; color: rgba(255,255,255,0.65);
+  line-height: 1.55;
 }
-#log .entry.ok { color: var(--success); }
-#log .entry.err { color: #ef4444; }
-#log .entry.info { color: var(--accent); }
+#log .entry.ok { color: #6EE7B7; }
+#log .entry.err { color: #FCA5A5; }
+#log .entry.info { color: #93B4FF; }
+
+/* ─────────── FOOTER ─────────── */
+.footer {
+  text-align: center; padding: 28px 24px 40px;
+  color: var(--ink-3); font-size: 0.82rem;
+}
+.footer b { color: var(--navy); font-weight: 700; }
+
+/* ─────────── RESPONSIVE ─────────── */
+@media (max-width: 860px) {
+  .topbar { padding: 14px 20px; }
+  .topbar nav { display: none; }
+  .hero { padding: 56px 24px 88px; }
+  .workspace { padding: 0 16px 48px; }
+  .panel { padding: 28px 22px; border-radius: 22px; }
+  .upload-grid { grid-template-columns: 1fr; }
+  .action-bar { flex-direction: column; align-items: stretch; }
+  #generateBtn { justify-content: center; }
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>Maddkour Cashflow Generator</h1>
-    <p>Upload your 3 input files to generate the complete cashflow workbook — v3.0</p>
-  </header>
 
-  <div class="upload-grid">
-    <div class="upload-card" id="boqCard">
-      <div class="icon">📋</div>
-      <h3>BOQ for Cash IN</h3>
-      <div class="desc">Bill of Quantities</div>
-      <span class="status">Click to upload .xlsx</span>
-      <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'boq')">
+<div class="topbar">
+  <div class="brand">
+    <svg class="logomark" viewBox="0 0 60 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M2 38 L2 12 L12 12 L18 28 L24 12 L34 12 L34 38 L26 38 L26 22 L21 38 L15 38 L10 22 L10 38 Z" fill="white"/>
+      <path d="M40 18 Q44 14 48 18" stroke="white" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      <path d="M42 24 Q45 21 48 24" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+      <circle cx="48" cy="30" r="2" fill="white"/>
+    </svg>
+    <div class="wordmark">MADKOUR<span class="sub">Cashflow</span></div>
+  </div>
+  <nav>
+    <a href="#" class="active">Generator</a>
+    <a href="#">Projects</a>
+    <a href="#">Reports</a>
+    <a href="#">Help</a>
+  </nav>
+</div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Finance · Project Cashflow</span>
+    <h1>Forecast every project's <span class="accent">cashflow</span> with engineering precision.</h1>
+    <p class="lead">Upload your BOQ, budget, and assumptions. Madkour's cashflow engine produces a complete, audit-ready workbook with monthly Cash In, Cash Out, and Net positions across all project tabs.</p>
+  </div>
+</section>
+
+<main class="workspace">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Generate cashflow workbook</h2>
+      <span class="step-counter">Step 01 / 02 — Upload inputs</span>
     </div>
-    <div class="upload-card" id="budgetCard">
-      <div class="icon">💰</div>
-      <h3>Budget for Cash Out</h3>
-      <div class="desc">Budget breakdown</div>
-      <span class="status">Click to upload .xlsx</span>
-      <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'budget')">
+    <p class="panel-sub">Drop in the three Excel files below. The generator validates structure on upload and lights up when everything's ready.</p>
+
+    <div class="upload-grid">
+      <label class="upload-card" id="boqCard">
+        <span class="step-num">01 · Cash In</span>
+        <div class="icon">📋</div>
+        <h3>BOQ</h3>
+        <div class="desc">Bill of Quantities driving project revenue.</div>
+        <span class="status">Click or drop a .xlsx file</span>
+        <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'boq')">
+      </label>
+      <label class="upload-card" id="budgetCard">
+        <span class="step-num">02 · Cash Out</span>
+        <div class="icon">💰</div>
+        <h3>Budget</h3>
+        <div class="desc">Cost breakdown for materials, labour, and overhead.</div>
+        <span class="status">Click or drop a .xlsx file</span>
+        <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'budget')">
+      </label>
+      <label class="upload-card" id="assumptionsCard">
+        <span class="step-num">03 · Parameters</span>
+        <div class="icon">⚙️</div>
+        <h3>Assumptions</h3>
+        <div class="desc">Payment terms, retention, advance, escalation rates.</div>
+        <span class="status">Click or drop a .xlsx file</span>
+        <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'assumptions')">
+      </label>
     </div>
-    <div class="upload-card" id="assumptionsCard">
-      <div class="icon">⚙️</div>
-      <h3>Assumptions</h3>
-      <div class="desc">Payment terms & rates</div>
-      <span class="status">Click to upload .xlsx</span>
-      <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'assumptions')">
+
+    <div class="action-bar">
+      <div class="hint">When all three files are uploaded, click <b>Generate</b> to build the workbook.</div>
+      <button id="generateBtn" onclick="generate()" disabled>
+        Generate Workbook
+        <span class="arrow">›</span>
+      </button>
     </div>
+
+    <div id="progress"><div id="progressBar"></div></div>
+    <div id="log"></div>
   </div>
 
-  <button id="generateBtn" onclick="generate()" disabled>Generate Cashflow Workbook</button>
-  <div id="progress"><div id="progressBar"></div></div>
-  <div id="log"></div>
-</div>
+  <div class="footer">
+    <b>Madkour Holding</b> · Cashflow Generator v3.0 · Defining the benchmarks of engineering excellence
+  </div>
+</main>
 
 <script>
 // ============================================================
