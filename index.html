@@ -1786,47 +1786,59 @@ function buildCashOutSummarySheet(cur, dates, assumptions, projName, cashOutLast
   const lastCol = colLetter(5 + N);
   ws['D4'] = {v: 'Total Cash Out Value', t:'s', s: S.sumColD};
   ws['E4'] = {f: 'SUM(F4:' + lastCol + '4)', t:'n', s: S.sumColE};
-  for (let i = 0; i < N; i++) {
-    const col = colLetter(6 + i);
-    ws[XLSX.utils.encode_cell({r:3,c:5+i})] = {f: 'SUBTOTAL(9,' + col + '5:' + col + '100)', t:'n', s: S.sumTotal};
-  }
 
-  // Summary rows for each group
-  const groupNames = ['Material Supply', 'S/C', 'SERVICES - EQ - LABOUR', 'INDIRECT COST', 'PROJECT OVERHEADS', 'RISKS & CONTINGENCIES'];
-  let summaryRow = 5;
+  // One row per unique scope-of-work name from the Cash Out sheet.
+  // Period cells use SUMPRODUCT matching label (column E) and month header (row 2)
+  // against the value matrix at valStartCol..valEndCol.
+  const names = (milestoneNames && milestoneNames.length > 0) ? milestoneNames : [];
+  const valStart = colLetter(coValStartCol);
+  const valEnd = colLetter(coValStartCol + N - 1);
+  const coLast = cashOutLastRow;
+  const firstRow = 5;
 
-  ws['D5'] = {v: projName, t:'s', s: S.sumColD};
-  ws['E5'] = {f: 'SUBTOTAL(9,E6:E' + (5 + groupNames.length) + ')', t:'n', s: S.sumColE};
-  for (let i = 0; i < N; i++) {
-    const col = colLetter(6 + i);
-    ws[XLSX.utils.encode_cell({r:4,c:5+i})] = {f: 'SUBTOTAL(9,' + col + '6:' + col + (5 + groupNames.length) + ')', t:'n', s: S.sumItem};
-  }
-
-  for (let g = 0; g < groupNames.length; g++) {
-    const r = 5 + g;
-    const gn = groupNames[g];
-    ws[XLSX.utils.encode_cell({r,c:3})] = {v: gn, t:'s', s: S.sumColD};
-    ws[XLSX.utils.encode_cell({r,c:4})] = {f: 'SUM(F' + (r+1) + ':' + lastCol + (r+1) + ')', t:'n', s: S.sumColE};
-
-    // Reference the group header row in the Cash Out sheet for each month's value
-    if (groupHeaderRows && groupHeaderRows[gn]) {
-      const gh = groupHeaderRows[gn];
-      for (let i = 0; i < N; i++) {
-        const vc = colLetter(coValStartCol + i);
-        ws[XLSX.utils.encode_cell({r,c:5+i})] = {f: "'" + coSheetName + "'!" + vc + gh.headerRow, t:'n', s: S.sumItem};
-      }
-    } else {
-      // Fallback: SUMPRODUCT matching by name
-      for (let i = 0; i < N; i++) {
-        ws[XLSX.utils.encode_cell({r,c:5+i})] = {v: 0, t:'n', s: S.sumItem};
-      }
+  if (names.length === 0) {
+    ws[XLSX.utils.encode_cell({r:4,c:3})] = {v: '(No items)', t:'s', s: S.sumLabel};
+    ws[XLSX.utils.encode_cell({r:4,c:4})] = {v: 0, t:'n', s: S.sumItem};
+    for (let i = 0; i < N; i++) {
+      ws[XLSX.utils.encode_cell({r:4,c:5+i})] = {v: 0, t:'n', s: S.sumItem};
     }
+    for (let i = 0; i < N; i++) {
+      const col = colLetter(6 + i);
+      ws[XLSX.utils.encode_cell({r:3,c:5+i})] = {f: 'SUBTOTAL(9,' + col + '5:' + col + '5)', t:'n', s: S.sumTotal};
+    }
+    ws['!cols'] = [{wch:8},{wch:8},{wch:8},{wch:42},{wch:18}];
+    for (let c = 5; c <= 5 + N; c++) ws['!cols'][c] = { wch: 14 };
+    ws['!ref'] = 'A1:' + colLetter(6+N) + '5';
+    return ws;
+  }
+
+  const lastRow = firstRow + names.length - 1;
+
+  for (let i = 0; i < names.length; i++) {
+    const r = firstRow + i;
+    const ri = r - 1;
+    const name = names[i];
+
+    ws[XLSX.utils.encode_cell({r:ri,c:3})] = {v: name, t:'s', s: S.sumLabel};
+    ws[XLSX.utils.encode_cell({r:ri,c:4})] = {f: 'SUM(F' + r + ':' + lastCol + r + ')', t:'n', s: S.sumItem};
+
+    for (let j = 0; j < N; j++) {
+      const monthCol = colLetter(6 + j);
+      const formula = "SUMPRODUCT(('" + coSheetName + "'!$E$4:$E$" + coLast + "=$D" + r + ")"
+                    + "*('" + coSheetName + "'!$" + valStart + "$2:$" + valEnd + "$2=" + monthCol + "$3)"
+                    + "*'" + coSheetName + "'!$" + valStart + "$4:$" + valEnd + "$" + coLast + ")";
+      ws[XLSX.utils.encode_cell({r:ri,c:5+j})] = {f: formula, t:'n', s: S.sumItem};
+    }
+  }
+
+  for (let i = 0; i < N; i++) {
+    const col = colLetter(6 + i);
+    ws[XLSX.utils.encode_cell({r:3,c:5+i})] = {f: 'SUBTOTAL(9,' + col + firstRow + ':' + col + lastRow + ')', t:'n', s: S.sumTotal};
   }
 
   ws['!cols'] = [{wch:8},{wch:8},{wch:8},{wch:42},{wch:18}];
   for (let c = 5; c <= 5 + N; c++) ws['!cols'][c] = { wch: 14 };
-  const lastDataRow = 5 + groupNames.length + 5;
-  ws['!ref'] = 'A1:' + colLetter(6+N) + lastDataRow;
+  ws['!ref'] = 'A1:' + colLetter(6+N) + lastRow;
   return ws;
 }
 
