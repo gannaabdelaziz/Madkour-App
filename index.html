@@ -50,7 +50,7 @@ body {
   display: flex; align-items: center; gap: 14px;
   color: var(--navy); text-decoration: none;
 }
-.brand .logomark { width: 56px; height: 34px; flex-shrink: 0; }
+.brand .logomark { width: 62px; height: 38px; flex-shrink: 0; }
 .brand .wordmark {
   display: flex; align-items: baseline; gap: 8px;
   font-weight: 800; font-size: 1.35rem; letter-spacing: 0.5px; line-height: 1;
@@ -267,14 +267,14 @@ body {
 <div class="topbar">
   <a class="brand" href="./">
     <svg class="logomark" viewBox="0 0 130 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Madkour">
-      <!-- Left peak -->
-      <path d="M5 75 L5 5 L55 5 Q55 42 62 75 Z" fill="#1E3FE5"/>
-      <!-- Right peak -->
-      <path d="M119 75 L119 5 L69 5 Q69 42 62 75 Z" fill="#0A1F44"/>
-      <!-- Concentric arcs cut out of left peak (white, matching topbar bg) -->
-      <path d="M11 70 A 7 7 0 0 1 18 63" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-      <path d="M11 70 A 13 13 0 0 1 24 57" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-      <path d="M11 70 A 19 19 0 0 1 30 51" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      <!-- Left peak (pointed) -->
+      <path d="M5 75 L5 25 L35 5 L62 75 Z" fill="#1E3FE5"/>
+      <!-- Right peak (pointed, mirrored) -->
+      <path d="M119 75 L119 25 L89 5 L62 75 Z" fill="#0A1F44"/>
+      <!-- Three concentric signal arcs in the lower-left of the left peak -->
+      <path d="M10 72 A 8 8 0 0 1 18 64"  stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      <path d="M10 72 A 14 14 0 0 1 24 58" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      <path d="M10 72 A 20 20 0 0 1 30 52" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" fill="none"/>
     </svg>
     <div class="wordmark">MADKOUR<span class="sub">Cashflow</span></div>
   </a>
