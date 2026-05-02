@@ -39,26 +39,27 @@ body {
 
 /* ─────────── TOP NAV ─────────── */
 .topbar {
-  background: var(--brand-blue);
+  background: var(--white);
   padding: 18px 48px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50;
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(10,31,68,0.04);
 }
-.brand { display: flex; align-items: center; gap: 12px; color: var(--white); }
-.brand .logomark { width: 36px; height: 28px; }
+.brand {
+  display: flex; align-items: center; gap: 14px;
+  color: var(--navy); text-decoration: none;
+}
+.brand .logomark { width: 56px; height: 34px; flex-shrink: 0; }
 .brand .wordmark {
   display: flex; align-items: baseline; gap: 8px;
-  font-weight: 800; font-size: 1.35rem; letter-spacing: 0.5px;
+  font-weight: 800; font-size: 1.35rem; letter-spacing: 0.5px; line-height: 1;
+  color: var(--navy);
 }
 .brand .wordmark .sub {
-  font-weight: 400; font-size: 0.95rem; letter-spacing: 0.2px; opacity: 0.95;
+  font-weight: 400; font-size: 0.95rem; letter-spacing: 0.2px;
+  color: var(--ink-2);
 }
-.topbar nav { display: flex; gap: 32px; }
-.topbar nav a {
-  color: var(--white); text-decoration: none; font-weight: 500; font-size: 0.92rem;
-  padding: 6px 2px; border-bottom: 2px solid transparent; transition: border-color .2s;
-}
-.topbar nav a.active, .topbar nav a:hover { border-bottom-color: var(--white); }
 
 /* ─────────── HERO ─────────── */
 .hero {
@@ -252,7 +253,6 @@ body {
 /* ─────────── RESPONSIVE ─────────── */
 @media (max-width: 860px) {
   .topbar { padding: 14px 20px; }
-  .topbar nav { display: none; }
   .hero { padding: 56px 24px 88px; }
   .workspace { padding: 0 16px 48px; }
   .panel { padding: 28px 22px; border-radius: 22px; }
@@ -265,21 +265,19 @@ body {
 <body>
 
 <div class="topbar">
-  <div class="brand">
-    <svg class="logomark" viewBox="0 0 60 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M2 38 L2 12 L12 12 L18 28 L24 12 L34 12 L34 38 L26 38 L26 22 L21 38 L15 38 L10 22 L10 38 Z" fill="white"/>
-      <path d="M40 18 Q44 14 48 18" stroke="white" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-      <path d="M42 24 Q45 21 48 24" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-      <circle cx="48" cy="30" r="2" fill="white"/>
+  <a class="brand" href="./">
+    <svg class="logomark" viewBox="0 0 130 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Madkour">
+      <!-- Left peak -->
+      <path d="M5 75 L5 5 L55 5 Q55 42 62 75 Z" fill="#1E3FE5"/>
+      <!-- Right peak -->
+      <path d="M119 75 L119 5 L69 5 Q69 42 62 75 Z" fill="#0A1F44"/>
+      <!-- Concentric arcs cut out of left peak (white, matching topbar bg) -->
+      <path d="M11 70 A 7 7 0 0 1 18 63" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      <path d="M11 70 A 13 13 0 0 1 24 57" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      <path d="M11 70 A 19 19 0 0 1 30 51" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" fill="none"/>
     </svg>
     <div class="wordmark">MADKOUR<span class="sub">Cashflow</span></div>
-  </div>
-  <nav>
-    <a href="#" class="active">Generator</a>
-    <a href="#">Projects</a>
-    <a href="#">Reports</a>
-    <a href="#">Help</a>
-  </nav>
+  </a>
 </div>
 
 <section class="hero">
