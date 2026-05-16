@@ -5,32 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Madkour Cashflow Generator</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-
 :root {
-  --brand-blue: #1E3FE5;
-  --brand-blue-deep: #1633C7;
-  --navy: #0A1F44;
-  --navy-2: #102855;
-  --cream: #ECECF4;
-  --cream-2: #F6F6FB;
+  --brand-blue: #0637E8;
+  --brand-blue-deep: #0527A8;
+  --brand-blue-soft: #E9EEFF;
+  --brand-cyan: #58CBFF;
+  --navy: #041B5C;
+  --navy-2: #082C8F;
+  --cream: #F4F7FF;
+  --cream-2: #F9FBFF;
   --white: #FFFFFF;
-  --orange: #FF8C2B;
-  --orange-deep: #F07415;
-  --ink: #0A1F44;
-  --ink-2: #4A5678;
-  --ink-3: #8A93AB;
-  --line: #DCDFEC;
+  --ink: #061642;
+  --ink-2: #52618C;
+  --ink-3: #8793B7;
+  --line: #D9E1FF;
+  --glass-line: rgba(255,255,255,0.22);
   --success: #16A34A;
   --error: #DC2626;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { height: 100%; }
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  background: var(--cream);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 90% 12%, rgba(88,203,255,0.26), transparent 28%),
+    linear-gradient(180deg, var(--brand-blue) 0 520px, var(--cream) 520px 100%);
   color: var(--ink);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -39,91 +41,280 @@ body {
 
 /* ─────────── TOP NAV ─────────── */
 .topbar {
-  background: var(--white);
-  padding: 18px 48px;
+  background: var(--brand-blue);
+  padding: 24px 48px 18px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50;
-  border-bottom: 1px solid var(--line);
-  box-shadow: 0 1px 0 rgba(10,31,68,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  box-shadow: none;
 }
 .brand {
-  display: flex; align-items: center; gap: 14px;
-  color: var(--navy); text-decoration: none;
+  display: flex; align-items: center; min-width: 0;
+  color: var(--white); text-decoration: none;
 }
-.brand .logomark { width: 62px; height: 38px; flex-shrink: 0; }
-.brand .wordmark {
-  display: flex; align-items: baseline; gap: 8px;
-  font-weight: 800; font-size: 1.35rem; letter-spacing: 0.5px; line-height: 1;
-  color: var(--navy);
+.brand-logo {
+  display: block;
+  width: min(340px, 58vw);
+  height: auto;
 }
-.brand .wordmark .sub {
-  font-weight: 400; font-size: 0.95rem; letter-spacing: 0.2px;
-  color: var(--ink-2);
+.brand-fallback {
+  display: none;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--white);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.brand-fallback span {
+  font-size: 1.18rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.92);
+}
+.topbar-product {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  color: var(--white);
+  font-size: 0.86rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.08);
 }
 
 /* ─────────── HERO ─────────── */
 .hero {
-  background: var(--navy);
+  background: var(--brand-blue);
   color: var(--white);
-  padding: 72px 48px 96px;
+  padding: 54px 48px 112px;
   position: relative;
   overflow: hidden;
 }
 .hero::before {
   content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(circle at 15% 20%, rgba(30,63,229,0.35), transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(255,140,43,0.18), transparent 50%);
+    linear-gradient(135deg, rgba(255,255,255,0.11) 0 1px, transparent 1px) 0 0 / 36px 36px,
+    radial-gradient(circle at 78% 18%, rgba(88,203,255,0.22), transparent 28%);
+  opacity: 0.65;
   pointer-events: none;
 }
-.hero-inner { max-width: 1200px; margin: 0 auto; position: relative; }
+.hero-inner {
+  max-width: 1200px; margin: 0 auto; position: relative;
+  display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.72fr);
+  gap: 56px; align-items: center;
+}
+.hero-copy { min-width: 0; }
+.hero-card {
+  border: 1px solid var(--glass-line);
+  border-radius: 28px;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+  box-shadow: 0 24px 70px -36px rgba(0,10,70,0.55);
+  backdrop-filter: blur(12px);
+}
+.hero-card-title {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.flow-preview {
+  display: grid;
+  gap: 10px;
+}
+.flow-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 14px;
+  border-radius: 16px;
+  color: var(--white);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.flow-row b {
+  font-size: 0.92rem;
+}
+.flow-row span {
+  color: rgba(255,255,255,0.72);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.flow-row.primary {
+  background: var(--white);
+  color: var(--brand-blue);
+  border-color: var(--white);
+}
+.flow-row.primary span {
+  color: var(--ink-2);
+}
 .eyebrow {
-  display: inline-block; padding: 6px 14px;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 999px; font-size: 0.78rem; font-weight: 600; letter-spacing: 1px;
+  display: inline-block; padding: 0;
+  background: transparent; border: 0;
+  border-radius: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 0;
   text-transform: uppercase; margin-bottom: 22px;
+  color: rgba(255,255,255,0.72);
 }
 .hero h1 {
-  font-size: clamp(2.4rem, 4.6vw, 3.6rem);
-  font-weight: 800; line-height: 1.05; letter-spacing: -1.2px;
-  max-width: 780px;
+  font-size: clamp(2.7rem, 5.2vw, 5rem);
+  font-weight: 850; line-height: 0.98; letter-spacing: 0;
+  max-width: 820px;
 }
-.hero h1 .accent { color: #6B8AFF; }
+.hero h1 .accent { color: var(--white); }
 .hero p.lead {
-  margin-top: 18px; max-width: 620px;
-  font-size: 1.05rem; line-height: 1.55; color: rgba(255,255,255,0.78); font-weight: 400;
+  margin-top: 24px; max-width: 660px;
+  font-size: clamp(1.05rem, 1.45vw, 1.28rem); line-height: 1.55; color: rgba(255,255,255,0.82); font-weight: 500;
+}
+.hero-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+.hero-metrics span {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  color: var(--white);
+  background: rgba(255,255,255,0.08);
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
 /* ─────────── MAIN PANEL ─────────── */
 .workspace {
-  max-width: 1200px; margin: -56px auto 0; padding: 0 32px 64px;
+  max-width: 1200px; margin: -58px auto 0; padding: 0 32px 64px;
   position: relative; z-index: 1;
 }
 .panel {
   background: var(--white);
   border-radius: 28px;
   padding: 40px;
-  box-shadow: 0 24px 60px -24px rgba(10,31,68,0.25), 0 2px 8px rgba(10,31,68,0.04);
+  border: 1px solid rgba(217,225,255,0.9);
+  box-shadow: 0 28px 80px -42px rgba(0,16,86,0.55), 0 10px 24px -18px rgba(4,27,92,0.28);
 }
 .panel-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
 .panel-head h2 {
-  font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; color: var(--navy);
+  font-size: 1.55rem; font-weight: 850; letter-spacing: 0; color: var(--navy);
 }
 .panel-head .step-counter {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
-  color: var(--ink-3); letter-spacing: 1px; text-transform: uppercase;
+  font-family: Consolas, "Courier New", monospace; font-size: 0.78rem;
+  color: var(--brand-blue); letter-spacing: 0; text-transform: uppercase;
+  background: var(--brand-blue-soft);
+  padding: 8px 12px;
+  border-radius: 999px;
 }
-.panel-sub { color: var(--ink-2); font-size: 0.95rem; margin-top: -16px; margin-bottom: 28px; }
+.panel-sub { color: var(--ink-2); font-size: 0.95rem; margin-top: -16px; margin-bottom: 28px; max-width: 720px; }
+.privacy-note {
+  margin: -12px 0 24px;
+  padding: 14px 16px;
+  border: 1px solid rgba(6,55,232,0.16);
+  border-radius: 14px;
+  background: #F5F8FF;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.privacy-note b {
+  color: var(--navy);
+  font-weight: 800;
+}
+.currency-setup {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid rgba(6,55,232,0.14);
+  border-radius: 8px;
+  background: #fff;
+}
+.currency-setup-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.currency-setup h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--navy);
+}
+.currency-setup p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--ink-2);
+}
+.currency-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.currency-controls input {
+  width: min(280px, 100%);
+  height: 38px;
+  border: 1px solid rgba(4,27,92,0.18);
+  border-radius: 8px;
+  padding: 0 12px;
+  font: inherit;
+  text-transform: uppercase;
+}
+.currency-controls button {
+  height: 38px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 14px;
+  background: var(--brand-blue);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.currency-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+}
+.currency-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  border-radius: 8px;
+  padding: 0 10px;
+  background: rgba(6,55,232,0.08);
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.currency-chip.fixed {
+  background: rgba(4,27,92,0.08);
+}
+.currency-chip button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0;
+  line-height: 1;
+}
 
 /* ─────────── UPLOAD CARDS ─────────── */
 .upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .upload-card {
   position: relative; padding: 28px 24px;
-  background: var(--cream-2);
+  background:
+    linear-gradient(180deg, var(--cream-2), var(--white));
   border: 1.5px solid var(--line);
   border-radius: 20px;
   cursor: pointer; transition: all 0.25s ease;
   display: flex; flex-direction: column; gap: 10px;
+  min-height: 250px;
 }
 .upload-card::after {
   content: ''; position: absolute; top: 18px; right: 20px;
@@ -135,51 +326,76 @@ body {
   border-color: var(--brand-blue);
   background: var(--white);
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px -16px rgba(30,63,229,0.35);
+  box-shadow: 0 18px 42px -24px rgba(6,55,232,0.45);
 }
 .upload-card.loaded {
   border-color: var(--brand-blue);
-  background: var(--white);
+  background: linear-gradient(180deg, #FFFFFF, #F5F8FF);
 }
 .upload-card.loaded::after {
   background: var(--brand-blue); border-color: var(--brand-blue);
   box-shadow: inset 0 0 0 4px var(--white);
 }
 .upload-card .step-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem; color: var(--ink-3); letter-spacing: 1px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.72rem; color: var(--ink-3); letter-spacing: 0;
+  text-transform: uppercase;
 }
 .upload-card .icon {
-  width: 52px; height: 52px;
-  border-radius: 14px;
+  width: 56px; height: 56px;
+  border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: 0;
   margin-top: 4px;
 }
-.upload-card:nth-child(1) .icon { background: rgba(30,63,229,0.10); color: var(--brand-blue); }
-.upload-card:nth-child(2) .icon { background: rgba(255,140,43,0.12); color: var(--orange-deep); }
-.upload-card:nth-child(3) .icon { background: rgba(10,31,68,0.08); color: var(--navy); }
+.upload-card:nth-child(1) .icon { background: rgba(6,55,232,0.10); color: var(--brand-blue); }
+.upload-card:nth-child(2) .icon { background: rgba(29,98,255,0.12); color: var(--brand-blue-deep); }
+.upload-card:nth-child(3) .icon { background: rgba(4,27,92,0.08); color: var(--navy); }
 
 .upload-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-top: 6px; }
-.upload-card .desc { font-size: 0.85rem; color: var(--ink-2); }
+.upload-card .desc { font-size: 0.85rem; color: var(--ink-2); line-height: 1.45; }
 .upload-card .status {
-  margin-top: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  margin-top: auto;
+  font-family: Consolas, "Courier New", monospace;
   font-size: 0.72rem; color: var(--ink-3);
-  padding: 8px 12px; border-radius: 10px;
+  padding: 9px 12px; border-radius: 12px;
   background: var(--white); border: 1px solid var(--line);
   word-break: break-all; line-height: 1.4;
 }
 .upload-card.loaded .status {
-  color: var(--brand-blue);
-  background: rgba(30,63,229,0.06);
-  border-color: rgba(30,63,229,0.25);
+  color: var(--brand-blue-deep);
+  background: rgba(6,55,232,0.06);
+  border-color: rgba(6,55,232,0.25);
 }
-.upload-card input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.template-btn {
+  position: relative; z-index: 2;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 8px 13px;
+  border: 1px solid rgba(6,55,232,0.24);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--brand-blue);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.template-btn:hover {
+  border-color: var(--brand-blue);
+  background: rgba(6,55,232,0.06);
+}
+.upload-card input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; }
 
 /* ─────────── ACTION BAR ─────────── */
 .action-bar {
-  margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--line);
+  margin-top: 32px; padding: 24px; border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, #F9FBFF, #F2F6FF);
   display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
 }
 .action-bar .hint { color: var(--ink-2); font-size: 0.9rem; }
@@ -188,17 +404,17 @@ body {
 #generateBtn {
   display: inline-flex; align-items: center; gap: 12px;
   padding: 16px 32px;
-  background: var(--orange);
+  background: var(--brand-blue);
   color: var(--white); border: none;
   border-radius: 999px;
-  font-family: inherit; font-size: 1rem; font-weight: 700; letter-spacing: 0.2px;
+  font-family: inherit; font-size: 1rem; font-weight: 700; letter-spacing: 0;
   cursor: pointer; transition: all 0.2s ease;
-  box-shadow: 0 8px 20px -8px rgba(255,140,43,0.6);
+  box-shadow: 0 8px 20px -8px rgba(6,55,232,0.62);
 }
 #generateBtn:hover:not(:disabled) {
-  background: var(--orange-deep);
+  background: var(--brand-blue-deep);
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px -8px rgba(255,140,43,0.7);
+  box-shadow: 0 12px 28px -8px rgba(6,55,232,0.72);
 }
 #generateBtn:disabled {
   background: #CFD3E2; color: #8A93AB;
@@ -214,12 +430,12 @@ body {
 
 /* ─────────── PROGRESS ─────────── */
 #progress {
-  height: 6px; background: var(--cream); border-radius: 999px;
+  height: 7px; background: #E5EBFF; border-radius: 999px;
   margin-top: 24px; overflow: hidden;
 }
 #progressBar {
   height: 100%; width: 0;
-  background: linear-gradient(90deg, var(--brand-blue), var(--orange));
+  background: linear-gradient(90deg, var(--brand-blue), var(--brand-cyan));
   border-radius: 999px;
   transition: width 0.4s ease;
 }
@@ -227,8 +443,8 @@ body {
 /* ─────────── LOG ─────────── */
 #log {
   margin-top: 20px;
-  background: var(--navy);
-  border-radius: 16px; padding: 22px 24px;
+  background: #061642;
+  border-radius: 18px; padding: 22px 24px;
   max-height: 360px; overflow-y: auto;
   display: none;
   border: 1px solid var(--navy-2);
@@ -249,13 +465,28 @@ body {
   color: var(--ink-3); font-size: 0.82rem;
 }
 .footer b { color: var(--navy); font-weight: 700; }
+.footer-credit {
+  margin-top: 8px;
+  color: var(--navy);
+  font-weight: 700;
+}
 
 /* ─────────── RESPONSIVE ─────────── */
 @media (max-width: 860px) {
-  .topbar { padding: 14px 20px; }
-  .hero { padding: 56px 24px 88px; }
+  body {
+    background:
+      radial-gradient(circle at 85% 6%, rgba(88,203,255,0.22), transparent 24%),
+      linear-gradient(180deg, var(--brand-blue) 0 620px, var(--cream) 620px 100%);
+  }
+  .topbar { padding: 16px 20px; gap: 12px; }
+  .brand-logo { width: min(260px, 64vw); }
+  .topbar-product { display: none; }
+  .hero { padding: 42px 24px 96px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 24px; }
+  .hero-card { border-radius: 22px; padding: 18px; }
   .workspace { padding: 0 16px 48px; }
   .panel { padding: 28px 22px; border-radius: 22px; }
+  .currency-setup-head { flex-direction: column; }
   .upload-grid { grid-template-columns: 1fr; }
   .action-bar { flex-direction: column; align-items: stretch; }
   #generateBtn { justify-content: center; }
@@ -266,25 +497,33 @@ body {
 
 <div class="topbar">
   <a class="brand" href="./">
-    <svg class="logomark" viewBox="0 0 130 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Madkour">
-      <!-- Left peak (pointed) -->
-      <path d="M5 75 L5 25 L35 5 L62 75 Z" fill="#1E3FE5"/>
-      <!-- Right peak (pointed, mirrored) -->
-      <path d="M119 75 L119 25 L89 5 L62 75 Z" fill="#0A1F44"/>
-      <!-- Three concentric signal arcs in the lower-left of the left peak -->
-      <path d="M10 72 A 8 8 0 0 1 18 64"  stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-      <path d="M10 72 A 14 14 0 0 1 24 58" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-      <path d="M10 72 A 20 20 0 0 1 30 52" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-    </svg>
-    <div class="wordmark">MADKOUR<span class="sub">Cashflow</span></div>
+    <img class="brand-logo" src="https://madkour.com.eg/themes/madkour/img/logos/madkour-holding-logo.svg" alt="Madkour Holding" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+    <span class="brand-fallback">MADKOUR <span>Holding</span></span>
   </a>
+  <span class="topbar-product">Cashflow Generator</span>
 </div>
 
 <section class="hero">
   <div class="hero-inner">
-    <span class="eyebrow">Finance · Project Cashflow</span>
-    <h1>Forecast every project's <span class="accent">cashflow</span> with engineering precision.</h1>
-    <p class="lead">Upload your BOQ, budget, and assumptions. Madkour's cashflow engine produces a complete, audit-ready workbook with monthly Cash In, Cash Out, and Net positions across all project tabs.</p>
+    <div class="hero-copy">
+      <span class="eyebrow">Finance - Project Cashflow</span>
+      <h1>Build cashflow workbooks with engineering precision.</h1>
+      <p class="lead">Upload the BOQ, Budget, and Assumptions files. The generator produces the complete Madkour workbook structure with monthly Cash In, Cash Out, Net positions, Summary, and EQU tabs.</p>
+      <div class="hero-metrics">
+        <span>3 input files</span>
+        <span>Multi-tab workbook</span>
+        <span>ND10 baseline styling</span>
+      </div>
+    </div>
+    <aside class="hero-card" aria-label="Workbook output preview">
+      <div class="hero-card-title">Workbook output</div>
+      <div class="flow-preview">
+        <div class="flow-row primary"><b>Cashflow</b><span>Monthly forecast</span></div>
+        <div class="flow-row"><b>Cash In</b><span>Revenue schedule</span></div>
+        <div class="flow-row"><b>Cash Out</b><span>Cost groups</span></div>
+        <div class="flow-row"><b>Summary</b><span>Project view</span></div>
+      </div>
+    </aside>
   </div>
 </section>
 
@@ -295,32 +534,53 @@ body {
       <span class="step-counter">Step 01 / 02 — Upload inputs</span>
     </div>
     <p class="panel-sub">Drop in the three Excel files below. The generator validates structure on upload and lights up when everything's ready.</p>
+    <div class="privacy-note">
+      <b>Privacy note:</b> All uploaded files are processed locally in your browser to generate the workbook. The app does not upload, store, or share project data on any server.
+    </div>
+
+    <div class="currency-setup">
+      <div class="currency-setup-head">
+        <div>
+          <h3>Template currencies</h3>
+          <p>Choose currencies before downloading templates. EGP stays as the equivalent/base currency.</p>
+        </div>
+        <div class="currency-controls">
+          <input id="currencyInput" list="currencyOptions" maxlength="3" placeholder="Type currency code, e.g. SAR" onkeydown="handleCurrencyKey(event)">
+          <datalist id="currencyOptions"></datalist>
+          <button type="button" onclick="addCurrencyFromInput()">Add</button>
+        </div>
+      </div>
+      <div id="currencyChips" class="currency-chips"></div>
+    </div>
 
     <div class="upload-grid">
-      <label class="upload-card" id="boqCard">
-        <span class="step-num">01 · Cash In</span>
-        <div class="icon">📋</div>
+      <div class="upload-card" id="boqCard">
+        <span class="step-num">01 - Cash In</span>
+        <div class="icon">BOQ</div>
         <h3>BOQ</h3>
         <div class="desc">Bill of Quantities driving project revenue.</div>
+        <button type="button" class="template-btn" onclick="downloadTemplate(event,'boq')">Download template</button>
         <span class="status">Click or drop a .xlsx file</span>
         <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'boq')">
-      </label>
-      <label class="upload-card" id="budgetCard">
-        <span class="step-num">02 · Cash Out</span>
-        <div class="icon">💰</div>
+      </div>
+      <div class="upload-card" id="budgetCard">
+        <span class="step-num">02 - Cash Out</span>
+        <div class="icon">BDG</div>
         <h3>Budget</h3>
         <div class="desc">Cost breakdown for materials, labour, and overhead.</div>
+        <button type="button" class="template-btn" onclick="downloadTemplate(event,'budget')">Download template</button>
         <span class="status">Click or drop a .xlsx file</span>
         <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'budget')">
-      </label>
-      <label class="upload-card" id="assumptionsCard">
-        <span class="step-num">03 · Parameters</span>
-        <div class="icon">⚙️</div>
+      </div>
+      <div class="upload-card" id="assumptionsCard">
+        <span class="step-num">03 - Parameters</span>
+        <div class="icon">ASM</div>
         <h3>Assumptions</h3>
         <div class="desc">Payment terms, retention, advance, escalation rates.</div>
+        <button type="button" class="template-btn" onclick="downloadTemplate(event,'assumptions')">Download template</button>
         <span class="status">Click or drop a .xlsx file</span>
         <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'assumptions')">
-      </label>
+      </div>
     </div>
 
     <div class="action-bar">
@@ -337,6 +597,7 @@ body {
 
   <div class="footer">
     <b>Madkour Holding</b> · Cashflow Generator v3.0 · Defining the benchmarks of engineering excellence
+    <div class="footer-credit">Done by Ganna Abdelaziz - Cost Control Engineer</div>
   </div>
 </main>
 
@@ -345,6 +606,66 @@ body {
 // FILE HANDLING
 // ============================================================
 const data = { boq: null, budget: null, assumptions: null };
+const ISO_CURRENCIES = [
+  'AED','AFN','ALL','AMD','ANG','AOA','ARS','AUD','AWG','AZN','BAM','BBD','BDT','BGN','BHD','BIF','BMD','BND','BOB','BOV','BRL','BSD','BTN','BWP','BYN','BZD',
+  'CAD','CDF','CHE','CHF','CHW','CLF','CLP','CNY','COP','COU','CRC','CUC','CUP','CVE','CZK','DJF','DKK','DOP','DZD','EGP','ERN','ETB','EUR','FJD','FKP',
+  'GBP','GEL','GHS','GIP','GMD','GNF','GTQ','GYD','HKD','HNL','HTG','HUF','IDR','ILS','INR','IQD','IRR','ISK','JMD','JOD','JPY','KES','KGS','KHR','KMF',
+  'KPW','KRW','KWD','KYD','KZT','LAK','LBP','LKR','LRD','LSL','LYD','MAD','MDL','MGA','MKD','MMK','MNT','MOP','MRU','MUR','MVR','MWK','MXN','MXV','MYR',
+  'MZN','NAD','NGN','NIO','NOK','NPR','NZD','OMR','PAB','PEN','PGK','PHP','PKR','PLN','PYG','QAR','RON','RSD','RUB','RWF','SAR','SBD','SCR','SDG','SEK',
+  'SGD','SHP','SLE','SLL','SOS','SRD','SSP','STN','SVC','SYP','SZL','THB','TJS','TMT','TND','TOP','TRY','TTD','TWD','TZS','UAH','UGX','USD','USN','UYI',
+  'UYU','UYW','UZS','VED','VES','VND','VUV','WST','XAF','XAG','XAU','XBA','XBB','XBC','XBD','XCD','XDR','XOF','XPD','XPF','XPT','XSU','XTS','XUA','XXX',
+  'YER','ZAR','ZMW','ZWG'
+];
+const selectedTemplateCurrencies = ['USD', 'EGP', 'EUR'];
+
+function initializeCurrencySelector() {
+  const options = document.getElementById('currencyOptions');
+  if (options) {
+    options.innerHTML = ISO_CURRENCIES.map(cur => '<option value="' + cur + '"></option>').join('');
+  }
+  renderCurrencyChips();
+}
+
+function getTemplateCurrencies() {
+  return sortCurrencies(selectedTemplateCurrencies);
+}
+
+function handleCurrencyKey(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    addCurrencyFromInput();
+  }
+}
+
+function addCurrencyFromInput() {
+  const input = document.getElementById('currencyInput');
+  const cur = normalizeCurrency(input && input.value);
+  if (!cur || !ISO_CURRENCIES.includes(cur)) {
+    if (input) input.value = '';
+    return;
+  }
+  if (!selectedTemplateCurrencies.includes(cur)) selectedTemplateCurrencies.push(cur);
+  if (input) input.value = '';
+  renderCurrencyChips();
+}
+
+function removeTemplateCurrency(cur) {
+  if (cur === 'EGP') return;
+  const idx = selectedTemplateCurrencies.indexOf(cur);
+  if (idx >= 0) selectedTemplateCurrencies.splice(idx, 1);
+  renderCurrencyChips();
+}
+
+function renderCurrencyChips() {
+  const el = document.getElementById('currencyChips');
+  if (!el) return;
+  el.innerHTML = getTemplateCurrencies().map(cur => {
+    const fixed = cur === 'EGP';
+    return '<span class="currency-chip ' + (fixed ? 'fixed' : '') + '">' + cur + (fixed ? '' : '<button type="button" aria-label="Remove ' + cur + '" onclick="removeTemplateCurrency(&quot;' + cur + '&quot;)">x</button>') + '</span>';
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', initializeCurrencySelector);
 
 function handleFile(input, type) {
   const file = input.files[0];
@@ -362,6 +683,378 @@ function handleFile(input, type) {
 
 function checkReady() {
   document.getElementById('generateBtn').disabled = !(data.boq && data.budget && data.assumptions);
+}
+
+// ============================================================
+// DOWNLOADABLE INPUT TEMPLATES
+// ============================================================
+const TEMPLATE_STYLE = {
+  title: { font:{bold:true,sz:16,name:'Century Gothic',color:{rgb:'0A1F44'}}, fill:{fgColor:{rgb:'DDEBF7'}}, alignment:{horizontal:'center',vertical:'center'}, border:{bottom:{style:'thin',color:{rgb:'A6A6A6'}}} },
+  note: { font:{italic:true,sz:10,name:'Century Gothic',color:{rgb:'4A5678'}}, fill:{fgColor:{rgb:'F6F6FB'}}, alignment:{wrapText:true,vertical:'top'} },
+  header: { font:{bold:true,sz:10,name:'Century Gothic',color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'0A1F44'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, border:{top:{style:'thin',color:{rgb:'A6A6A6'}},bottom:{style:'thin',color:{rgb:'A6A6A6'}},left:{style:'thin',color:{rgb:'A6A6A6'}},right:{style:'thin',color:{rgb:'A6A6A6'}}} },
+  section: { font:{bold:true,sz:11,name:'Century Gothic',color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'1E3FE5'}}, alignment:{vertical:'center'}, border:{top:{style:'thin',color:{rgb:'A6A6A6'}},bottom:{style:'thin',color:{rgb:'A6A6A6'}},left:{style:'thin',color:{rgb:'A6A6A6'}},right:{style:'thin',color:{rgb:'A6A6A6'}}} },
+  data: { font:{sz:10,name:'Century Gothic',color:{rgb:'000000'}}, border:{top:{style:'thin',color:{rgb:'D9D9D9'}},bottom:{style:'thin',color:{rgb:'D9D9D9'}},left:{style:'thin',color:{rgb:'D9D9D9'}},right:{style:'thin',color:{rgb:'D9D9D9'}}} },
+  example: { font:{sz:10,name:'Century Gothic',color:{rgb:'000000'}}, fill:{fgColor:{rgb:'FFF2CC'}}, border:{top:{style:'thin',color:{rgb:'D9D9D9'}},bottom:{style:'thin',color:{rgb:'D9D9D9'}},left:{style:'thin',color:{rgb:'D9D9D9'}},right:{style:'thin',color:{rgb:'D9D9D9'}}} },
+  pct: { font:{sz:10,name:'Century Gothic',color:{rgb:'000000'}}, numFmt:'0%', border:{top:{style:'thin',color:{rgb:'D9D9D9'}},bottom:{style:'thin',color:{rgb:'D9D9D9'}},left:{style:'thin',color:{rgb:'D9D9D9'}},right:{style:'thin',color:{rgb:'D9D9D9'}}} },
+  money: { font:{sz:10,name:'Century Gothic',color:{rgb:'000000'}}, numFmt:'#,##0', border:{top:{style:'thin',color:{rgb:'D9D9D9'}},bottom:{style:'thin',color:{rgb:'D9D9D9'}},left:{style:'thin',color:{rgb:'D9D9D9'}},right:{style:'thin',color:{rgb:'D9D9D9'}}} },
+  date: { font:{sz:10,name:'Century Gothic',color:{rgb:'000000'}}, numFmt:'dd-mmm-yyyy', border:{top:{style:'thin',color:{rgb:'D9D9D9'}},bottom:{style:'thin',color:{rgb:'D9D9D9'}},left:{style:'thin',color:{rgb:'D9D9D9'}},right:{style:'thin',color:{rgb:'D9D9D9'}}} }
+};
+
+const TEMPLATE_BORDER = {
+  top:{style:'thin',color:{rgb:'D9D9D9'}},
+  bottom:{style:'thin',color:{rgb:'D9D9D9'}},
+  left:{style:'thin',color:{rgb:'D9D9D9'}},
+  right:{style:'thin',color:{rgb:'D9D9D9'}}
+};
+const BOQ_STYLE = {
+  headerLeft: { font:{name:'Arial',sz:7,bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'4472C4'}}, alignment:{horizontal:'left',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  headerCenter: { font:{name:'Arial',sz:7,bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'4472C4'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  totalText: { font:{name:'Arial',sz:7,bold:true,color:{rgb:'FFFFFF'}}, alignment:{horizontal:'left',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  totalNum: { font:{name:'Arial',sz:7,bold:true,color:{rgb:'000000'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, numFmt:'#,##0', border:TEMPLATE_BORDER },
+  bandDark: { font:{name:'Arial',sz:7,bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'5B9BD5'}}, alignment:{horizontal:'left',vertical:'center'}, border:TEMPLATE_BORDER },
+  bandNavy: { font:{name:'Arial',sz:7,bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'2F5496'}}, alignment:{horizontal:'left',vertical:'center'}, border:TEMPLATE_BORDER },
+  bandLight: { font:{name:'Arial',sz:7,color:{rgb:'000000'}}, fill:{fgColor:{rgb:'D9EAF7'}}, alignment:{horizontal:'left',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  bandLightRed: { font:{name:'Arial',sz:7,bold:true,color:{rgb:'FF0000'}}, fill:{fgColor:{rgb:'D9EAF7'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  data: { font:{name:'Arial',sz:7,color:{rgb:'000000'}}, alignment:{horizontal:'left',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  dataCenter: { font:{name:'Arial',sz:7,color:{rgb:'000000'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  money: { font:{name:'Arial',sz:7,color:{rgb:'000000'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, numFmt:'#,##0', border:TEMPLATE_BORDER }
+};
+const BUDGET_STYLE = {
+  headerLeft: { font:{name:'Aptos Narrow',sz:11,bold:true,color:{rgb:'000000'}}, fill:{fgColor:{rgb:'44B3D8'}}, alignment:{horizontal:'left',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  headerCenter: { font:{name:'Aptos Narrow',sz:11,bold:true,color:{rgb:'000000'}}, fill:{fgColor:{rgb:'44B3D8'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER, numFmt:'_(* #,##0_);_(* (#,##0);_(* "-"??_);_(@_)' },
+  headerBlank: { font:{name:'Aptos Narrow',sz:11,bold:true,color:{rgb:'000000'}}, alignment:{horizontal:'left',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  band: { font:{name:'Aptos Narrow',sz:11,bold:true,color:{rgb:'000000'}}, fill:{fgColor:{rgb:'44B3D8'}}, alignment:{horizontal:'left',vertical:'center'}, border:TEMPLATE_BORDER },
+  parent: { font:{name:'Aptos Narrow',sz:11,color:{rgb:'000000'}}, fill:{fgColor:{rgb:'D9D9D9'}}, alignment:{horizontal:'left',vertical:'center'}, border:TEMPLATE_BORDER },
+  parentMoney: { font:{name:'Aptos Narrow',sz:11,color:{rgb:'000000'}}, fill:{fgColor:{rgb:'D9D9D9'}}, alignment:{horizontal:'right',vertical:'center'}, numFmt:'#,##0', border:TEMPLATE_BORDER },
+  data: { font:{name:'Aptos Narrow',sz:11,color:{rgb:'000000'}}, alignment:{horizontal:'left',vertical:'center'}, border:TEMPLATE_BORDER },
+  dataSmall: { font:{name:'Aptos Narrow',sz:10,color:{rgb:'000000'}}, alignment:{horizontal:'left',vertical:'center'}, border:TEMPLATE_BORDER },
+  money: { font:{name:'Aptos Narrow',sz:11,color:{rgb:'000000'}}, alignment:{horizontal:'right',vertical:'center'}, numFmt:'#,##0', border:TEMPLATE_BORDER },
+  spacer: { border:{left:{style:'thick',color:{rgb:'000000'}},right:{style:'thick',color:{rgb:'000000'}}} }
+};
+const ASSUMPTION_STYLE = {
+  section: { font:{name:'Arial',sz:11,bold:true,color:{rgb:'2F5496'}} },
+  header: { font:{name:'Arial',sz:12,bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'2F5496'}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, border:TEMPLATE_BORDER },
+  label: { font:{name:'Arial',sz:10,color:{rgb:'000000'}}, alignment:{vertical:'center'}, border:TEMPLATE_BORDER },
+  subSection: { font:{name:'Arial',sz:10,bold:true,color:{rgb:'2F5496'}}, border:TEMPLATE_BORDER },
+  input: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, border:TEMPLATE_BORDER },
+  note: { font:{name:'Arial',sz:9,color:{rgb:'808080'}}, border:TEMPLATE_BORDER },
+  pct: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, numFmt:'0%', border:TEMPLATE_BORDER },
+  pct2: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, numFmt:'0.00%', border:TEMPLATE_BORDER },
+  money: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, numFmt:'#,##0', border:TEMPLATE_BORDER },
+  usd: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, numFmt:'[$USD] #,##0', border:TEMPLATE_BORDER },
+  eur: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, numFmt:'[$EUR] #,##0', border:TEMPLATE_BORDER },
+  egp: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, numFmt:'[$EGP] #,##0', border:TEMPLATE_BORDER },
+  date: { font:{name:'Arial',sz:10,color:{rgb:'0000FF'}}, fill:{fgColor:{rgb:'FFF2CC'}}, alignment:{horizontal:'center',vertical:'center'}, numFmt:'[$-409]d-mmm-yyyy;@', border:TEMPLATE_BORDER }
+};
+
+function downloadTemplate(event, type) {
+  event.preventDefault();
+  event.stopPropagation();
+  if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+  addCurrencyFromInput();
+
+  const builders = {
+    boq: buildBOQTemplate,
+    budget: buildBudgetTemplate,
+    assumptions: buildAssumptionsTemplate
+  };
+  const built = builders[type]();
+  XLSX.writeFile(built.workbook, built.filename, { cellStyles: true });
+}
+
+function putCell(ws, row, col, value, style, type) {
+  const cell = { v: value, t: type || (typeof value === 'number' ? 'n' : 's') };
+  if (style) cell.s = style;
+  ws[XLSX.utils.encode_cell({ r: row - 1, c: col - 1 })] = cell;
+}
+
+function setRangeStyle(ws, row, startCol, endCol, style) {
+  for (let col = startCol; col <= endCol; col++) {
+    const addr = XLSX.utils.encode_cell({ r: row - 1, c: col - 1 });
+    if (!ws[addr]) ws[addr] = { v: '', t: 's' };
+    ws[addr].s = style;
+  }
+}
+
+function setTemplateCommon(ws, ref, freezePane) {
+  ws['!ref'] = ref;
+  if (freezePane) ws['!freeze'] = freezePane;
+}
+
+function withBudgetBorder(style, sides) {
+  const copy = JSON.parse(JSON.stringify(style));
+  copy.border = copy.border || {};
+  sides.forEach(side => copy.border[side] = { style:'thick', color:{rgb:'000000'} });
+  return copy;
+}
+
+function buildBOQTemplate() {
+  const wb = XLSX.utils.book_new();
+  const ws = {};
+  const currencies = getTemplateCurrencies();
+
+  const headers = ['Trade', 'BOQ', 'Category', 'Task Number', 'Description'].concat(currencies.map(cur => 'Total Price\n(' + cur + ')'));
+  headers.forEach((header, i) => putCell(ws, 4, i + 2, header, i >= 3 ? BOQ_STYLE.headerCenter : BOQ_STYLE.headerLeft));
+  for (let col = 2; col <= 6; col++) putCell(ws, 5, col, '', col === 5 ? BOQ_STYLE.headerCenter : BOQ_STYLE.totalText);
+  currencies.forEach((cur, idx) => putCell(ws, 5, 7 + idx, defaultTemplateAmount(cur, idx), BOQ_STYLE.totalNum));
+
+  const rows = [
+    ['Main BOQ', 'Main BOQ', '', '', '', 'bandDark'],
+    ['GIS - 220KV - (Annex I)', 'GIS - 220KV - (Annex I)', '', 1, 'Lump sum price for design, fabrication, factory testing, training and site delivery of 220 kV GIS switchgear', 'bandNavy'],
+    ['ELECTRICAL WORKS', 'Main BOQ', 'GIS - 220KV', '1.Main', '220 kV GIS switchgear', 'bandLight'],
+    ['ELECTRICAL WORKS', 'Main BOQ', 'GIS - 220KV', 1.1, 'Supply 220 kV GIS switchgear', 'data'],
+    ['CIVIL WORKS', 'Main BOQ', 'Foundations', '2.Main', 'Concrete foundations and earthing works', 'data'],
+    ['MECHANICAL WORKS', 'Main BOQ', 'Fire Fighting System', '3.Main', 'Fire fighting system supply and installation', 'data']
+  ];
+  rows.forEach((row, rIdx) => {
+    const rowType = row[5];
+    const values = row.slice(0, 5).concat(currencies.map((cur, idx) => (rowType === 'data' && idx === rIdx - 3) ? defaultTemplateAmount(cur, idx) : ''));
+    values.forEach((value, cIdx) => {
+    let style = BOQ_STYLE.data;
+    if (rowType === 'bandDark') style = cIdx >= 5 ? {...BOQ_STYLE.bandDark, numFmt:'#,##0'} : BOQ_STYLE.bandDark;
+    else if (rowType === 'bandNavy') style = cIdx >= 5 ? {...BOQ_STYLE.bandNavy, numFmt:'#,##0'} : BOQ_STYLE.bandNavy;
+    else if (rowType === 'bandLight') style = cIdx === 3 || cIdx === 4 ? BOQ_STYLE.bandLightRed : (cIdx >= 5 ? {...BOQ_STYLE.bandLight, numFmt:'#,##0', alignment:{horizontal:'center',vertical:'center',wrapText:true}} : BOQ_STYLE.bandLight);
+    else if (cIdx === 3 || cIdx >= 5) style = cIdx >= 5 ? BOQ_STYLE.money : BOQ_STYLE.dataCenter;
+    putCell(ws, rIdx + 6, cIdx + 2, value, style);
+    });
+  });
+
+  ws['!cols'] = [{ wch: 2.33 }, { wch: 18.22 }, { wch: 13 }, { wch: 15.11 }, { wch: 7.89 }, { wch: 60.11 }];
+  currencies.forEach((cur, idx) => { ws['!cols'][6 + idx] = { wch: 14 }; });
+  ws['!rows'] = [null, null, null, { hpt: 33 }, null, { hpt: 14.4 }, { hpt: 17.4 }, { hpt: 10.8 }, { hpt: 21 }];
+  const lastCol = colLetter(6 + currencies.length);
+  ws['!autofilter'] = { ref:'A4:' + lastCol + '80' };
+  setTemplateCommon(ws, 'A1:' + lastCol + '80');
+  XLSX.utils.book_append_sheet(wb, ws, 'BOQ');
+  return { workbook: wb, filename: 'BOQ_Input_Template.xlsx' };
+}
+
+function defaultTemplateAmount(cur, idx) {
+  if (cur === 'USD') return 250000;
+  if (cur === 'EGP') return 1800000;
+  if (cur === 'EUR') return 0;
+  return idx === 0 ? 250000 : 0;
+}
+
+function defaultExchangeRate(cur) {
+  if (cur === 'USD') return 48.4;
+  if (cur === 'EUR') return 53.0;
+  if (cur === 'EGP') return 1;
+  return '';
+}
+
+function buildBudgetTemplate() {
+  const wb = XLSX.utils.book_new();
+  const ws = {};
+  const currencies = getTemplateCurrencies();
+
+  const headers = ['Trade ', 'BOQ', 'CATEGORY / PACKAGE', 'Parent Task', 'Task Number', 'Budget Catergory', 'Description', 'Unit ', 'Currency', '', 'Budget Amount', ''];
+  headers.forEach((header, i) => {
+    const col = i + 1;
+    let style = (col >= 4 && col <= 6) || col === 11 ? BUDGET_STYLE.headerCenter : BUDGET_STYLE.headerLeft;
+    if (col === 10 || col === 12) style = BUDGET_STYLE.headerBlank;
+    if (col <= 9 || col === 11) style = withBudgetBorder(style, ['top','bottom']);
+    if (col === 10 || col === 12) style = withBudgetBorder(style, ['left','right']);
+    putCell(ws, 3, col, header, style);
+  });
+  for (let col = 1; col <= 12; col++) {
+    let style = col <= 9 || col === 11 ? BUDGET_STYLE.headerBlank : BUDGET_STYLE.spacer;
+    if (col === 10 || col === 12) style = withBudgetBorder(BUDGET_STYLE.headerBlank, ['left','right']);
+    putCell(ws, 4, col, '', style);
+  }
+  for (let col = 1; col <= 12; col++) {
+    let style = col <= 9 || col === 11 ? BUDGET_STYLE.band : BUDGET_STYLE.spacer;
+    if (col === 10 || col === 12) style = withBudgetBorder(BUDGET_STYLE.headerBlank, ['left','right']);
+    putCell(ws, 5, col, '', style);
+  }
+
+  const rows = [
+    ['ELECTRICAL WORKS', 'Main BOQ', 'GIS - 220KV', '1.Main', '1.Main', '#', '220 kV GIS switchgear', 'EA', currencies[0], '', 2850000],
+    ['ELECTRICAL WORKS', 'Main BOQ', 'GIS - 220KV', '1.Main', '1.Main.1', 'MATERIAL', 'Supply 220 kV GIS switchgear', 'EA', currencies[0], '', 2500000],
+    ['ELECTRICAL WORKS', 'Main BOQ', 'GIS - 220KV', '1.Main', '1.Main.2', 'SERVICES', 'Custom duties and clearance', 'LS', currencies[0], '', 350000],
+    ['CIVIL WORKS', 'Main BOQ', 'Foundations', '2.Main', '2.Main.1', 'S/C', 'Civil subcontractor installation works', 'LS', currencies.includes('EGP') ? 'EGP' : currencies[0], '', 1800000],
+    ['PROJECT', 'Main BOQ', 'Project Controls', '3.Main', '3.Main.1', 'LABOUR', 'Planning and control labour', 'LS', currencies.includes('EGP') ? 'EGP' : currencies[0], '', 500000]
+  ];
+  rows.forEach((row, rIdx) => row.forEach((value, cIdx) => {
+    const isParent = row[5] === '#';
+    let style = isParent ? BUDGET_STYLE.parent : BUDGET_STYLE.data;
+    if (cIdx === 5 && value === 'SERVICES') style = BUDGET_STYLE.dataSmall;
+    if (cIdx === 10) style = isParent ? BUDGET_STYLE.parentMoney : BUDGET_STYLE.money;
+    putCell(ws, rIdx + 6, cIdx + 1, value, style);
+  }));
+  rows.forEach((row, rIdx) => {
+    const rowNum = rIdx + 6;
+    putCell(ws, rowNum, 10, '', withBudgetBorder(BUDGET_STYLE.headerBlank, ['left','right']));
+    putCell(ws, rowNum, 12, '', withBudgetBorder(BUDGET_STYLE.headerBlank, ['left','right']));
+  });
+
+  ws['!cols'] = [{ wch: 17.55 }, { wch: 16.33 }, { wch: 24.78 }, { wch: 9.78 }, { wch: 11.89 }, { wch: 12 }, { wch: 43.89 }, { wch: 9 }, { wch: 12.44 }, { wch: 2.55 }, { wch: 19.33 }, { wch: 2.66 }];
+  ws['!rows'] = [null, null, { hpt: 54 }, { hpt: 15 }];
+  ws['!autofilter'] = { ref:'A3:L100' };
+  setTemplateCommon(ws, 'A1:L100');
+  XLSX.utils.book_append_sheet(wb, ws, 'Break Down');
+  appendCurrencyListSheet(wb, currencies);
+  return { workbook: wb, filename: 'Budget_Input_Template.xlsx' };
+}
+
+function appendCurrencyListSheet(wb, currencies) {
+  const ws = {};
+  putCell(ws, 1, 1, 'Active Currency', ASSUMPTION_STYLE.header);
+  putCell(ws, 1, 2, 'Exchange Rate to EGP', ASSUMPTION_STYLE.header);
+  currencies.forEach((cur, idx) => {
+    putCell(ws, idx + 2, 1, cur, ASSUMPTION_STYLE.label);
+    putCell(ws, idx + 2, 2, cur === 'EGP' ? 1 : '', ASSUMPTION_STYLE.input, cur === 'EGP' ? 'n' : 's');
+  });
+  ws['!cols'] = [{ wch: 18 }, { wch: 22 }];
+  setTemplateCommon(ws, 'A1:B' + (currencies.length + 1));
+  XLSX.utils.book_append_sheet(wb, ws, 'Currencies');
+}
+
+function buildAssumptionsTemplate() {
+  const wb = XLSX.utils.book_new();
+  const ws = {};
+  const currencies = getTemplateCurrencies();
+  const nonEgpCurrencies = currencies.filter(cur => cur !== 'EGP');
+
+  putCell(ws, 2, 2, 'PROJECT INFORMATION', ASSUMPTION_STYLE.section);
+  putCell(ws, 3, 2, 'Parameter', ASSUMPTION_STYLE.header);
+  putCell(ws, 3, 3, 'Value', ASSUMPTION_STYLE.header);
+  putCell(ws, 3, 4, 'Notes', ASSUMPTION_STYLE.header);
+  const projectInfo = [
+    ['Project Name', 'Sample Project', 'Workbook file name and sheet titles'],
+    ['Project Start Date', dateSerial(2026, 1, 1), 'First month in the cashflow timeline'],
+    ['Number of Months', 12, 'Timeline duration']
+  ].concat(nonEgpCurrencies.map(cur => [cur + ' to EGP Exchange Rate', defaultExchangeRate(cur), 'For equivalent conversion']));
+  projectInfo.forEach((row, i) => {
+    putCell(ws, i + 4, 2, row[0], ASSUMPTION_STYLE.label);
+    putCell(ws, i + 4, 3, row[1], row[0].includes('Date') ? ASSUMPTION_STYLE.date : ASSUMPTION_STYLE.input);
+    putCell(ws, i + 4, 4, row[2], ASSUMPTION_STYLE.note);
+  });
+
+  const contractRow = Math.max(11, projectInfo.length + 7);
+  putCell(ws, contractRow, 2, 'CONTRACT VALUE', ASSUMPTION_STYLE.section);
+  currencies.forEach((cur, idx) => {
+    putCell(ws, contractRow + 1, 2 + idx, '(' + cur + ')', ASSUMPTION_STYLE.header);
+    putCell(ws, contractRow + 2, 2 + idx, defaultTemplateAmount(cur, idx), ASSUMPTION_STYLE.money);
+  });
+
+  const cashInStart = contractRow + 6;
+  const cashInSections = currencies.map(cur => [
+    'Material ' + cur,
+    [['Advanced Payment', 0.20, 45], ['Site Delivery ' + cur, 0.70, 45], ['Retention', 0.10, 45]]
+  ]).concat([
+    ['Services ' + (currencies.includes('EGP') ? 'EGP' : currencies[0]), [['Advanced Payment', 0.20, 45], ['Progress', 0.70, 45], ['Retention', 0.10, 45]]]
+  ]);
+  const cashOutStart = writePaymentTerms(ws, cashInStart, 'CASH IN - PAYMENT TERMS', 'Currency / Category', cashInSections) + 3;
+  const cashOutSections = currencies.map(cur => [
+    'Material ' + cur,
+    [['Advanced Payment PO ' + cur, 0.10, 0], ['Shipping MAT ' + cur, 0.40, 15], ['Delivery MAT ' + cur, 0.40, 30], ['CCC', 0.10, 0]]
+  ]).concat([
+    ['S/C', [['Advanced Payment Installation', 0.05, 0], ['Installation Progress', 0.85, 30], ['Subcontractor Retention', 0.10, 0]]],
+    ['SERVICES-EQ-LABOUR', [['Advanced Payment Installation', 0.10, 0], ['Progress', 0.90, 30]]]
+  ]);
+  const deductionsStart = writePaymentTerms(ws, cashOutStart, 'CASH OUT - PAYMENT TERMS', 'Currency / Budget Catergory', cashOutSections) + 3;
+
+  putCell(ws, deductionsStart, 2, 'CASH IN SUMMARY - DEDUCTIONS', ASSUMPTION_STYLE.section);
+  putCell(ws, deductionsStart + 1, 2, 'Deduction Type', ASSUMPTION_STYLE.header);
+  putCell(ws, deductionsStart + 1, 3, 'Percentage (%)', ASSUMPTION_STYLE.header);
+  putCell(ws, deductionsStart + 1, 4, 'Notes', ASSUMPTION_STYLE.header);
+  [
+    ['VAT', 0, 'Applied on gross invoicing'],
+    ['Advanced Payment Deduction (AP)', 0, 'Deducted from each invoice'],
+    ['Stamp Duties & Additional Stamp Duties', 0, 'On net before VAT'],
+    ['Governmental Deductions', 0.009, ''],
+    ['Viva Egypt', 0, '']
+  ].forEach((row, i) => {
+    putCell(ws, deductionsStart + 2 + i, 2, row[0], ASSUMPTION_STYLE.label);
+    putCell(ws, deductionsStart + 2 + i, 3, row[1], ASSUMPTION_STYLE.pct);
+    putCell(ws, deductionsStart + 2 + i, 4, row[2], ASSUMPTION_STYLE.note);
+  });
+
+  const indirectStart = deductionsStart + 9;
+  putCell(ws, indirectStart, 2, 'CASH OUT - INDIRECT COSTS', ASSUMPTION_STYLE.section);
+  putCell(ws, indirectStart + 1, 2, 'These are fixed-value line items in the Cash Out sheet. Enter the total budget for each.', ASSUMPTION_STYLE.note);
+  putCell(ws, indirectStart + 2, 2, 'Indirect Cost Item', ASSUMPTION_STYLE.header);
+  putCell(ws, indirectStart + 2, 3, 'Total Budget (EGP)', ASSUMPTION_STYLE.header);
+  putCell(ws, indirectStart + 2, 4, 'Notes', ASSUMPTION_STYLE.header);
+  [
+    ['1. STAFF SALARIES AND WAGES', 250000, ''],
+    ['2. EMPLOYER AND/OR ENGINEER REQUIREMENTS', 50000, ''],
+    ['3. CONTRACTOR OFFICES AND SITE FACILITIES', 75000, '']
+  ].forEach((row, i) => {
+    putCell(ws, indirectStart + 3 + i, 2, row[0], ASSUMPTION_STYLE.label);
+    putCell(ws, indirectStart + 3 + i, 3, row[1], ASSUMPTION_STYLE.money);
+    putCell(ws, indirectStart + 3 + i, 4, row[2], ASSUMPTION_STYLE.note);
+  });
+
+  const overheadStart = indirectStart + 16;
+  putCell(ws, overheadStart, 2, 'CASH OUT - PROJECT OVERHEADS', ASSUMPTION_STYLE.section);
+  putCell(ws, overheadStart + 1, 2, 'Percentage-based costs applied on total contract value, distributed across project timeline.', ASSUMPTION_STYLE.note);
+  putCell(ws, overheadStart + 2, 2, 'Overhead Type', ASSUMPTION_STYLE.header);
+  putCell(ws, overheadStart + 2, 3, 'Percentage (%)', ASSUMPTION_STYLE.header);
+  putCell(ws, overheadStart + 2, 4, 'Applied On', ASSUMPTION_STYLE.header);
+  currencies.forEach((cur, idx) => putCell(ws, overheadStart + 2, 5 + idx, '(' + cur + ')', ASSUMPTION_STYLE.header));
+  [
+    ['INSURANCE POLICIES', 0.005, 'Total contract value'],
+    ['PERFORMANCE BOND COST', 0.0026, 'Total contract value'],
+    ['GOVERNMENTAL DEDUCTIONS 0.9%', 0.009, 'Total contract value']
+  ].forEach((row, i) => {
+    const rr = overheadStart + 3 + i;
+    putCell(ws, rr, 2, row[0], ASSUMPTION_STYLE.label);
+    putCell(ws, rr, 3, row[1], ASSUMPTION_STYLE.pct2);
+    putCell(ws, rr, 4, row[2], ASSUMPTION_STYLE.note);
+    currencies.forEach((cur, idx) => putCell(ws, rr, 5 + idx, 0, ASSUMPTION_STYLE.money));
+  });
+
+  const risksStart = overheadStart + 14;
+  putCell(ws, risksStart, 2, 'CASH OUT - RISKS & CONTINGENCIES', ASSUMPTION_STYLE.section);
+  putCell(ws, risksStart + 1, 2, 'Fixed-value items for project risk reserves and company overheads.', ASSUMPTION_STYLE.note);
+  putCell(ws, risksStart + 2, 2, 'Item', ASSUMPTION_STYLE.header);
+  putCell(ws, risksStart + 2, 3, 'Total Budget', ASSUMPTION_STYLE.header);
+  putCell(ws, risksStart + 2, 4, 'Notes', ASSUMPTION_STYLE.header);
+  currencies.forEach((cur, idx) => putCell(ws, risksStart + 2, 5 + idx, '(' + cur + ')', ASSUMPTION_STYLE.header));
+  [
+    ['RISKS & CONTINGENCIES', 0.02, 'Project risk reserve'],
+    ['COMPANY OVERHEADS', 0.04, 'Corporate overhead allocation']
+  ].forEach((row, i) => {
+    const rr = risksStart + 3 + i;
+    putCell(ws, rr, 2, row[0], ASSUMPTION_STYLE.label);
+    putCell(ws, rr, 3, row[1], ASSUMPTION_STYLE.pct2);
+    putCell(ws, rr, 4, row[2], ASSUMPTION_STYLE.note);
+    currencies.forEach((cur, idx) => putCell(ws, rr, 5 + idx, 0, ASSUMPTION_STYLE.money));
+  });
+
+  const lastCol = colLetter(Math.max(7, 4 + currencies.length));
+  const lastRow = risksStart + 5;
+  ws['!cols'] = [{ wch: 5 }, { wch: 22.11 }, { wch: 29.44 }, { wch: 22 }, { wch: 24.89 }];
+  currencies.forEach((cur, idx) => { ws['!cols'][4 + idx] = { wch: 18 }; });
+  ws['!rows'] = [];
+  [2, contractRow, cashInStart, cashOutStart, deductionsStart, indirectStart, overheadStart, risksStart].forEach(row => { ws['!rows'][row - 1] = { hpt: 15.6 }; });
+  setTemplateCommon(ws, 'A1:' + lastCol + lastRow);
+  XLSX.utils.book_append_sheet(wb, ws, 'Assumptions');
+  appendCurrencyListSheet(wb, currencies);
+  return { workbook: wb, filename: 'Assumptions_Input_Template.xlsx' };
+}
+
+function writePaymentTerms(ws, startRow, title, categoryHeader, sections) {
+  putCell(ws, startRow, 2, title, ASSUMPTION_STYLE.section);
+  putCell(ws, startRow + 1, 2, categoryHeader, ASSUMPTION_STYLE.header);
+  putCell(ws, startRow + 1, 3, 'Milestone', ASSUMPTION_STYLE.header);
+  putCell(ws, startRow + 1, 4, 'Percentage (%)', ASSUMPTION_STYLE.header);
+  putCell(ws, startRow + 1, 5, 'Cash Duration (Days)', ASSUMPTION_STYLE.header);
+  let row = startRow + 2;
+  sections.forEach(section => {
+    putCell(ws, row, 2, section[0], ASSUMPTION_STYLE.subSection);
+    row++;
+    section[1].forEach(term => {
+      putCell(ws, row, 3, term[0], ASSUMPTION_STYLE.label);
+      putCell(ws, row, 4, term[1], ASSUMPTION_STYLE.pct);
+      putCell(ws, row, 5, term[2], ASSUMPTION_STYLE.input);
+      row++;
+    });
+    row++;
+  });
+  return row;
 }
 
 function log(msg, cls) {
@@ -396,6 +1089,248 @@ function colLetter(n) {
   let s = '';
   while (n > 0) { n--; s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26); }
   return s;
+}
+
+function xmlEscape(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function xmlUnescape(value) {
+  return String(value == null ? '' : value)
+    .replace(/&apos;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&amp;/g, '&');
+}
+
+function sheetRefName(sheetName) {
+  return "'" + String(sheetName).replace(/'/g, "''") + "'";
+}
+
+function nextPartNumber(paths, prefix, suffix) {
+  let max = 0;
+  paths.forEach(path => {
+    const match = path.match(new RegExp('^' + prefix.replace(/\//g, '\\/') + '(\\d+)' + suffix.replace('.', '\\.') + '$'));
+    if (match) max = Math.max(max, Number(match[1]));
+  });
+  return max + 1;
+}
+
+function nextRelationshipId(relsXml) {
+  let max = 0;
+  relsXml.replace(/Id="rId(\d+)"/g, function(_, id) {
+    max = Math.max(max, Number(id));
+    return _;
+  });
+  return 'rId' + (max + 1);
+}
+
+function addContentTypeOverride(contentTypesXml, partName, contentType) {
+  if (contentTypesXml.indexOf('PartName="' + partName + '"') !== -1) return contentTypesXml;
+  const override = '<Override PartName="' + partName + '" ContentType="' + contentType + '"/>';
+  return contentTypesXml.replace('</Types>', override + '</Types>');
+}
+
+function addWorksheetDrawing(worksheetXml, drawingRelId) {
+  let xml = worksheetXml;
+  if (xml.indexOf('xmlns:r=') === -1) {
+    xml = xml.replace('<worksheet ', '<worksheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" ');
+  }
+  xml = xml.replace(/<drawing r:id="[^"]+"\/>/g, '');
+  const drawing = '<drawing r:id="' + drawingRelId + '"/>';
+  if (xml.indexOf('<legacyDrawing') !== -1) return xml.replace('<legacyDrawing', drawing + '<legacyDrawing');
+  if (xml.indexOf('<pageMargins') !== -1) return xml.replace('<pageMargins', drawing + '<pageMargins');
+  return xml.replace('</worksheet>', drawing + '</worksheet>');
+}
+
+function addWorksheetRelationship(relsXml, drawingRelId, drawingPartName) {
+  const rel = '<Relationship Id="' + drawingRelId + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/' + drawingPartName + '"/>';
+  if (!relsXml) {
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + rel + '</Relationships>';
+  }
+  return relsXml.replace('</Relationships>', rel + '</Relationships>');
+}
+
+function buildCashflowDrawingXml(chartRelId, N) {
+  const toCol = Math.max(2 + N, 15);
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' +
+    '<xdr:twoCellAnchor>' +
+    '<xdr:from><xdr:col>1</xdr:col><xdr:colOff>90000</xdr:colOff><xdr:row>1</xdr:row><xdr:rowOff>60000</xdr:rowOff></xdr:from>' +
+    '<xdr:to><xdr:col>' + toCol + '</xdr:col><xdr:colOff>60000</xdr:colOff><xdr:row>29</xdr:row><xdr:rowOff>100000</xdr:rowOff></xdr:to>' +
+    '<xdr:graphicFrame macro="">' +
+    '<xdr:nvGraphicFramePr><xdr:cNvPr id="2" name="Cashflow Chart"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr>' +
+    '<xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm>' +
+    '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart">' +
+    '<c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="' + chartRelId + '"/>' +
+    '</a:graphicData></a:graphic>' +
+    '</xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor></xdr:wsDr>';
+}
+
+function buildDrawingChartRelsXml(chartPartName) {
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/' + chartPartName + '"/>' +
+    '</Relationships>';
+}
+
+function buildCashflowChartXml(sheetName, cur, N) {
+  const sheet = sheetRefName(sheetName);
+  const lastCol = colLetter(2 + N);
+  const catRange = sheet + '!$C$36:$' + lastCol + '$36';
+  const series = [
+    { labelRow: 38, valueRow: 38, type: 'bar', color: '5B9BD5' },
+    { labelRow: 41, valueRow: 41, type: 'bar', color: 'ED7D31' },
+    { labelRow: 39, valueRow: 39, type: 'line', color: '0070C0' },
+    { labelRow: 42, valueRow: 42, type: 'line', color: '70AD47' }
+  ];
+  const barSer = series.filter(s => s.type === 'bar').map((s, idx) => chartSeriesXml(sheet, catRange, s, idx, idx, N)).join('');
+  const lineSer = series.filter(s => s.type === 'line').map((s, idx) => chartSeriesXml(sheet, catRange, s, idx + 2, idx + 2, N)).join('');
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+    '<c:date1904 val="0"/><c:lang val="en-US"/><c:roundedCorners val="0"/>' +
+    '<c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="1400" b="1"><a:latin typeface="Century Gothic"/></a:rPr><a:t>' + xmlEscape('Cash Flow ' + cur) + '</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title>' +
+    '<c:plotArea><c:layout/>' +
+    '<c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:varyColors val="0"/>' + barSer + '<c:gapWidth val="150"/><c:axId val="208811320"/><c:axId val="208811712"/></c:barChart>' +
+    '<c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>' + lineSer + '<c:marker val="1"/><c:smooth val="0"/><c:axId val="208811320"/><c:axId val="208811712"/></c:lineChart>' +
+    '<c:catAx><c:axId val="208811320"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:numFmt formatCode="mmm\\-yy" sourceLinked="0"/><c:majorTickMark val="out"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:txPr><a:bodyPr rot="-5400000"/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="900"><a:latin typeface="Century Gothic"/></a:defRPr></a:pPr></a:p></c:txPr><c:crossAx val="208811712"/><c:crosses val="autoZero"/><c:auto val="0"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/></c:catAx>' +
+    '<c:valAx><c:axId val="208811712"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:majorGridlines/><c:numFmt formatCode="#,##0" sourceLinked="0"/><c:majorTickMark val="out"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="900"><a:latin typeface="Century Gothic"/></a:defRPr></a:pPr></a:p></c:txPr><c:crossAx val="208811320"/><c:crosses val="autoZero"/><c:crossBetween val="between"/></c:valAx>' +
+    '</c:plotArea><c:legend><c:legendPos val="r"/><c:overlay val="0"/><c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1000" b="1"><a:latin typeface="Century Gothic"/></a:defRPr></a:pPr></a:p></c:txPr></c:legend><c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>' +
+    '<c:spPr><a:solidFill><a:schemeClr val="bg1"/></a:solidFill><a:ln><a:solidFill><a:srgbClr val="D9E2F3"/></a:solidFill></a:ln></c:spPr>' +
+    '</c:chartSpace>';
+}
+
+function chartSeriesXml(sheet, catRange, s, idx, order, N) {
+  const valueRange = sheet + '!$C$' + s.valueRow + ':$' + colLetter(2 + N) + '$' + s.valueRow;
+  const lineXml = s.type === 'line'
+    ? '<c:spPr><a:ln w="28575" cap="rnd"><a:solidFill><a:srgbClr val="' + s.color + '"/></a:solidFill><a:round/></a:ln></c:spPr><c:marker><c:symbol val="none"/></c:marker>'
+    : '<c:spPr><a:solidFill><a:srgbClr val="' + s.color + '"/></a:solidFill><a:ln><a:noFill/></a:ln></c:spPr><c:invertIfNegative val="0"/>';
+  return '<c:ser><c:idx val="' + idx + '"/><c:order val="' + order + '"/>' +
+    '<c:tx><c:strRef><c:f>' + xmlEscape(sheet + '!$B$' + s.labelRow) + '</c:f></c:strRef></c:tx>' +
+    lineXml +
+    '<c:cat><c:numRef><c:f>' + xmlEscape(catRange) + '</c:f></c:numRef></c:cat>' +
+    '<c:val><c:numRef><c:f>' + xmlEscape(valueRange) + '</c:f></c:numRef></c:val>' +
+    (s.type === 'line' ? '<c:smooth val="0"/>' : '') +
+    '</c:ser>';
+}
+
+async function writeWorkbookWithCashflowCharts(wb, filename, chartSheetNames, N) {
+  if (!window.JSZip) throw new Error('JSZip did not load, so native Excel charts cannot be generated.');
+  const workbookArray = XLSX.write(wb, { bookType: 'xlsx', type: 'array', cellStyles: true });
+  const zip = await JSZip.loadAsync(workbookArray);
+  const allPaths = Object.keys(zip.files);
+  const workbookXml = await zip.file('xl/workbook.xml').async('string');
+  const workbookRelsXml = await zip.file('xl/_rels/workbook.xml.rels').async('string');
+  const sheetTargets = getWorksheetTargets(workbookXml, workbookRelsXml);
+  let contentTypesXml = await zip.file('[Content_Types].xml').async('string');
+  let drawingNo = nextPartNumber(allPaths, 'xl/drawings/drawing', '.xml');
+  let chartNo = nextPartNumber(allPaths, 'xl/charts/chart', '.xml');
+
+  for (const sheetName of chartSheetNames) {
+    const worksheetPath = sheetTargets[sheetName];
+    if (!worksheetPath || !zip.file(worksheetPath)) continue;
+
+    const drawingName = 'drawing' + drawingNo + '.xml';
+    const chartName = 'chart' + chartNo + '.xml';
+    const worksheetDir = worksheetPath.substring(0, worksheetPath.lastIndexOf('/'));
+    const worksheetFile = worksheetPath.substring(worksheetPath.lastIndexOf('/') + 1);
+    const worksheetRelsPath = worksheetDir + '/_rels/' + worksheetFile + '.rels';
+    const existingRels = zip.file(worksheetRelsPath) ? await zip.file(worksheetRelsPath).async('string') : '';
+    const drawingRelId = nextRelationshipId(existingRels);
+
+    const worksheetXml = await zip.file(worksheetPath).async('string');
+    zip.file(worksheetPath, addWorksheetDrawing(worksheetXml, drawingRelId));
+    zip.file(worksheetRelsPath, addWorksheetRelationship(existingRels, drawingRelId, drawingName));
+    zip.file('xl/drawings/' + drawingName, buildCashflowDrawingXml('rId1', N));
+    zip.file('xl/drawings/_rels/' + drawingName + '.rels', buildDrawingChartRelsXml(chartName));
+    zip.file('xl/charts/' + chartName, buildCashflowChartXml(sheetName, sheetName.replace(/^Cashflow\s+/i, ''), N));
+
+    contentTypesXml = addContentTypeOverride(contentTypesXml, '/xl/drawings/' + drawingName, 'application/vnd.openxmlformats-officedocument.drawing+xml');
+    contentTypesXml = addContentTypeOverride(contentTypesXml, '/xl/charts/' + chartName, 'application/vnd.openxmlformats-officedocument.drawingml.chart+xml');
+    drawingNo++;
+    chartNo++;
+  }
+
+  zip.file('[Content_Types].xml', contentTypesXml);
+  const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  downloadBlob(blob, filename);
+}
+
+function getWorksheetTargets(workbookXml, workbookRelsXml) {
+  const relTargets = {};
+  workbookRelsXml.replace(/<Relationship\b[^>]*Id="([^"]+)"[^>]*Target="([^"]+)"[^>]*>/g, function(_, id, target) {
+    const cleanTarget = target.replace(/^\//, '');
+    relTargets[id] = cleanTarget.indexOf('xl/') === 0 ? cleanTarget : 'xl/' + cleanTarget;
+    return _;
+  });
+  const sheetTargets = {};
+  workbookXml.replace(/<sheet\b[^>]*name="([^"]+)"[^>]*r:id="([^"]+)"[^>]*\/>/g, function(_, name, relId) {
+    sheetTargets[xmlUnescape(name)] = relTargets[relId];
+    return _;
+  });
+  return sheetTargets;
+}
+
+function downloadBlob(blob, filename) {
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+
+function normalizeCurrency(value) {
+  const cur = String(value || '').trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(cur) ? cur : '';
+}
+
+function currencyCodesFromText(value) {
+  const text = String(value || '').toUpperCase();
+  const codes = [];
+  let match;
+  const parenthetical = /\(([A-Z]{3})\)/g;
+  while ((match = parenthetical.exec(text)) !== null) codes.push(match[1]);
+  const toEgp = /\b([A-Z]{3})\s+TO\s+EGP\b/g;
+  while ((match = toEgp.exec(text)) !== null) codes.push(match[1]);
+  const ignored = { AND: true, THE: true, FOR: true, VAT: true };
+  if (codes.length === 0) {
+    const tokens = text.match(/\b[A-Z]{3}\b/g) || [];
+    tokens.forEach(token => { if (!ignored[token]) codes.push(token); });
+  }
+  return Array.from(new Set(codes.map(normalizeCurrency).filter(Boolean)));
+}
+
+function firstCurrencyCode(value) {
+  return currencyCodesFromText(value)[0] || '';
+}
+
+function getCurrencyAmount(item, cur) {
+  return (item && item.amountsByCurrency && item.amountsByCurrency[cur]) || 0;
+}
+
+function sortCurrencies(currencies) {
+  const unique = Array.from(new Set(currencies.map(normalizeCurrency).filter(Boolean)));
+  const referenceOrder = ['USD', 'EGP', 'EUR'];
+  const ordered = referenceOrder.filter(cur => unique.includes(cur));
+  return ordered.concat(unique.filter(cur => !referenceOrder.includes(cur)).sort());
+}
+
+function detectCurrencyColumnsFromRow(row) {
+  const columns = {};
+  (row || []).forEach((value, idx) => {
+    const cur = firstCurrencyCode(value);
+    if (cur) columns[idx] = cur;
+  });
+  return columns;
 }
 
 function dateSerial(year, month, day) {
@@ -447,12 +1382,27 @@ function parseAssumptions(wb) {
   const a = {
     projectName: '', startDate: null, numMonths: 24,
     usdToEgp: 48.4, eurToEgp: 53.0,
+    exchangeRates: { EGP: 1, USD: 48.4, EUR: 53.0 },
     cashInTerms: {}, cashOutTerms: {},
     deductions: {}, overheads: {},
     indirectCost: {}, indirectCostItems: [],
     projectOverheads: [], risksContingencies: [],
     _indirectCostCur: 'EGP'
   };
+
+  const currencySheet = wb.Sheets['Currencies'];
+  if (currencySheet) {
+    const currencyRows = XLSX.utils.sheet_to_json(currencySheet, { header: 1, defval: null });
+    currencyRows.slice(1).forEach(row => {
+      const cur = normalizeCurrency(row && row[0]);
+      const rate = Number(row && row[1]);
+      if (cur && (cur === 'EGP' || rate > 0)) {
+        a.exchangeRates[cur] = cur === 'EGP' ? 1 : rate;
+        if (cur === 'USD') a.usdToEgp = rate;
+        if (cur === 'EUR') a.eurToEgp = rate;
+      }
+    });
+  }
 
   for (let r = range.s.r; r <= range.e.r; r++) {
     const b = vals[r + '_1'], c = vals[r + '_2'], d = vals[r + '_3'];
@@ -461,33 +1411,56 @@ function parseAssumptions(wb) {
       if (lb === 'project name' && c !== undefined) a.projectName = c;
       if (lb === 'project start date' && c !== undefined) a.startDate = c;
       if (lb === 'number of months' && c !== undefined) a.numMonths = Number(c) || 24;
-      if (lb.includes('usd to egp') && c !== undefined) a.usdToEgp = Number(c) || 48.4;
-      if (lb.includes('eur to egp') && c !== undefined) a.eurToEgp = Number(c) || 53.0;
+      const rateMatch = b.trim().toUpperCase().match(/\b([A-Z]{3})\s+TO\s+EGP\b/);
+      if (rateMatch && c !== undefined) {
+        const rateCur = normalizeCurrency(rateMatch[1]);
+        const rate = Number(c);
+        if (rateCur && rate > 0) {
+          a.exchangeRates[rateCur] = rate;
+          if (rateCur === 'USD') a.usdToEgp = rate;
+          if (rateCur === 'EUR') a.eurToEgp = rate;
+        }
+      }
     }
   }
 
   let section = '', subsection = '';
+  let sectionCurrencyColumns = {};
   for (let r = range.s.r; r <= range.e.r; r++) {
     const b = vals[r + '_1'], c = vals[r + '_2'], d = vals[r + '_3'], e = vals[r + '_4'];
-    const colE = vals[r + '_4'], colF = vals[r + '_5'], colG = vals[r + '_6'];
+    const rowValues = [];
+    for (let cc = range.s.c; cc <= range.e.c; cc++) rowValues[cc] = vals[r + '_' + cc];
 
     if (typeof b === 'string') {
       const lb = b.trim().toUpperCase();
+      const priorSection = section;
       if (lb.includes('INDIRECT') && lb.includes('COST')) section = 'indirectCost';
       else if (lb.includes('PROJECT') && lb.includes('OVERHEAD')) section = 'projectOverheads';
       else if (lb.includes('RISK') && lb.includes('CONTINGENC')) section = 'risksContingencies';
       else if (lb.includes('CASH IN') && lb.includes('PAYMENT')) section = 'cashIn';
       else if (lb.includes('CASH OUT') && lb.includes('PAYMENT')) section = 'cashOut';
       else if (lb.includes('CASH IN') && lb.includes('DEDUCTION')) section = 'deductions';
+      if (section !== priorSection) sectionCurrencyColumns = {};
+    }
+
+    if (section === 'indirectCost' || section === 'projectOverheads' || section === 'risksContingencies') {
+      const detectedColumns = detectCurrencyColumnsFromRow(rowValues);
+      if (Object.keys(detectedColumns).length > 0) {
+        sectionCurrencyColumns = detectedColumns;
+        if (section === 'indirectCost') {
+          const firstCol = Object.keys(detectedColumns)[0];
+          a._indirectCostCur = detectedColumns[firstCol] || a._indirectCostCur;
+        }
+      }
     }
 
     if (typeof b === 'string' && b.trim() && !c && !d && (section === 'cashIn' || section === 'cashOut')) {
-      subsection = b.trim();
+      subsection = normalizeAssumptionCategory(b.trim());
     }
     if (typeof b === 'string' && b.trim() && typeof c !== 'number' && typeof d !== 'number') {
       const lbl = b.trim();
       if ((section === 'cashIn' || section === 'cashOut') && lbl.match(/material|installation|services|civil|custom|S\/C|LABOUR|EQ/i)) {
-        subsection = lbl;
+        subsection = normalizeAssumptionCategory(lbl);
       }
     }
 
@@ -505,15 +1478,11 @@ function parseAssumptions(wb) {
 
     if (section === 'indirectCost' && typeof b === 'string' && b.trim()) {
       const label = b.trim().toUpperCase();
-      if (label.includes('EGP') && typeof c !== 'number') a._indirectCostCur = 'EGP';
-      else if (label.includes('USD') && typeof c !== 'number') a._indirectCostCur = 'USD';
-      else if (label.includes('EUR') && typeof c !== 'number') a._indirectCostCur = 'EUR';
+      const labelCur = firstCurrencyCode(label);
+      if (labelCur && typeof c !== 'number') a._indirectCostCur = labelCur;
 
       if (typeof c === 'number' && c > 0) {
-        let cur = a._indirectCostCur || 'EGP';
-        if (label.includes('USD')) cur = 'USD';
-        else if (label.includes('EUR')) cur = 'EUR';
-        else if (label.includes('EGP')) cur = 'EGP';
+        const cur = labelCur || a._indirectCostCur || 'EGP';
         a.indirectCostItems.push({ name: b.trim(), value: c, currency: cur });
         a.indirectCost[cur] = (a.indirectCost[cur] || 0) + c;
       }
@@ -522,31 +1491,42 @@ function parseAssumptions(wb) {
     if (section === 'projectOverheads' && typeof b === 'string' && b.trim()) {
       const label = b.trim(), lu = label.toUpperCase();
       if (!(lu.includes('PROJECT') && lu.includes('OVERHEAD')) && !lu.includes('PERCENTAGE-BASED') && !lu.includes('OVERHEAD TYPE')) {
-        if (typeof c === 'number' || typeof colE === 'number') {
-          a.projectOverheads.push({
-            name: label, pct: typeof c === 'number' ? c : 0,
-            USD: typeof colE === 'number' ? colE : 0,
-            EUR: typeof colF === 'number' ? colF : 0,
-            EGP: typeof colG === 'number' ? colG : 0
-          });
+        const amountsByCurrency = {};
+        Object.entries(sectionCurrencyColumns).forEach(([colIdx, cur]) => {
+          const value = vals[r + '_' + colIdx];
+          amountsByCurrency[cur] = typeof value === 'number' ? value : 0;
+        });
+        if (typeof c === 'number' || Object.values(amountsByCurrency).some(value => value > 0)) {
+          const item = { name: label, pct: typeof c === 'number' ? c : 0, amountsByCurrency };
+          Object.entries(amountsByCurrency).forEach(([cur, value]) => { item[cur] = value; });
+          a.projectOverheads.push(item);
         }
       }
     }
 
     if (section === 'risksContingencies' && typeof b === 'string' && b.trim()) {
       const label = b.trim();
-      if (typeof c === 'number' || typeof colE === 'number') {
-        a.risksContingencies.push({
-          name: label, pct: typeof c === 'number' ? c : 0,
-          USD: typeof colE === 'number' ? colE : 0,
-          EUR: typeof colF === 'number' ? colF : 0,
-          EGP: typeof colG === 'number' ? colG : 0
-        });
+      const amountsByCurrency = {};
+      Object.entries(sectionCurrencyColumns).forEach(([colIdx, cur]) => {
+        const value = vals[r + '_' + colIdx];
+        amountsByCurrency[cur] = typeof value === 'number' ? value : 0;
+      });
+      if (typeof c === 'number' || Object.values(amountsByCurrency).some(value => value > 0)) {
+        const item = { name: label, pct: typeof c === 'number' ? c : 0, amountsByCurrency };
+        Object.entries(amountsByCurrency).forEach(([cur, value]) => { item[cur] = value; });
+        a.risksContingencies.push(item);
       }
     }
   }
 
   return a;
+}
+
+function normalizeAssumptionCategory(label) {
+  const text = String(label || '').trim();
+  const upper = text.toUpperCase();
+  if (upper.includes('SERVICES') && upper.includes('EQ') && upper.includes('LABOUR')) return 'SERVICES-EQ-LABOUR';
+  return text;
 }
 
 // ============================================================
@@ -556,20 +1536,29 @@ function parseBOQ(wb) {
   const ws = wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null, range: 3 });
   const items = [];
+  const headerRow = rows[0] || [];
+  let currencyColumns = detectCurrencyColumnsFromRow(headerRow);
+  if (Object.keys(currencyColumns).length === 0) {
+    currencyColumns = { 6: 'USD', 7: 'EUR', 8: 'EGP' };
+  }
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (!r) continue;
     const trade = r[1], boq = r[2], cat = r[3], taskNum = r[4], desc = r[5];
-    const usd = r[6], eur = r[7], egp = r[8];
+    const amountsByCurrency = {};
+    Object.entries(currencyColumns).forEach(([colIdx, cur]) => {
+      const value = r[Number(colIdx)];
+      amountsByCurrency[cur] = (typeof value === 'number' && value !== 0) ? value : 0;
+    });
     if (!desc && !taskNum) continue;
-    items.push({
+    const item = {
       trade: trade || '', boq: boq || '', category: cat || '',
       taskNum: taskNum || '', description: desc || '',
-      USD: (typeof usd === 'number' && usd !== 0) ? usd : 0,
-      EUR: (typeof eur === 'number' && eur !== 0) ? eur : 0,
-      EGP: (typeof egp === 'number' && egp !== 0) ? egp : 0,
-      isHeader: !usd && !eur && !egp && !taskNum
-    });
+      amountsByCurrency,
+      isHeader: !taskNum && !Object.values(amountsByCurrency).some(value => value > 0)
+    };
+    Object.entries(amountsByCurrency).forEach(([cur, value]) => { item[cur] = value; });
+    items.push(item);
   }
   return items;
 }
@@ -600,11 +1589,24 @@ function parseBudget(wb) {
   return items;
 }
 
-function detectCurrencies(boqItems, budgetItems) {
+function detectCurrencies(boqItems, budgetItems, assumptions) {
   const currencies = new Set();
-  boqItems.forEach(item => { if (item.USD > 0) currencies.add('USD'); if (item.EUR > 0) currencies.add('EUR'); if (item.EGP > 0) currencies.add('EGP'); });
+  boqItems.forEach(item => {
+    Object.entries(item.amountsByCurrency || {}).forEach(([cur, value]) => {
+      if (value > 0) currencies.add(cur);
+    });
+  });
   budgetItems.forEach(item => { if (item.currency && item.amount > 0) currencies.add(item.currency); });
-  return Array.from(currencies).sort();
+  if (assumptions) {
+    (assumptions.indirectCostItems || []).forEach(item => { if (item.currency && item.value > 0) currencies.add(item.currency); });
+    (assumptions.projectOverheads || []).forEach(item => {
+      Object.entries(item.amountsByCurrency || {}).forEach(([cur, value]) => { if (value > 0) currencies.add(cur); });
+    });
+    (assumptions.risksContingencies || []).forEach(item => {
+      Object.entries(item.amountsByCurrency || {}).forEach(([cur, value]) => { if (value > 0) currencies.add(cur); });
+    });
+  }
+  return sortCurrencies(Array.from(currencies));
 }
 
 // ============================================================
@@ -703,7 +1705,7 @@ async function generate() {
     log('Parsing Assumptions...');
     const assumptions = parseAssumptions(data.assumptions);
     log('  Project: ' + (assumptions.projectName || 'Unnamed'), 'ok');
-    log('  Months: ' + assumptions.numMonths + ', USD/EGP: ' + assumptions.usdToEgp);
+    log('  Months: ' + assumptions.numMonths + ', exchange rates: ' + Object.entries(assumptions.exchangeRates || {}).map(function(e){return e[0] + '/EGP=' + e[1]}).join(', '));
     log('  Cash In terms: ' + Object.keys(assumptions.cashInTerms).length + ' categories');
     log('  Cash Out terms: ' + Object.keys(assumptions.cashOutTerms).length + ' categories');
     log('  Indirect Cost items: ' + (assumptions.indirectCostItems || []).length + ' (' + Object.entries(assumptions.indirectCost).map(function(e){return e[0]+':'+e[1]}).join(', ') + ')');
@@ -718,10 +1720,16 @@ async function generate() {
 
     log('Parsing Budget...');
     const budgetItems = parseBudget(data.budget);
-    log('  Found ' + budgetItems.length + ' items', 'ok');
+    const budgetDataItems = budgetItems.filter(item => !item.isParent && item.amount > 0);
+    log('  Found ' + budgetDataItems.length + ' usable data items (' + budgetItems.length + ' rows parsed)', 'ok');
     setProgress(20);
 
-    const currencies = detectCurrencies(boqItems, budgetItems);
+    const currencies = detectCurrencies(boqItems, budgetItems, assumptions);
+    if (currencies.length === 0) throw new Error('No active currencies found in BOQ or Budget input files.');
+    const missingRates = currencies.filter(cur => cur !== 'EGP' && !(assumptions.exchangeRates && assumptions.exchangeRates[cur] > 0));
+    if (missingRates.length > 0) {
+      throw new Error('Missing exchange rate(s) in Assumptions: ' + missingRates.map(cur => cur + ' to EGP Exchange Rate').join(', '));
+    }
     log('Active currencies: ' + currencies.join(', '), 'info');
 
     const dates = generateDates(assumptions.startDate, assumptions.numMonths);
@@ -731,6 +1739,7 @@ async function generate() {
     const wb = XLSX.utils.book_new();
     const N = assumptions.numMonths;
     const projName = assumptions.projectName || 'Project';
+    const chartSheetNames = [];
 
     let progress = 30;
     const progressPerCurrency = 55 / currencies.length;
@@ -738,7 +1747,7 @@ async function generate() {
     for (const cur of currencies) {
       log('Building ' + cur + ' tabs...', 'info');
 
-      const boqCur = boqItems.filter(item => item[cur] > 0 || item.isHeader);
+      const boqCur = boqItems.filter(item => getCurrencyAmount(item, cur) > 0 || item.isHeader);
       const budgetCur = budgetItems.filter(item => item.currency === cur);
 
       const ciTabName = safeSheetNameWithSuffix(projName, ' Cash in ' + cur);
@@ -780,20 +1789,22 @@ async function generate() {
       setProgress(progress);
 
       // TAB 5: Cashflow
-      log('  Creating Cashflow ' + cur + ' (with chart)...');
+      log('  Creating Cashflow ' + cur + '...');
       const cfSheet = buildCashflowSheet(cur, dates, assumptions, projName, ciSumTabName, coSumTabName, N);
       XLSX.utils.book_append_sheet(wb, cfSheet, cfTabName);
       setTabColor(wb, cfTabName, TAB_COLORS['CF_' + cur] || 'C00000');
+      chartSheetNames.push(cfTabName);
       progress += progressPerCurrency * 0.2;
       setProgress(progress);
     }
 
     // Cashflow EQU
-    if (currencies.length > 1 || currencies.includes('USD') || currencies.includes('EUR')) {
-      log('Building Cashflow EQU (with chart)...', 'info');
+    if (currencies.length > 1 || currencies.some(cur => cur !== 'EGP')) {
+      log('Building Cashflow EQU...', 'info');
       const equSheet = buildCashflowEQUSheet(currencies, dates, assumptions);
       XLSX.utils.book_append_sheet(wb, equSheet, 'Cashflow EQU');
       setTabColor(wb, 'Cashflow EQU', TAB_COLORS.CF_EQU);
+      chartSheetNames.push('Cashflow EQU');
     }
     setProgress(90);
 
@@ -803,15 +1814,10 @@ async function generate() {
     XLSX.utils.book_append_sheet(wb, aSheet, 'Assumptions');
     setProgress(92);
 
-    // Inject charts into all Cashflow sheets
-    log('Injecting charts into Cashflow sheets...', 'info');
-    injectChartsIntoWorkbook(wb, currencies, N);
-    setProgress(95);
-
     // Download
-    log('Generating Excel file...', 'info');
+    log('Generating Excel file with native charts...', 'info');
     const filename = (projName.replace(/[:\\\\/\\?\*\[\]]/g, '-')) + '_Cashflow_Baseline.xlsx';
-    XLSX.writeFile(wb, filename);
+    await writeWorkbookWithCashflowCharts(wb, filename, chartSheetNames, N);
     setProgress(100);
     log('✓ Download complete: ' + filename, 'ok');
 
@@ -831,53 +1837,6 @@ function setTabColor(wb, sheetName, colorHex) {
   if (!wb.Workbook.Sheets) wb.Workbook.Sheets = [];
   while (wb.Workbook.Sheets.length <= idx) wb.Workbook.Sheets.push({});
   wb.Workbook.Sheets[idx].tabColor = { rgb: colorHex };
-}
-
-// ============================================================
-// CHART INJECTION via raw XML
-// ============================================================
-function injectChartsIntoWorkbook(wb, currencies, N) {
-  // xlsx-js-style doesn't natively support charts, so we inject them
-  // by adding chart XML into the zip structure after serialization.
-  // Unfortunately, xlsx-js-style's XLSX.writeFile doesn't expose the zip.
-  //
-  // WORKAROUND: We inject a chart placeholder using the undocumented
-  // sheet['!drawing'] property. SheetJS supports reading drawings but
-  // writing them requires manual XML manipulation.
-  //
-  // Since xlsx-js-style can't create native Excel charts, we'll create
-  // a visual DATA TABLE in the Cashflow sheet that acts as the chart
-  // source data, formatted with conditional formatting bars to simulate
-  // a chart visually. We'll also add the raw OpenXML chart.
-
-  // We use a different approach: write the file to a blob, modify the zip,
-  // and re-trigger download. But that requires JSZip which isn't loaded.
-  //
-  // PRACTICAL SOLUTION: Add chart via the OpenXML approach by manipulating
-  // the workbook's internal zip structure.
-  //
-  // Since we can't easily inject charts with xlsx-js-style alone,
-  // let's add a visual bar representation using Unicode block characters
-  // and formatted cells to create a pseudo-chart that looks professional.
-
-  for (const cur of currencies) {
-    const cfTabName = safeSheetName('Cashflow ' + cur);
-    addVisualBarChart(wb, cfTabName, cur, N);
-  }
-  if (currencies.length > 1 || currencies.includes('USD') || currencies.includes('EUR')) {
-    addVisualBarChart(wb, 'Cashflow EQU', 'EQU', N);
-  }
-}
-
-function addVisualBarChart(wb, sheetName, cur, N) {
-  // The chart data is already in rows 63 and 66 of the cashflow sheet.
-  // We can't inject a native Excel chart with xlsx-js-style.
-  // Instead we leave the data structured so the user can easily create
-  // a chart from it manually, or we can use a more advanced approach.
-  // The data rows (63 = Cash In, 66 = Cash Out) are already properly
-  // formatted and referenced.
-  //
-  // NOTE: For native chart support, see the post-processing step below.
 }
 
 // ============================================================
@@ -1052,7 +2011,7 @@ function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName) 
         const cri = row - 1;
         sectionRows.push(row); // record this section's Excel row number
         ws[XLSX.utils.encode_cell({r:cri,c:5})] = {v: catName, t:'s', s: S.section};
-        const catDryCost = items.reduce((s, it) => s + (it[cur] || 0), 0);
+        const catDryCost = items.reduce((s, it) => s + getCurrencyAmount(it, cur), 0);
         ws[XLSX.utils.encode_cell({r:cri,c:6})] = {v: catDryCost, t:'n', s: S.section};
         fillRow(ws, cri, cmCol, S.section);
         if (!ws['!rows'][cri]) ws['!rows'][cri] = {};
@@ -1060,14 +2019,15 @@ function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName) 
         row++;
 
         for (const item of items) {
-          if (!item[cur] || item[cur] === 0) continue;
+          const itemAmount = getCurrencyAmount(item, cur);
+          if (!itemAmount) continue;
           const itemHeaderRow = row;
           const iri = row - 1;
 
           ws[XLSX.utils.encode_cell({r:iri,c:0})] = {v: item.taskNum || '', t:'s', s: S.itemHeader};
           ws[XLSX.utils.encode_cell({r:iri,c:4})] = {v: item.taskNum || '', t:'s', s: S.itemHeader};
           ws[XLSX.utils.encode_cell({r:iri,c:5})] = {v: item.description || '', t:'s', s: S.itemHeader};
-          ws[XLSX.utils.encode_cell({r:iri,c:6})] = {v: item[cur], t:'n', s: S.itemHeader};
+          ws[XLSX.utils.encode_cell({r:iri,c:6})] = {v: itemAmount, t:'n', s: S.itemHeader};
           writeBetaAndValues(ws, iri, row);
           fillRow(ws, iri, cmCol, S.itemHeader);
           if (!ws['!rows'][iri]) ws['!rows'][iri] = {};
@@ -1346,7 +2306,7 @@ function getCashOutGroup(budgetCat) {
   const bc = (budgetCat || '').trim().toUpperCase();
   if (bc === 'MATERIAL') return 'Material Supply';
   if (bc === 'S/C') return 'S/C';
-  if (bc === 'SERVICES' || bc === 'EQ' || bc === 'LABOUR') return 'SERVICES - EQ - LABOUR';
+  if (bc === 'SERVICES' || bc === 'EQ' || bc === 'LABOUR') return 'SERVICES-EQ-LABOUR';
   return 'Material Supply'; // default
 }
 
@@ -1452,7 +2412,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
   const allMilestoneNames = new Set();
 
   // --- GROUP BUDGET ITEMS ---
-  const groupOrder = ['Material Supply', 'S/C', 'SERVICES - EQ - LABOUR'];
+  const groupOrder = ['Material Supply', 'S/C', 'SERVICES-EQ-LABOUR'];
   const groupedItems = {};
   for (const g of groupOrder) groupedItems[g] = [];
 
@@ -1600,7 +2560,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
   }
 
   // --- PROJECT OVERHEADS section (always present) ---
-  const ohItems = assumptions.projectOverheads.filter(oh => (oh[cur] || 0) > 0);
+  const ohItems = assumptions.projectOverheads.filter(oh => getCurrencyAmount(oh, cur) > 0);
   {
     const hri = row - 1;
     ws[XLSX.utils.encode_cell({r:hri,c:0})] = {v: 'PROJECT OVERHEADS', t:'s', s: S.trade};
@@ -1623,7 +2583,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
       allMilestoneNames.add(oh.name);
       const ori = row - 1;
       ws[XLSX.utils.encode_cell({r:ori,c:4})] = {v: oh.name, t:'s', s: S.data};
-      ws[XLSX.utils.encode_cell({r:ori,c:5})] = {v: oh[cur], t:'n', s: S.num};
+      ws[XLSX.utils.encode_cell({r:ori,c:5})] = {v: getCurrencyAmount(oh, cur), t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:ori,c:6})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:ori,c:7})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:ori,c:ahCol-1})] = {f: 'H' + row + '-SUM(' + colLetter(actualStartCol) + row + ':' + colLetter(actualEndCol) + row + ')', t:'n', s: S.num};
@@ -1645,7 +2605,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
   }
 
   // --- RISKS & CONTINGENCIES section (always present) ---
-  const rcItems = assumptions.risksContingencies.filter(rc => (rc[cur] || 0) > 0);
+  const rcItems = assumptions.risksContingencies.filter(rc => getCurrencyAmount(rc, cur) > 0);
   {
     const hri = row - 1;
     ws[XLSX.utils.encode_cell({r:hri,c:0})] = {v: 'RISKS & CONTINGENCIES', t:'s', s: S.trade};
@@ -1668,7 +2628,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
       allMilestoneNames.add(rc.name);
       const rci = row - 1;
       ws[XLSX.utils.encode_cell({r:rci,c:4})] = {v: rc.name, t:'s', s: S.data};
-      ws[XLSX.utils.encode_cell({r:rci,c:5})] = {v: rc[cur], t:'n', s: S.num};
+      ws[XLSX.utils.encode_cell({r:rci,c:5})] = {v: getCurrencyAmount(rc, cur), t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:rci,c:6})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:rci,c:7})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:rci,c:ahCol-1})] = {f: 'H' + row + '-SUM(' + colLetter(actualStartCol) + row + ':' + colLetter(actualEndCol) + row + ')', t:'n', s: S.num};
@@ -1788,11 +2748,9 @@ function buildCashOutSummarySheet(cur, dates, assumptions, projName, cashOutLast
   ws['E4'] = {f: 'SUM(F4:' + lastCol + '4)', t:'n', s: S.sumColE};
 
   // One row per unique scope-of-work name from the Cash Out sheet.
-  // Period cells use SUMPRODUCT matching label (column E) and month header (row 2)
-  // against the value matrix at valStartCol..valEndCol.
+  // Period cells use the ND10 pattern: match label (column E) against one
+  // source value column per month. Do not SUMPRODUCT a 2D month matrix.
   const names = (milestoneNames && milestoneNames.length > 0) ? milestoneNames : [];
-  const valStart = colLetter(coValStartCol);
-  const valEnd = colLetter(coValStartCol + N - 1);
   const coLast = cashOutLastRow;
   const firstRow = 5;
 
@@ -1823,10 +2781,9 @@ function buildCashOutSummarySheet(cur, dates, assumptions, projName, cashOutLast
     ws[XLSX.utils.encode_cell({r:ri,c:4})] = {f: 'SUM(F' + r + ':' + lastCol + r + ')', t:'n', s: S.sumItem};
 
     for (let j = 0; j < N; j++) {
-      const monthCol = colLetter(6 + j);
+      const srcCol = colLetter(coValStartCol + j);
       const formula = "SUMPRODUCT(('" + coSheetName + "'!$E$4:$E$" + coLast + "=$D" + r + ")"
-                    + "*('" + coSheetName + "'!$" + valStart + "$2:$" + valEnd + "$2=" + monthCol + "$3)"
-                    + "*'" + coSheetName + "'!$" + valStart + "$4:$" + valEnd + "$" + coLast + ")";
+                    + "*1,'" + coSheetName + "'!" + srcCol + "$4:" + srcCol + "$" + coLast + ")";
       ws[XLSX.utils.encode_cell({r:ri,c:5+j})] = {f: formula, t:'n', s: S.sumItem};
     }
   }
@@ -1964,47 +2921,7 @@ function buildCashflowSheet(cur, dates, assumptions, projName, ciSumTabName, coS
 
   ws['!ref'] = 'A1:' + colLetter(3+N) + '55';
 
-  addChartToSheet(ws, cur, N);
-
   return ws;
-}
-
-// ============================================================
-// ADD CHART TO CASHFLOW SHEET
-// ============================================================
-function addChartToSheet(ws, cur, N) {
-  // The chart references:
-  //   Categories: row 36, columns C to last date column
-  //   Series 1 (Cash In): row 38, columns C to last date column
-  //   Series 2 (Cash Out): row 41, columns C to last date column
-
-  const lastCol = colLetter(2 + N);
-  const sheetName = safeSheetName('Cashflow ' + cur);
-
-  // Store chart metadata on the sheet for post-processing
-  if (!ws['!charts']) ws['!charts'] = [];
-  ws['!charts'].push({
-    type: 'bar',
-    grouping: 'clustered',
-    title: null,
-    anchor: { from: {col: 1, row: 11}, to: {col: Math.min(N + 2, 16), row: 28} },
-    series: [
-      {
-        name: 'Project Cash In "' + cur + '"',
-        nameRef: "'"+sheetName+"'!$B$38",
-        categories: "'"+sheetName+"'!$C$36:$" + lastCol + "$36",
-        values: "'"+sheetName+"'!$C$38:$" + lastCol + "$38",
-        color: '4472C4'
-      },
-      {
-        name: 'Project Cash Out "' + cur + '"',
-        nameRef: "'"+sheetName+"'!$B$41",
-        categories: "'"+sheetName+"'!$C$36:$" + lastCol + "$36",
-        values: "'"+sheetName+"'!$C$41:$" + lastCol + "$41",
-        color: 'ED7D31'
-      }
-    ]
-  });
 }
 
 // ============================================================
@@ -2071,52 +2988,54 @@ function buildCashflowEQUSheet(currencies, dates, assumptions) {
     ws[XLSX.utils.encode_cell({r:43,c:2+i})] = {f: col + '39-' + col + '42', t:'n', s: S.cfNet};
   }
 
-  ws['B85'] = {v: assumptions.usdToEgp, t:'n', s: S.num};
+  ws['B85'] = {v: 'Exchange Rates to EGP', t:'s', s: S.sumSection};
+  ws['C85'] = {v: 'Rate', t:'s', s: S.sumSection};
 
+  const orderedCurrencies = sortCurrencies(currencies);
+  const currencyRows = {};
   let r = 86;
-  if (currencies.includes('EGP')) {
-    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'in egp', t:'s', s: S.data};
-    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow EGP'!" + colLetter(3+i) + "38", t:'n', s: S.num};
+  for (const cur of orderedCurrencies) {
+    const rate = cur === 'EGP' ? 1 : ((assumptions.exchangeRates && assumptions.exchangeRates[cur]) || 0);
+    ws[XLSX.utils.encode_cell({r,c:1})] = {v: cur + ' to EGP', t:'s', s: S.data};
+    ws[XLSX.utils.encode_cell({r,c:2})] = {v: rate, t:'n', s: S.num};
     r++;
-    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'out egp', t:'s', s: S.data};
-    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow EGP'!" + colLetter(3+i) + "41", t:'n', s: S.num};
-    r += 2;
   }
-  if (currencies.includes('USD')) {
-    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'in usd', t:'s', s: S.data};
-    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow USD'!" + colLetter(3+i) + "38", t:'n', s: S.num};
+
+  r += 1;
+  for (const cur of orderedCurrencies) {
+    const inRow = r + 1;
+    const outRow = r + 2;
+    const rateRow = 87 + orderedCurrencies.indexOf(cur);
+    currencyRows[cur] = { inRow, outRow, rateRow };
+    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'in ' + cur.toLowerCase(), t:'s', s: S.data};
+    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow " + cur + "'!" + colLetter(3+i) + "38", t:'n', s: S.num};
     r++;
-    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'out usd', t:'s', s: S.data};
-    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow USD'!" + colLetter(3+i) + "41", t:'n', s: S.num};
-    r += 2;
-  }
-  if (currencies.includes('EUR')) {
-    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'in eur', t:'s', s: S.data};
-    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow EUR'!" + colLetter(3+i) + "38", t:'n', s: S.num};
-    r++;
-    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'out eur', t:'s', s: S.data};
-    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow EUR'!" + colLetter(3+i) + "41", t:'n', s: S.num};
+    ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'out ' + cur.toLowerCase(), t:'s', s: S.data};
+    for (let i = 0; i < N; i++) ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: "='Cashflow " + cur + "'!" + colLetter(3+i) + "41", t:'n', s: S.num};
     r += 2;
   }
 
-  ws[XLSX.utils.encode_cell({r:94,c:1})] = {v: 'equ in', t:'s', s: S.data};
-  ws[XLSX.utils.encode_cell({r:95,c:1})] = {v: 'equ out', t:'s', s: S.data};
+  const equInRow = r + 1;
+  const equOutRow = r + 2;
+  ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'equ in', t:'s', s: S.data};
+  ws[XLSX.utils.encode_cell({r:r+1,c:1})] = {v: 'equ out', t:'s', s: S.data};
 
   for (let i = 0; i < N; i++) {
     const col = colLetter(3+i);
-    const parts_in = [], parts_out = [];
-    let cr = 87;
-    if (currencies.includes('EGP')) {
-      parts_in.push(col + cr); parts_out.push(col + (cr+1)); cr += 3;
+    const partsIn = [], partsOut = [];
+    for (const cur of orderedCurrencies) {
+      const rows = currencyRows[cur];
+      partsIn.push('(' + col + rows.inRow + '*$C$' + rows.rateRow + ')');
+      partsOut.push('(' + col + rows.outRow + '*$C$' + rows.rateRow + ')');
     }
-    if (currencies.includes('USD')) {
-      parts_in.push('(' + col + cr + '*$B$85)'); parts_out.push('(' + col + (cr+1) + '*$B$85)'); cr += 3;
-    }
-    if (currencies.includes('EUR')) {
-      parts_in.push('(' + col + cr + '*' + assumptions.eurToEgp + ')'); parts_out.push('(' + col + (cr+1) + '*' + assumptions.eurToEgp + ')');
-    }
-    ws[XLSX.utils.encode_cell({r:94,c:2+i})] = {f: parts_in.join('+') || '0', t:'n', s: S.num};
-    ws[XLSX.utils.encode_cell({r:95,c:2+i})] = {f: parts_out.join('+') || '0', t:'n', s: S.num};
+    ws[XLSX.utils.encode_cell({r,c:2+i})] = {f: partsIn.join('+') || '0', t:'n', s: S.num};
+    ws[XLSX.utils.encode_cell({r:r+1,c:2+i})] = {f: partsOut.join('+') || '0', t:'n', s: S.num};
+  }
+
+  for (let i = 0; i < N; i++) {
+    const col = colLetter(3+i);
+    ws[XLSX.utils.encode_cell({r:37,c:2+i})] = {f: col + equInRow, t:'n', s: S.cfCashIn};
+    ws[XLSX.utils.encode_cell({r:40,c:2+i})] = {f: col + equOutRow, t:'n', s: S.cfCashOut};
   }
 
   ws['!cols'] = [{wch:2},{wch:42},{wch:18}];
@@ -2140,33 +3059,7 @@ function buildCashflowEQUSheet(currencies, dates, assumptions) {
     { s:{r:9,c:1}, e:{r:9,c:8} },
   ];
   ws['!freeze'] = { xSplit: 2, ySplit: 37 };
-  ws['!ref'] = 'A1:' + colLetter(3+N) + '100';
-
-  // Add chart
-  const lastCol = colLetter(2 + N);
-  if (!ws['!charts']) ws['!charts'] = [];
-  ws['!charts'].push({
-    type: 'bar',
-    grouping: 'clustered',
-    title: null,
-    anchor: { from: {col: 1, row: 11}, to: {col: Math.min(N + 2, 16), row: 28} },
-    series: [
-      {
-        name: 'Project Cash In "EQU"',
-        nameRef: "'Cashflow EQU'!$B$38",
-        categories: "'Cashflow EQU'!$C$36:$" + lastCol + "$36",
-        values: "'Cashflow EQU'!$C$38:$" + lastCol + "$38",
-        color: '4472C4'
-      },
-      {
-        name: 'Project Cash Out "EQU"',
-        nameRef: "'Cashflow EQU'!$B$41",
-        categories: "'Cashflow EQU'!$C$36:$" + lastCol + "$36",
-        values: "'Cashflow EQU'!$C$41:$" + lastCol + "$41",
-        color: 'ED7D31'
-      }
-    ]
-  });
+  ws['!ref'] = 'A1:' + colLetter(3+N) + Math.max(100, equOutRow);
 
   return ws;
 }
@@ -2213,18 +3106,21 @@ function buildAssumptionsSheet(assumptions) {
   }
 
   r += 2;
-  ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'Baseline Dollar Exchange rate', t:'s', s: S.sumSection};
-  ws[XLSX.utils.encode_cell({r,c:2})] = {v: assumptions.usdToEgp, t:'n', s: S.num};
+  ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'Exchange Rates to EGP', t:'s', s: S.sumSection};
+  ws[XLSX.utils.encode_cell({r,c:2})] = {v: 'Rate', t:'s', s: S.sumSection};
   r++;
-  ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'Baseline Euro Exchange rate', t:'s', s: S.sumSection};
-  ws[XLSX.utils.encode_cell({r,c:2})] = {v: assumptions.eurToEgp, t:'n', s: S.num};
+  for (const cur of sortCurrencies(Object.keys(assumptions.exchangeRates || {})).filter(cur => cur !== 'EGP')) {
+    ws[XLSX.utils.encode_cell({r,c:1})] = {v: cur + ' to EGP Exchange Rate', t:'s', s: S.data};
+    ws[XLSX.utils.encode_cell({r,c:2})] = {v: assumptions.exchangeRates[cur], t:'n', s: S.num};
+    r++;
+  }
 
   if (assumptions.indirectCostItems.length > 0) {
     r += 2;
     ws[XLSX.utils.encode_cell({r,c:1})] = {v: 'Indirect Cost', t:'s', s: S.sumSection};
     r++;
     for (const ic of assumptions.indirectCostItems) {
-      ws[XLSX.utils.encode_cell({r,c:1})] = {v: ic.name, t:'s', s: S.data};
+      ws[XLSX.utils.encode_cell({r,c:1})] = {v: ic.name + ' (' + ic.currency + ')', t:'s', s: S.data};
       ws[XLSX.utils.encode_cell({r,c:2})] = {v: ic.value, t:'n', s: S.num};
       r++;
     }
@@ -2237,6 +3133,13 @@ function buildAssumptionsSheet(assumptions) {
     for (const oh of assumptions.projectOverheads) {
       ws[XLSX.utils.encode_cell({r,c:1})] = {v: oh.name, t:'s', s: S.data};
       ws[XLSX.utils.encode_cell({r,c:2})] = {v: oh.pct, t:'n', z:'0.00%', s: {...S.data, numFmt:'0.00%'}};
+      let cc = 4;
+      Object.entries(oh.amountsByCurrency || {}).forEach(([cur, value]) => {
+        if (value > 0) {
+          ws[XLSX.utils.encode_cell({r,c:cc})] = {v: cur + ': ' + value, t:'s', s: S.data};
+          cc++;
+        }
+      });
       r++;
     }
   }
@@ -2248,6 +3151,13 @@ function buildAssumptionsSheet(assumptions) {
     for (const rc of assumptions.risksContingencies) {
       ws[XLSX.utils.encode_cell({r,c:1})] = {v: rc.name, t:'s', s: S.data};
       ws[XLSX.utils.encode_cell({r,c:2})] = {v: rc.pct, t:'n', z:'0.00%', s: {...S.data, numFmt:'0.00%'}};
+      let cc = 4;
+      Object.entries(rc.amountsByCurrency || {}).forEach(([cur, value]) => {
+        if (value > 0) {
+          ws[XLSX.utils.encode_cell({r,c:cc})] = {v: cur + ': ' + value, t:'s', s: S.data};
+          cc++;
+        }
+      });
       r++;
     }
   }
@@ -2257,274 +3167,6 @@ function buildAssumptionsSheet(assumptions) {
   return ws;
 }
 
-// ============================================================
-// POST-PROCESSING: Inject real Excel charts into the XLSX zip
-// ============================================================
-// Override XLSX.writeFile to intercept the zip and add chart XML
-const originalWriteFile = XLSX.writeFile;
-XLSX.writeFile = function(wb, filename, opts) {
-  // Collect chart definitions from all sheets
-  const chartSheets = [];
-  for (let si = 0; si < wb.SheetNames.length; si++) {
-    const sn = wb.SheetNames[si];
-    const ws = wb.Sheets[sn];
-    if (ws['!charts'] && ws['!charts'].length > 0) {
-      chartSheets.push({ sheetIndex: si, sheetName: sn, charts: ws['!charts'] });
-      delete ws['!charts']; // remove before write
-    }
-  }
-
-  if (chartSheets.length === 0) {
-    return originalWriteFile.call(XLSX, wb, filename, opts);
-  }
-
-  // Write to array buffer, then manipulate zip
-  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array', ...(opts || {}) });
-
-  // Use JSZip-like functionality from SheetJS internals
-  // SheetJS bundles cfb/zip utilities. We can use them.
-  const zip = XLSX.read(wbout, { type: 'array', bookSheets: true });
-
-  // Actually, let's use a simpler approach: use the raw zip
-  // SheetJS exposes XLSX.utils and internal zip tools
-  // We'll use the cfb library that comes with SheetJS
-
-  // Alternative: use fetch to load JSZip, but we can't do that synchronously.
-  // Let's use the built-in zip manipulation from the SheetJS bundle.
-
-  // The SheetJS bundle includes a ZIP implementation we can access
-  const jszip_load = typeof JSZip !== 'undefined' ? JSZip : null;
-
-  if (!jszip_load) {
-    // JSZip not available - fall back to saving without charts
-    // but add a note to the user
-    log('Note: Charts require JSZip library. Adding chart data tables instead.', 'info');
-    saveBlob(new Blob([wbout], {type:'application/octet-stream'}), filename);
-    return;
-  }
-
-  // If JSZip is available, inject charts
-  jszip_load.loadAsync(wbout).then(function(zip) {
-    // Process charts sequentially to avoid race conditions on shared zip entries
-    let chartIdx = 0;
-
-    function processNextChart(csIdx, chartInCsIdx) {
-      if (csIdx >= chartSheets.length) {
-        // All charts done — generate final blob
-        zip.generateAsync({ type: 'blob' }).then(function(blob) {
-          saveBlob(blob, filename);
-        });
-        return;
-      }
-      const cs = chartSheets[csIdx];
-      if (chartInCsIdx >= cs.charts.length) {
-        processNextChart(csIdx + 1, 0);
-        return;
-      }
-
-      chartIdx++;
-      const ci = chartIdx; // capture current value (avoids closure bug)
-      const chart = cs.charts[chartInCsIdx];
-      const chartXml   = generateChartXml(chart, ci);
-      const drawingXml = generateDrawingXml(chart, ci);
-      const sheetIdx   = cs.sheetIndex + 1;
-      const relsPath        = 'xl/worksheets/_rels/sheet' + sheetIdx + '.xml.rels';
-      const drawingPath     = 'xl/drawings/drawing' + ci + '.xml';
-      const drawingRelsPath = 'xl/drawings/_rels/drawing' + ci + '.xml.rels';
-      const sheetPath       = 'xl/worksheets/sheet' + sheetIdx + '.xml';
-
-      zip.file('xl/charts/chart' + ci + '.xml', chartXml);
-      zip.file(drawingPath, drawingXml);
-      zip.file(drawingRelsPath,
-        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart' + ci + '.xml"/>' +
-        '</Relationships>'
-      );
-
-      // Step 1: update sheet rels
-      const sheetRelsPromise = zip.file(relsPath)
-        ? zip.file(relsPath).async('string').then(function(content) {
-            const newRel = '<Relationship Id="rIdDrawing' + ci + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing' + ci + '.xml"/>';
-            zip.file(relsPath, content.replace('</Relationships>', newRel + '</Relationships>'));
-          })
-        : Promise.resolve().then(function() {
-            zip.file(relsPath,
-              '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-              '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-              '<Relationship Id="rIdDrawing' + ci + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing' + ci + '.xml"/>' +
-              '</Relationships>'
-            );
-          });
-
-      // Step 2 (sequential after step 1): update sheet XML
-      const sheetXmlPromise = sheetRelsPromise.then(function() {
-        return zip.file(sheetPath).async('string').then(function(content) {
-          if (content.indexOf('<drawing') === -1) {
-            if (content.indexOf('xmlns:r=') === -1) {
-              content = content.replace('<worksheet', '<worksheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"');
-            }
-            content = content.replace('</worksheet>', '<drawing r:id="rIdDrawing' + ci + '"/></worksheet>');
-            zip.file(sheetPath, content);
-          }
-        });
-      });
-
-      // Step 3 (sequential): update [Content_Types].xml
-      sheetXmlPromise.then(function() {
-        return zip.file('[Content_Types].xml').async('string').then(function(content) {
-          let updated = content;
-          if (updated.indexOf('/xl/charts/chart' + ci + '.xml') === -1) {
-            updated = updated.replace('</Types>',
-              '<Override PartName="/xl/charts/chart' + ci + '.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>' +
-              '<Override PartName="/xl/drawings/drawing' + ci + '.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>' +
-              '</Types>');
-          }
-          zip.file('[Content_Types].xml', updated);
-        });
-      }).then(function() {
-        // Move to next chart
-        processNextChart(csIdx, chartInCsIdx + 1);
-      });
-    }
-
-    processNextChart(0, 0);
-  });
-};
-
-function saveBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function generateChartXml(chart, idx) {
-  const ns  = 'http://schemas.openxmlformats.org/drawingml/2006/chart';
-  const nsa = 'http://schemas.openxmlformats.org/drawingml/2006/main';
-  const nsr = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-
-  // Series bar colors: Cash In = blue, Cash Out = orange
-  const barColors = ['4472C4', 'ED7D31'];
-
-  let seriesXml = '';
-  for (let i = 0; i < chart.series.length; i++) {
-    const s = chart.series[i];
-    const color = s.color || barColors[i] || '4472C4';
-    seriesXml +=
-      '<c:ser>' +
-        '<c:idx val="' + i + '"/>' +
-        '<c:order val="' + i + '"/>' +
-        '<c:tx>' +
-          '<c:strRef>' +
-            '<c:f>' + escXml(s.nameRef) + '</c:f>' +
-            '<c:strCache>' +
-              '<c:ptCount val="1"/>' +
-              '<c:pt idx="0"><c:v>' + escXml(s.name) + '</c:v></c:pt>' +
-            '</c:strCache>' +
-          '</c:strRef>' +
-        '</c:tx>' +
-        '<c:spPr>' +
-          '<a:solidFill><a:srgbClr val="' + color + '"/></a:solidFill>' +
-          '<a:ln><a:noFill/></a:ln>' +
-        '</c:spPr>' +
-        '<c:cat><c:numRef><c:f>' + escXml(s.categories) + '</c:f></c:numRef></c:cat>' +
-        '<c:val><c:numRef><c:f>' + escXml(s.values) + '</c:f></c:numRef></c:val>' +
-      '</c:ser>';
-  }
-
-  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-    '<c:chartSpace xmlns:c="' + ns + '" xmlns:a="' + nsa + '" xmlns:r="' + nsr + '">' +
-      '<c:date1904 val="0"/>' +
-      '<c:chart>' +
-        '<c:autoTitleDeleted val="1"/>' +
-        '<c:plotArea>' +
-          '<c:layout/>' +
-          '<c:barChart>' +
-            '<c:barDir val="col"/>' +
-            '<c:grouping val="clustered"/>' +
-            '<c:varyColors val="0"/>' +
-            seriesXml +
-            '<c:axId val="1"/>' +
-            '<c:axId val="2"/>' +
-          '</c:barChart>' +
-          '<c:dateAx>' +
-            '<c:axId val="1"/>' +
-            '<c:scaling><c:orientation val="minMax"/></c:scaling>' +
-            '<c:delete val="0"/>' +
-            '<c:axPos val="b"/>' +
-            '<c:numFmt formatCode="MMM-YY" sourceLinked="0"/>' +
-            '<c:tickLblSkip val="1"/>' +
-            '<c:crossAx val="2"/>' +
-            '<c:auto val="1"/>' +
-            '<c:baseTimeUnit val="months"/>' +
-          '</c:dateAx>' +
-          '<c:valAx>' +
-            '<c:axId val="2"/>' +
-            '<c:scaling><c:orientation val="minMax"/></c:scaling>' +
-            '<c:delete val="0"/>' +
-            '<c:axPos val="l"/>' +
-            '<c:numFmt formatCode="#,##0" sourceLinked="0"/>' +
-            '<c:crossAx val="1"/>' +
-          '</c:valAx>' +
-        '</c:plotArea>' +
-        '<c:legend>' +
-          '<c:legendPos val="b"/>' +
-          '<c:overlay val="0"/>' +
-        '</c:legend>' +
-        '<c:plotVisOnly val="1"/>' +
-      '</c:chart>' +
-    '</c:chartSpace>';
-}
-
-function escXml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
-}
-
-function generateDrawingXml(chart, idx) {
-  const nsxdr = 'http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing';
-  const nsa = 'http://schemas.openxmlformats.org/drawingml/2006/main';
-  const nsr = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
-
-  const from = chart.anchor.from;
-  const to = chart.anchor.to;
-
-  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-    '<xdr:wsDr xmlns:xdr="' + nsxdr + '" xmlns:a="' + nsa + '" xmlns:r="' + nsr + '">' +
-    '<xdr:twoCellAnchor>' +
-      '<xdr:from><xdr:col>' + from.col + '</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>' + from.row + '</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from>' +
-      '<xdr:to><xdr:col>' + to.col + '</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>' + to.row + '</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to>' +
-      '<xdr:graphicFrame macro="">' +
-        '<xdr:nvGraphicFramePr>' +
-          '<xdr:cNvPr id="' + (idx + 1) + '" name="Chart ' + idx + '"/>' +
-          '<xdr:cNvGraphicFramePr/>' +
-        '</xdr:nvGraphicFramePr>' +
-        '<xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm>' +
-        '<a:graphic>' +
-          '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart">' +
-            '<c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" r:id="rId1"/>' +
-          '</a:graphicData>' +
-        '</a:graphic>' +
-      '</xdr:graphicFrame>' +
-      '<xdr:clientData/>' +
-    '</xdr:twoCellAnchor>' +
-    '</xdr:wsDr>';
-}
-
-function lightenColor(hex) {
-  // Lighten a hex color for pattern fill background
-  const r = Math.min(255, parseInt(hex.substr(0, 2), 16) + 160);
-  const g = Math.min(255, parseInt(hex.substr(2, 2), 16) + 160);
-  const b = Math.min(255, parseInt(hex.substr(4, 2), 16) + 160);
-  return r.toString(16).padStart(2,'0') + g.toString(16).padStart(2,'0') + b.toString(16).padStart(2,'0');
-}
-
 </script>
-<!-- Load JSZip for chart injection -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
 </html>
