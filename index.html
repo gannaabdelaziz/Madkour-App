@@ -891,22 +891,9 @@ function buildBudgetTemplate() {
   ws['!autofilter'] = { ref:'A3:L100' };
   setTemplateCommon(ws, 'A1:L100');
   XLSX.utils.book_append_sheet(wb, ws, 'Break Down');
-  appendCurrencyListSheet(wb, currencies);
   return { workbook: wb, filename: 'Budget_Input_Template.xlsx' };
 }
 
-function appendCurrencyListSheet(wb, currencies) {
-  const ws = {};
-  putCell(ws, 1, 1, 'Active Currency', ASSUMPTION_STYLE.header);
-  putCell(ws, 1, 2, 'Exchange Rate to EGP', ASSUMPTION_STYLE.header);
-  currencies.forEach((cur, idx) => {
-    putCell(ws, idx + 2, 1, cur, ASSUMPTION_STYLE.label);
-    putCell(ws, idx + 2, 2, cur === 'EGP' ? 1 : '', ASSUMPTION_STYLE.input, cur === 'EGP' ? 'n' : 's');
-  });
-  ws['!cols'] = [{ wch: 18 }, { wch: 22 }];
-  setTemplateCommon(ws, 'A1:B' + (currencies.length + 1));
-  XLSX.utils.book_append_sheet(wb, ws, 'Currencies');
-}
 
 function buildAssumptionsTemplate() {
   const wb = XLSX.utils.book_new();
@@ -1030,7 +1017,6 @@ function buildAssumptionsTemplate() {
   [2, contractRow, cashInStart, cashOutStart, deductionsStart, indirectStart, overheadStart, risksStart].forEach(row => { ws['!rows'][row - 1] = { hpt: 15.6 }; });
   setTemplateCommon(ws, 'A1:' + lastCol + lastRow);
   XLSX.utils.book_append_sheet(wb, ws, 'Assumptions');
-  appendCurrencyListSheet(wb, currencies);
   return { workbook: wb, filename: 'Assumptions_Input_Template.xlsx' };
 }
 
