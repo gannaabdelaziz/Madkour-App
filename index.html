@@ -3392,8 +3392,10 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
   const finalSumStartRow = Math.min(7, Math.max(1, totalRow - 1));
   const finalDryCostRefs = mainDivisionRows.map(r => 'F' + r).join(',');
   ws[XLSX.utils.encode_cell({r:tri,c:5})] = {f: finalDryCostRefs ? 'SUM(' + finalDryCostRefs + ')' : '0', t:'n', s: S.totalRow};
-  ws[XLSX.utils.encode_cell({r:tri,c:6})] = {f: 'SUM(G' + finalSumStartRow + ':G' + (totalRow-1) + ')', t:'n', s: S.totalRow};
-  ws[XLSX.utils.encode_cell({r:tri,c:7})] = {f: 'SUM(H' + finalSumStartRow + ':H' + (totalRow-1) + ')', t:'n', s: S.totalRow};
+  const finalBudgetRefs = mainDivisionRows.map(r => 'G' + r).join(',');
+  const finalRemainingRefs = mainDivisionRows.map(r => 'H' + r).join(',');
+  ws[XLSX.utils.encode_cell({r:tri,c:6})] = {f: finalBudgetRefs ? 'SUM(' + finalBudgetRefs + ')' : '0', t:'n', s: S.totalRow};
+  ws[XLSX.utils.encode_cell({r:tri,c:7})] = {f: finalRemainingRefs ? 'SUM(' + finalRemainingRefs + ')' : '0', t:'n', s: S.totalRow};
   for (let i = 0; i < N; i++) {
     const vc = colLetter(valStartCol + i);
     ws[XLSX.utils.encode_cell({r:tri,c:valStartCol-1+i})] = {f: 'SUM(' + vc + finalSumStartRow + ':' + vc + (totalRow-1) + ')', t:'n', s: S.totalRow};
