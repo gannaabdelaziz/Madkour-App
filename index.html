@@ -49,8 +49,15 @@ body {
   box-shadow: none;
 }
 .brand {
-  display: flex; align-items: center; min-width: 0;
+  display: flex; flex-direction: column; align-items: flex-start; min-width: 0;
   color: var(--white); text-decoration: none;
+}
+.brand-signature {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.80);
 }
 .brand-logo {
   display: block;
@@ -569,6 +576,7 @@ body {
   <a class="brand" href="./">
     <img class="brand-logo" src="https://madkour.com.eg/themes/madkour/img/logos/madkour-holding-logo.svg" alt="Madkour Holding" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
     <span class="brand-fallback">MADKOUR <span>Holding</span></span>
+    <span class="brand-signature">by Ganna Abdelaziz · Cost Control Engineer</span>
   </a>
   <span class="topbar-product">Cashflow Generator</span>
 </div>
@@ -684,6 +692,7 @@ body {
 
   <div class="footer">
     <b>Madkour Holding</b> · Cashflow Generator v3.0 · Defining the benchmarks of engineering excellence
+    <div class="footer-credit">© 2026 Ganna Abdelaziz, Cost Control Engineer · All rights reserved</div>
   </div>
 </main>
 
@@ -2292,6 +2301,12 @@ async function generate() {
     setProgress(30);
 
     const wb = XLSX.utils.book_new();
+    wb.Props = {
+      Title: 'Cashflow Baseline Workbook',
+      Author: 'Ganna Abdelaziz',
+      Company: 'Madkour Holding',
+      CreatedDate: new Date()
+    };
     const N = assumptions.numMonths;
     const projName = assumptions.projectName || 'Project';
     const chartSheetNames = [];
