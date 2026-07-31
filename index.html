@@ -30,9 +30,7 @@
 html, body { height: 100%; }
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at 90% 12%, rgba(88,203,255,0.26), transparent 28%),
-    linear-gradient(180deg, var(--brand-blue) 0 520px, var(--cream) 520px 100%);
+  background: var(--brand-blue);
   color: var(--ink);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -99,10 +97,7 @@ body {
 }
 .hero::before {
   content: ''; position: absolute; inset: 0;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.11) 0 1px, transparent 1px) 0 0 / 36px 36px,
-    radial-gradient(circle at 78% 18%, rgba(88,203,255,0.22), transparent 28%);
-  opacity: 0.65;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 60%);
   pointer-events: none;
 }
 .hero-inner {
@@ -219,24 +214,34 @@ body {
 .panel-sub { color: var(--ink-2); font-size: 0.95rem; margin-top: -16px; margin-bottom: 28px; max-width: 720px; }
 .privacy-note {
   margin: -12px 0 24px;
-  padding: 14px 16px;
-  border: 1px solid rgba(6,55,232,0.16);
-  border-radius: 14px;
-  background: #F5F8FF;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(6,55,232,0.04);
   color: var(--ink-2);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   line-height: 1.55;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
 }
 .privacy-note b {
   color: var(--navy);
   font-weight: 800;
 }
+.privacy-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: var(--brand-blue);
+  margin-top: 2px;
+}
 .currency-setup {
   margin-bottom: 24px;
-  padding: 16px;
-  border: 1px solid rgba(6,55,232,0.14);
-  border-radius: 8px;
-  background: #fff;
+  padding: 18px;
+  border: 1px solid rgba(6,55,232,0.16);
+  border-radius: 16px;
+  background: #F5F8FF;
 }
 .currency-setup-head {
   display: flex;
@@ -249,6 +254,15 @@ body {
   margin: 0 0 4px;
   font-size: 1rem;
   color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.currency-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: var(--brand-blue);
 }
 .currency-setup p {
   margin: 0;
@@ -258,11 +272,13 @@ body {
 .currency-controls {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
 }
 .currency-controls input {
-  width: min(280px, 100%);
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 280px;
   height: 38px;
   border: 1px solid rgba(4,27,92,0.18);
   border-radius: 8px;
@@ -270,7 +286,12 @@ body {
   font: inherit;
   text-transform: uppercase;
 }
+.currency-controls input::placeholder {
+  text-transform: none;
+  letter-spacing: normal;
+}
 .currency-controls button {
+  flex: 0 0 auto;
   height: 38px;
   border: 0;
   border-radius: 8px;
@@ -486,6 +507,28 @@ body {
   border-radius: 999px;
   transition: width 0.4s ease;
 }
+/* Success state (workbook ready) */
+.generation-status.is-success {
+  border-color: rgba(22,163,74,0.35);
+  background: #F0FDF4;
+}
+.generation-status.is-success .status-dot {
+  background: var(--success);
+  box-shadow: 0 0 0 5px rgba(22,163,74,0.15);
+}
+.generation-status.is-success .generation-status-text b { color: #15803D; }
+.generation-status.is-success #progressBar { background: var(--success); }
+/* Error state (generation failed) */
+.generation-status.is-error {
+  border-color: rgba(220,38,38,0.35);
+  background: #FEF2F2;
+}
+.generation-status.is-error .status-dot {
+  background: var(--error);
+  box-shadow: 0 0 0 5px rgba(220,38,38,0.15);
+}
+.generation-status.is-error .generation-status-text b { color: var(--error); }
+.generation-status.is-error #progressBar { background: var(--error); }
 #progressPct {
   min-width: 38px;
   color: var(--ink-2);
@@ -530,21 +573,19 @@ body {
 /* ─────────── FOOTER ─────────── */
 .footer {
   text-align: center; padding: 28px 24px 40px;
-  color: var(--ink-3); font-size: 0.82rem;
+  color: rgba(255,255,255,0.72); font-size: 0.82rem;
 }
-.footer b { color: var(--navy); font-weight: 700; }
+.footer b { color: var(--white); font-weight: 700; }
 .footer-credit {
   margin-top: 8px;
-  color: var(--navy);
+  color: rgba(255,255,255,0.9);
   font-weight: 700;
 }
 
 /* ─────────── RESPONSIVE ─────────── */
 @media (max-width: 860px) {
   body {
-    background:
-      radial-gradient(circle at 85% 6%, rgba(88,203,255,0.22), transparent 24%),
-      linear-gradient(180deg, var(--brand-blue) 0 620px, var(--cream) 620px 100%);
+    background: var(--brand-blue);
   }
   .topbar { padding: 16px 20px; gap: 12px; }
   .brand-logo { width: min(260px, 64vw); }
@@ -566,6 +607,39 @@ body {
   }
   #progressPct {
     text-align: left;
+  }
+}
+
+/* ─────────── ACCESSIBILITY ─────────── */
+/* Visible keyboard focus ring on every interactive element */
+:focus-visible {
+  outline: 3px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+/* On the dark blue topbar/hero, use a light ring so it stays visible */
+.topbar :focus-visible,
+.hero :focus-visible {
+  outline-color: var(--white);
+}
+/* File inputs are invisible overlays — surface their focus on the card */
+.upload-card input[type=file]:focus-visible { outline: none; }
+.upload-card:focus-within {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px var(--brand-blue-soft);
+}
+/* Visually hidden, but still read aloud by screen readers */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+/* Respect the OS "reduce motion" setting for motion-sensitive users */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 </style>
@@ -608,21 +682,23 @@ body {
   <div class="panel">
     <div class="panel-head">
       <h2>Generate cashflow workbook</h2>
-      <span class="step-counter">Step 01 / 02 — Upload inputs</span>
+      <span class="step-counter">Upload inputs</span>
     </div>
     <p class="panel-sub">Drop in the three required Excel files below. Primavera is optional for schedule lookup preparation.</p>
     <div class="privacy-note">
-      <b>Privacy note:</b> All uploaded files are processed locally in your browser to generate the workbook. The app does not upload, store, or share project data on any server.
+      <svg class="privacy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div><b>Privacy note:</b> All uploaded files are processed locally in your browser to generate the workbook. The app does not upload, store, or share project data on any server.</div>
     </div>
 
     <div class="currency-setup">
       <div class="currency-setup-head">
         <div>
-          <h3>Template currencies</h3>
+          <h3><svg class="currency-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>Template currencies</h3>
           <p>Choose currencies before downloading templates. EGP stays as the equivalent/base currency.</p>
         </div>
         <div class="currency-controls">
-          <input id="currencyInput" list="currencyOptions" maxlength="3" placeholder="Type currency code, e.g. SAR" onkeydown="handleCurrencyKey(event)">
+          <label class="sr-only" for="currencyInput">Add a template currency (3-letter code)</label>
+          <input id="currencyInput" list="currencyOptions" maxlength="3" placeholder="e.g. SAR" aria-label="Add a template currency (3-letter code)" onkeydown="handleCurrencyKey(event)">
           <datalist id="currencyOptions"></datalist>
           <button type="button" onclick="addCurrencyFromInput()">Add</button>
         </div>
@@ -637,8 +713,8 @@ body {
         <h3>BOQ</h3>
         <div class="desc">Bill of Quantities driving project revenue.</div>
         <button type="button" class="template-btn" onclick="downloadTemplate(event,'boq')">Download template</button>
-        <span class="status">Click or drop a .xlsx file</span>
-        <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'boq')">
+        <span class="status" role="status" aria-live="polite">Click or drop a .xlsx file</span>
+        <input type="file" accept=".xlsx,.xls" aria-label="Upload BOQ Excel file" onchange="handleFile(this,'boq')">
       </div>
       <div class="upload-card" id="budgetCard">
         <span class="step-num">02 - Cash Out</span>
@@ -646,8 +722,8 @@ body {
         <h3>Budget</h3>
         <div class="desc">Cost breakdown for materials, labour, and overhead.</div>
         <button type="button" class="template-btn" onclick="downloadTemplate(event,'budget')">Download template</button>
-        <span class="status">Click or drop a .xlsx file</span>
-        <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'budget')">
+        <span class="status" role="status" aria-live="polite">Click or drop a .xlsx file</span>
+        <input type="file" accept=".xlsx,.xls" aria-label="Upload Budget Excel file" onchange="handleFile(this,'budget')">
       </div>
       <div class="upload-card" id="assumptionsCard">
         <span class="step-num">03 - Parameters</span>
@@ -655,8 +731,8 @@ body {
         <h3>Assumptions</h3>
         <div class="desc">Payment terms, retention, advance, escalation rates.</div>
         <button type="button" class="template-btn" onclick="downloadTemplate(event,'assumptions')">Download template</button>
-        <span class="status">Click or drop a .xlsx file</span>
-        <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'assumptions')">
+        <span class="status" role="status" aria-live="polite">Click or drop a .xlsx file</span>
+        <input type="file" accept=".xlsx,.xls" aria-label="Upload Assumptions Excel file" onchange="handleFile(this,'assumptions')">
       </div>
       <div class="upload-card" id="primaveraCard">
         <span class="step-num">04 - Schedule</span>
@@ -664,8 +740,8 @@ body {
         <h3>Primavera</h3>
         <div class="desc">Activity IDs with related start and finish dates.</div>
         <button type="button" class="template-btn" onclick="downloadTemplate(event,'primavera')">Download template</button>
-        <span class="status">Optional .xlsx file</span>
-        <input type="file" accept=".xlsx,.xls" onchange="handleFile(this,'primavera')">
+        <span class="status" role="status" aria-live="polite">Optional .xlsx file</span>
+        <input type="file" accept=".xlsx,.xls" aria-label="Upload Primavera schedule Excel file (optional)" onchange="handleFile(this,'primavera')">
       </div>
     </div>
 
@@ -679,7 +755,7 @@ body {
 
     <div id="generationStatus" class="generation-status">
       <div class="status-dot"></div>
-      <div class="generation-status-text">
+      <div class="generation-status-text" role="status" aria-live="polite" aria-atomic="true">
         <b id="generationStatusTitle">Generating workbook</b>
         <span id="generationStatusSub">Preparing files...</span>
       </div>
@@ -2255,6 +2331,7 @@ const TAB_COLORS = {
 async function generate() {
   document.getElementById('generateBtn').disabled = true;
   document.getElementById('log').innerHTML = '';
+  document.getElementById('generationStatus').classList.remove('is-success', 'is-error');
   document.getElementById('generationStatusTitle').textContent = 'Generating workbook';
   setDetailsVisible(false);
   setGenerationMessage('Preparing files...');
@@ -2398,13 +2475,17 @@ async function generate() {
     const filename = (projName.replace(/[:\\\\/\\?\*\[\]]/g, '-')) + '_Cashflow_Baseline.xlsx';
     await writeWorkbookWithCashflowCharts(wb, filename, chartSheetNames, N);
     setProgress(100);
+    document.getElementById('generationStatus').classList.add('is-success');
     document.getElementById('generationStatusTitle').textContent = 'Workbook ready';
     log('✓ Download complete: ' + filename, 'ok');
 
   } catch (err) {
+    document.getElementById('generationStatus').classList.add('is-error');
     document.getElementById('generationStatusTitle').textContent = 'Generation failed';
     log('ERROR: ' + err.message, 'err');
     console.error(err);
+  } finally {
+    document.getElementById('generateBtn').disabled = false;
   }
 }
 
