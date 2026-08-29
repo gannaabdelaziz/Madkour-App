@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Generated workbook preview</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f3f3f3;
+    font-family: "Segoe UI", Calibri, system-ui, sans-serif; }
+  #app { width: 900px; height: 680px; display: flex; flex-direction: column;
+    background: #fff; overflow: hidden; }
+
+  .titlebar { height: 40px; background: #107C41; color: #fff; display: flex;
+    align-items: center; gap: 10px; padding: 0 14px; flex: 0 0 auto; }
+  .titlebar .x { font-weight: 700; font-size: 15px; letter-spacing: .2px; }
+  .titlebar .file { font-size: 13.5px; opacity: .95; }
+
+  .ribbon { height: 30px; background: #fff; border-bottom: 1px solid #d0d0d0;
+    display: flex; align-items: center; gap: 20px; padding: 0 14px;
+    font-size: 12.5px; color: #444; flex: 0 0 auto; }
+  .ribbon b { color: #107C41; border-bottom: 2px solid #107C41; padding-bottom: 4px; }
+
+  .colhead, .row { display: flex; }
+  .colhead div, .row .cell { border-right: 1px solid #d4d4d4;
+    border-bottom: 1px solid #d4d4d4; }
+  .corner, .rownum { width: 34px; flex: 0 0 34px; background: #f5f5f5;
+    color: #666; font-size: 11px; text-align: center; }
+  .colhead { flex: 0 0 auto; }
+  .colhead div { background: #f5f5f5; color: #444; font-size: 11px;
+    text-align: center; line-height: 20px; height: 20px; font-weight: 600; }
+
+  .sheetwrap { flex: 1 1 auto; overflow: hidden; }
+  .row { height: 21px; }
+  .row .rownum { line-height: 21px; }
+  .cell { font-size: 11.5px; line-height: 21px; padding: 0 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1a1a1a; }
+  .cell.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .hdrrow .cell { background: #1F4E79; color: #fff; font-weight: 700;
+    font-size: 11px; text-align: center; }
+
+  .tabbar { flex: 0 0 auto; height: 34px; background: #f0f0f0;
+    border-top: 1px solid #cfcfcf; display: flex; align-items: stretch;
+    overflow: hidden; position: relative; padding-right: 92px; }
+  .tab { padding: 0 10px; font-size: 11px; line-height: 33px; color: #444;
+    border-right: 1px solid #dcdcdc; white-space: nowrap; flex: 0 0 auto;
+    max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+  .tab.active { background: #fff; color: #107C41; font-weight: 700;
+    border-top: 2px solid #107C41; line-height: 31px; max-width: 190px; }
+  .tabcount { position: absolute; right: 0; top: 0; bottom: 0;
+    padding: 0 12px; font-size: 11.5px; line-height: 33px; color: #107C41;
+    font-weight: 700; background: #e6f4ec; border-left: 1px solid #cfcfcf; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="titlebar">
+    <span class="x">X</span>
+    <span class="file" id="fname">DEMO 220-66-11 kV GIS Substation_Cashflow_Baseline.xlsx</span>
+  </div>
+  <div class="ribbon"><b>Home</b><span>Insert</span><span>Formulas</span><span>Data</span><span>Review</span><span>View</span></div>
+  <div class="sheetwrap">
+    <div class="colhead" id="colhead"></div>
+    <div id="rows"></div>
+  </div>
+  <div class="tabbar" id="tabbar"></div>
+</div>
+
+<script>
+const LETTERS = ['A','B','C','D','E','F'];
+
+fetch('grid.json').then(r => r.json()).then(d => {
+  const ch = document.getElementById('colhead');
+  ch.appendChild(Object.assign(document.createElement('div'), { className: 'corner' }));
+  d.widths.forEach((w, i) => {
+    const el = document.createElement('div');
+    el.style.width = w + 'px'; el.style.flex = '0 0 ' + w + 'px';
+    el.textContent = LETTERS[i];
+    ch.appendChild(el);
+  });
+
+  const rowsEl = document.getElementById('rows');
+
+  // synthetic header row using the real column meanings
+  const hr = document.createElement('div');
+  hr.className = 'row hdrrow';
+  hr.appendChild(Object.assign(document.createElement('div'), { className: 'cell rownum', textContent: '3' }));
+  d.headers.forEach((h, i) => {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    c.style.width = d.widths[i] + 'px'; c.style.flex = '0 0 ' + d.widths[i] + 'px';
+    c.textContent = h;
+    hr.appendChild(c);
+  });
+  rowsEl.appendChild(hr);
+
+  d.grid.forEach((row, ri) => {
+    const r = document.createElement('div');
+    r.className = 'row';
+    r.appendChild(Object.assign(document.createElement('div'), { className: 'cell rownum', textContent: ri + 4 }));
+    row.forEach((cell, ci) => {
+      const c = document.createElement('div');
+      c.className = 'cell' + (cell.num ? ' num' : '');
+      c.style.width = d.widths[ci] + 'px'; c.style.flex = '0 0 ' + d.widths[ci] + 'px';
+      if (cell.bg && cell.bg.toUpperCase() !== '#FFFFFF') c.style.background = cell.bg;
+      if (cell.fg && cell.fg.toUpperCase() !== '#000000') c.style.color = cell.fg;
+      if (cell.b) c.style.fontWeight = '700';
+      c.textContent = cell.v;
+      r.appendChild(c);
+    });
+    rowsEl.appendChild(r);
+  });
+
+  const tb = document.getElementById('tabbar');
+  d.sheets.forEach(s => {
+    const t = document.createElement('div');
+    t.className = 'tab' + (s === d.active ? ' active' : '');
+    t.textContent = s;
+    tb.appendChild(t);
+  });
+  const cnt = document.createElement('div');
+  cnt.className = 'tabcount';
+  cnt.textContent = d.sheets.length + ' sheets';
+  tb.appendChild(cnt);
+  window.__ready = true;
+});
+</script>
+</body>
+</html>
