@@ -334,6 +334,54 @@ body {
 
 /* ─────────── UPLOAD CARDS ─────────── */
 .upload-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+/* Refresh from an edited workbook — deliberately outside the numbered upload
+   sequence, because it is an alternative way in, not a fifth required step. */
+.refresh-panel {
+  margin-top: 22px; padding: 24px;
+  border: 1px dashed var(--brand-blue); border-radius: 18px;
+  background: linear-gradient(180deg, #F7F9FF, #EEF3FF);
+}
+.refresh-head { margin-bottom: 18px; }
+.refresh-body {
+  display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+}
+.refresh-body .refresh-drop { flex: 0 0 250px; }
+.refresh-copy, .refresh-head { flex: 1 1 380px; }
+.refresh-tag {
+  display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--brand-blue); background: var(--white);
+  border: 1px solid var(--line); padding: 4px 11px; border-radius: 999px;
+}
+.refresh-copy h3 { margin: 11px 0 7px; font-size: 1.02rem; color: var(--navy); }
+.refresh-copy p { margin: 0; font-size: 0.87rem; color: var(--ink-2); line-height: 1.62; }
+.refresh-copy p b { color: var(--navy); }
+.refresh-note { margin-top: 9px !important; font-size: 0.81rem !important; color: var(--ink-3) !important; }
+.refresh-notice {
+  margin-top: 14px; padding: 13px 16px; border-radius: 12px;
+  font-size: 0.85rem; line-height: 1.6; border: 1px solid transparent;
+}
+.refresh-notice.warn { background: #FFF7ED; border-color: #FDBA74; color: #7C2D12; }
+.refresh-notice.warn b { color: #7C2D12; }
+.refresh-notice.ok { background: #F0FDF4; border-color: #86EFAC; color: #14532D; }
+.refresh-notice.ok b { color: #14532D; }
+.refresh-drop {
+  position: relative; flex: 0 0 236px; min-height: 128px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--white);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px;
+  padding: 18px; cursor: pointer; transition: all 0.18s ease; text-align: center;
+}
+.refresh-drop:hover { border-color: var(--brand-blue); background: var(--brand-blue-soft); }
+.refresh-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.refresh-drop-icon {
+  width: 42px; height: 42px; border-radius: 11px; background: var(--brand-blue-soft);
+  color: var(--brand-blue); font-weight: 700; font-size: 0.82rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.refresh-drop .status { font-size: 0.79rem; color: var(--ink-2); word-break: break-word; }
+.refresh-drop.loaded { border-color: var(--success); background: #F2FBF5; }
+.refresh-drop.loaded .refresh-drop-icon { background: #DCFCE7; color: var(--success); }
+.refresh-drop.loaded .status { color: var(--success); font-weight: 600; }
 .upload-card {
   position: relative; padding: 28px 24px;
   background:
@@ -425,12 +473,12 @@ body {
   margin-top: 32px; padding: 24px; border: 1px solid var(--line);
   border-radius: 22px;
   background: linear-gradient(180deg, #F9FBFF, #F2F6FF);
-  display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
 }
-.action-bar .hint { color: var(--ink-2); font-size: 0.9rem; }
-.action-bar .hint b { color: var(--navy); font-weight: 700; }
 
-#generateBtn {
+.action-buttons { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+#generateBtn, #cashflowBtn, #refreshCashflowBtn {
   display: inline-flex; align-items: center; gap: 12px;
   padding: 16px 32px;
   background: var(--brand-blue);
@@ -440,22 +488,169 @@ body {
   cursor: pointer; transition: all 0.2s ease;
   box-shadow: 0 8px 20px -8px rgba(6,55,232,0.62);
 }
-#generateBtn:hover:not(:disabled) {
+#generateBtn:hover:not(:disabled), #cashflowBtn:hover:not(:disabled), #refreshCashflowBtn:hover:not(:disabled) {
   background: var(--brand-blue-deep);
   transform: translateY(-1px);
   box-shadow: 0 12px 28px -8px rgba(6,55,232,0.72);
 }
-#generateBtn:disabled {
+#generateBtn:disabled, #cashflowBtn:disabled, #refreshCashflowBtn:disabled {
   background: #CFD3E2; color: #8A93AB;
   cursor: not-allowed; box-shadow: none;
 }
-#generateBtn .arrow {
+#generateBtn .arrow, #cashflowBtn .arrow, #refreshCashflowBtn .arrow {
   display: inline-flex; align-items: center; justify-content: center;
   width: 26px; height: 26px; border-radius: 50%;
   background: rgba(255,255,255,0.22);
   font-size: 0.85rem;
 }
-#generateBtn:disabled .arrow { background: rgba(255,255,255,0.4); }
+#generateBtn:disabled .arrow, #cashflowBtn:disabled .arrow, #refreshCashflowBtn:disabled .arrow { background: rgba(255,255,255,0.4); }
+
+#cashflowBtn.secondary, #refreshCashflowBtn.secondary {
+  background: var(--white); color: var(--brand-blue);
+  border: 1.5px solid var(--brand-blue);
+  box-shadow: 0 6px 16px -10px rgba(6,55,232,0.5);
+}
+#cashflowBtn.secondary:hover:not(:disabled), #refreshCashflowBtn.secondary:hover:not(:disabled) {
+  background: var(--brand-blue-soft); color: var(--brand-blue-deep);
+  border-color: var(--brand-blue-deep);
+}
+#cashflowBtn.secondary:disabled, #refreshCashflowBtn.secondary:disabled {
+  background: var(--white); color: #A6AEC6; border-color: #D8DEEE;
+}
+#cashflowBtn.secondary .arrow, #refreshCashflowBtn.secondary .arrow { background: var(--brand-blue-soft); }
+#cashflowBtn.secondary:disabled .arrow, #refreshCashflowBtn.secondary:disabled .arrow { background: #EFF2FA; }
+
+/* ─────────── CASH FLOW DASHBOARD ─────────── */
+.cf-dash {
+  margin-top: 28px; padding: 28px; border: 1px solid var(--line);
+  border-radius: 22px; background: var(--white);
+  box-shadow: 0 18px 44px -30px rgba(4,27,92,0.45);
+}
+.cf-dash-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.cf-dash-head h2 { margin: 0; font-size: 1.45rem; color: var(--navy); letter-spacing: -0.01em; }
+.cf-dash-sub { margin: 6px 0 0; color: var(--ink-2); font-size: 0.9rem; }
+.cf-dash-actions { display: flex; gap: 10px; }
+.cf-share, .cf-close {
+  font-family: inherit; font-size: 0.85rem; font-weight: 600;
+  padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: all 0.15s ease;
+}
+.cf-share { background: var(--brand-blue); color: var(--white); border: none; }
+.cf-share:hover { background: var(--brand-blue-deep); }
+.cf-close { background: var(--white); color: var(--ink-2); border: 1px solid var(--line); }
+.cf-close:hover { background: var(--cream); color: var(--navy); }
+
+.cf-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 22px 0 4px; border-bottom: 1px solid var(--line); }
+.cf-tab {
+  font-family: inherit; font-size: 0.92rem; font-weight: 600;
+  padding: 11px 20px; border: none; background: none; color: var(--ink-2);
+  cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; transition: all 0.15s ease;
+}
+.cf-tab:hover { color: var(--navy); }
+.cf-tab[aria-selected="true"] { color: var(--brand-blue); border-bottom-color: var(--brand-blue); }
+
+.cf-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 24px 0; }
+.cf-tile { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--cream-2); }
+.cf-tile-label { font-size: 0.78rem; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.cf-tile-value { font-size: 1.32rem; font-weight: 700; color: var(--navy); margin-top: 8px; font-variant-numeric: tabular-nums; }
+.cf-tile-note { font-size: 0.78rem; color: var(--ink-3); margin-top: 5px; }
+.cf-tile.neg .cf-tile-value { color: var(--error); }
+.cf-tile.pos .cf-tile-value { color: var(--success); }
+
+.cf-chart-wrap { margin: 26px 0; }
+.cf-chart {
+  position: relative; border: 1px solid var(--line); border-radius: 16px;
+  background: var(--white); padding: 8px; overflow-x: auto;
+}
+.cf-chart svg { display: block; width: 100%; height: auto; min-width: 680px; touch-action: pan-y; }
+.cf-chart svg:focus { outline: 2px solid var(--brand-blue); outline-offset: 2px; border-radius: 10px; }
+
+.cf-legend {
+  display: flex; gap: 10px 26px; flex-wrap: wrap; margin-top: 14px;
+  font-size: 0.85rem; font-weight: 600; color: var(--ink-2);
+}
+.cf-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.cf-swatch { width: 20px; height: 11px; border-radius: 2px; display: inline-block; flex: none; }
+.cf-swatch.line { height: 3px; border-radius: 2px; }
+
+.cf-tip {
+  position: absolute; pointer-events: none; z-index: 5;
+  background: var(--navy); color: var(--white);
+  border-radius: 12px; padding: 12px 14px; font-size: 0.8rem; line-height: 1.55;
+  box-shadow: 0 14px 30px -12px rgba(4,27,92,0.7);
+  min-width: 210px; opacity: 0; transition: opacity 0.12s ease;
+}
+.cf-tip.on { opacity: 1; }
+.cf-tip b { display: block; font-size: 0.88rem; margin-bottom: 7px; color: var(--brand-cyan); }
+.cf-tip-row { display: flex; justify-content: space-between; gap: 18px; font-variant-numeric: tabular-nums; }
+.cf-tip-row span:first-child { color: rgba(255,255,255,0.72); }
+.cf-tip-sep { height: 1px; background: rgba(255,255,255,0.2); margin: 7px 0; }
+
+/* ---- payment terms editor ---- */
+.cf-terms-wrap {
+  margin-top: 26px; border: 1px solid var(--line); border-radius: 16px;
+  background: var(--cream-2); overflow: hidden;
+}
+.cf-terms-wrap > summary {
+  cursor: pointer; padding: 15px 20px; font-weight: 700; color: var(--navy);
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; list-style: none;
+}
+.cf-terms-wrap > summary::-webkit-details-marker { display: none; }
+.cf-terms-wrap > summary::before { content: '▸'; color: var(--ink-3); font-size: 0.9rem; }
+.cf-terms-wrap[open] > summary::before { content: '▾'; }
+.cf-terms-wrap > summary:hover { background: var(--brand-blue-soft); }
+.cf-terms-badge {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  background: #D97706; color: var(--white); padding: 3px 9px; border-radius: 999px;
+}
+.cf-terms-hint { font-size: 0.8rem; font-weight: 500; color: var(--ink-3); }
+.cf-terms { padding: 4px 20px 20px; }
+.cf-terms section { margin-top: 16px; }
+.cf-terms h3 { font-size: 0.85rem; color: var(--ink-2); margin: 0 0 12px; font-weight: 700; }
+.cf-term-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.cf-term-group { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--white); }
+.cf-term-group.edited { border-color: #D97706; box-shadow: 0 0 0 1px #D9770633; }
+.cf-term-group h4 {
+  margin: 0 0 10px; font-size: 0.85rem; color: var(--navy);
+  display: flex; align-items: center; gap: 8px;
+}
+.cf-term-group h4 em {
+  font-style: normal; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  color: #D97706; letter-spacing: 0.04em;
+}
+.cf-term-table { width: 100%; border-collapse: collapse; }
+.cf-term-table td { padding: 4px 0; vertical-align: middle; white-space: nowrap; }
+.cf-term-name { font-size: 0.82rem; color: var(--ink-2); padding-right: 10px !important; }
+.cf-term-table input {
+  width: 66px; padding: 6px 8px; font-family: inherit; font-size: 0.85rem;
+  border: 1px solid var(--line); border-radius: 8px; text-align: right;
+  color: var(--navy); background: var(--white);
+}
+.cf-term-table input:focus { outline: 2px solid var(--brand-blue); outline-offset: 1px; border-color: var(--brand-blue); }
+.cf-term-unit { font-size: 0.75rem; color: var(--ink-3); margin-left: 5px; }
+.cf-term-warn { margin: 9px 0 0; font-size: 0.78rem; color: #B45309; line-height: 1.5; }
+.cf-terms-reset {
+  margin-top: 18px; font-family: inherit; font-size: 0.82rem; font-weight: 600;
+  padding: 9px 18px; border-radius: 999px; cursor: pointer;
+  background: var(--white); color: var(--ink-2); border: 1px solid var(--line);
+}
+.cf-terms-reset:hover { background: var(--cream); color: var(--navy); }
+
+.cf-analysis { margin-top: 30px; }
+.cf-analysis h3 { font-size: 1.05rem; color: var(--navy); margin: 0 0 14px; }
+.cf-finding {
+  border: 1px solid var(--line); border-left: 4px solid var(--brand-blue);
+  border-radius: 12px; padding: 15px 18px; margin-bottom: 11px; background: var(--cream-2);
+}
+.cf-finding.warn   { border-left-color: #D97706; }
+.cf-finding.danger { border-left-color: var(--error); }
+.cf-finding.good   { border-left-color: var(--success); }
+.cf-finding h4 { margin: 0 0 5px; font-size: 0.9rem; color: var(--navy); }
+.cf-finding p  { margin: 0; font-size: 0.88rem; color: var(--ink-2); line-height: 1.65; }
+
+@media (max-width: 780px) {
+  .cf-dash { padding: 20px 16px; }
+  .cf-tiles { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+}
 
 /* ─────────── PROGRESS ─────────── */
 #generationStatus {
@@ -746,12 +941,54 @@ body {
     </div>
 
     <div class="action-bar">
-      <div class="hint">When BOQ, Budget, and Assumptions are uploaded, click <b>Generate</b> to build the workbook.</div>
-      <button id="generateBtn" onclick="generate()" disabled>
-        Generate Workbook
-        <span class="arrow">›</span>
-      </button>
+      <div class="action-buttons">
+        <button id="generateBtn" onclick="generate()" disabled>
+          Generate Workbook
+          <span class="arrow">›</span>
+        </button>
+        <button id="cashflowBtn" class="secondary" onclick="showCashflow()" disabled>
+          Cash Flow
+          <span class="arrow">›</span>
+        </button>
+      </div>
     </div>
+
+    <div class="refresh-panel" id="updatedCard">
+      <div class="refresh-head">
+        <span class="refresh-tag">Start from a workbook you already have</span>
+        <h3>Already have a workbook from this app?</h3>
+        <p>Drop it here on its own — <b>nothing else needed</b>. It carries its own copy of the BOQ,
+           Budget and Assumptions, so the cash flow rebuilds straight from the file, picking up any
+           <b>Progress Dates</b> or <b>Cash Duration Days</b> you edited in Excel.</p>
+      </div>
+      <div class="refresh-body">
+        <label class="refresh-drop">
+          <span class="refresh-drop-icon">CF</span>
+          <span class="status" role="status" aria-live="polite">Click or drop the workbook</span>
+          <input type="file" accept=".xlsx,.xls" aria-label="Upload a cashflow workbook to rebuild from" onchange="handleFile(this,'updated')">
+        </label>
+        <button id="refreshCashflowBtn" class="secondary" onclick="showCashflow()" disabled>
+          Cash Flow
+          <span class="arrow">›</span>
+        </button>
+      </div>
+      <div id="refreshNotice" class="refresh-notice" hidden></div>
+    </div>
+
+    <section id="cashflowDashboard" class="cf-dash" hidden aria-labelledby="cfDashTitle">
+      <header class="cf-dash-head">
+        <div>
+          <h2 id="cfDashTitle">Cash Flow</h2>
+          <p id="cfDashSub" class="cf-dash-sub"></p>
+        </div>
+        <div class="cf-dash-actions">
+          <button type="button" class="cf-share" onclick="shareCashflow()">Share</button>
+          <button type="button" class="cf-close" onclick="hideCashflow()" aria-label="Close cash flow dashboard">Close</button>
+        </div>
+      </header>
+      <div id="cfTabs" class="cf-tabs" role="tablist" aria-label="Currency"></div>
+      <div id="cfBody"></div>
+    </section>
 
     <div id="generationStatus" class="generation-status">
       <div class="status-dot"></div>
@@ -767,7 +1004,7 @@ body {
   </div>
 
   <div class="footer">
-    <b>Madkour Holding</b> · Cashflow Generator v3.0 · Defining the benchmarks of engineering excellence
+    <b>Madkour Holding</b> · Cashflow Generator v3.3 · Defining the benchmarks of engineering excellence
     <div class="footer-credit">© 2026 Ganna Abdelaziz, Cost Control Engineer · All rights reserved</div>
   </div>
 </main>
@@ -776,7 +1013,7 @@ body {
 // ============================================================
 // FILE HANDLING
 // ============================================================
-const data = { boq: null, budget: null, assumptions: null, primavera: null, primaveraParsed: null };
+const data = { boq: null, budget: null, assumptions: null, primavera: null, primaveraParsed: null, updated: null, sheetDates: null, standalone: null };
 const ISO_CURRENCIES = [
   'AED','AFN','ALL','AMD','ANG','AOA','ARS','AUD','AWG','AZN','BAM','BBD','BDT','BGN','BHD','BIF','BMD','BND','BOB','BOV','BRL','BSD','BTN','BWP','BYN','BZD',
   'CAD','CDF','CHE','CHF','CHW','CLF','CLP','CNY','COP','COU','CRC','CUC','CUP','CVE','CZK','DJF','DKK','DOP','DZD','EGP','ERN','ETB','EUR','FJD','FKP',
@@ -836,7 +1073,10 @@ function renderCurrencyChips() {
   }).join('');
 }
 
-document.addEventListener('DOMContentLoaded', initializeCurrencySelector);
+document.addEventListener('DOMContentLoaded', function () {
+  initializeCurrencySelector();
+  checkReady();
+});
 
 function handleFile(input, type) {
   const file = input.files[0];
@@ -850,6 +1090,27 @@ function handleFile(input, type) {
       if (type === 'primavera') {
         data.primaveraParsed = parsePrimavera(data.primavera);
         status.textContent = file.name + ' - ' + data.primaveraParsed.activities.length + ' activities parsed';
+      } else if (type === 'updated') {
+        // Embedded input data makes the workbook self-sufficient; the dates are
+        // read either way so hand-edited schedules are picked up.
+        data.standalone = readEmbeddedInputs(data.updated);
+        let dated = 0, dateNote = '';
+        try {
+          const read = readUpdatedWorkbook(data.updated);
+          data.sheetDates = read.overrides;
+          dated = read.overrides.size;
+        } catch (dateErr) {
+          data.sheetDates = null;
+          if (!data.standalone) throw dateErr;
+          dateNote = ' (no dates filled in yet)';
+        }
+        if (data.standalone) {
+          status.textContent = file.name + ' - ready to run on its own' +
+            (dated ? ', ' + dated + ' dated lines' : dateNote);
+        } else {
+          status.textContent = file.name + ' - ' + dated + ' dated lines read';
+        }
+        showRefreshNotice(data.standalone, dated);
       } else {
         status.textContent = file.name;
       }
@@ -857,6 +1118,7 @@ function handleFile(input, type) {
     } catch (err) {
       data[type] = null;
       if (type === 'primavera') data.primaveraParsed = null;
+      if (type === 'updated') { data.sheetDates = null; data.standalone = null; }
       card.classList.remove('loaded');
       status.textContent = 'Error: ' + err.message;
       input.value = '';
@@ -866,23 +1128,68 @@ function handleFile(input, type) {
   reader.readAsArrayBuffer(file);
 }
 
+// A workbook made before v3.3 has no embedded inputs, so it cannot run alone.
+// Say so plainly, and say exactly what to do about it — the old wording was a
+// dead end that looked like the upload had simply been ignored.
+function showRefreshNotice(standalone, datedLines) {
+  const box = document.getElementById('refreshNotice');
+  if (!box) return;
+  if (standalone) {
+    box.hidden = false;
+    box.className = 'refresh-notice ok';
+    box.innerHTML = '<b>Ready.</b> This workbook carries its own data — click <b>Cash Flow</b> below. ' +
+      'Nothing else needs uploading.';
+    return;
+  }
+  box.hidden = false;
+  box.className = 'refresh-notice warn';
+  box.innerHTML = '<b>This workbook was made by an earlier version,</b> so it does not carry its own ' +
+    'BOQ, Budget and Assumptions yet — it cannot run on its own.' +
+    (datedLines ? ' Its ' + datedLines + ' dates have been read and will be used.' : '') +
+    '<br><br><b>To fix it once:</b> upload BOQ, Budget and Assumptions in the cards above, click ' +
+    '<b>Generate Workbook</b>, and keep the file it makes. That new file — and every one after it — ' +
+    'will run on its own with nothing else attached.';
+}
+
 function checkReady() {
-  document.getElementById('generateBtn').disabled = !(data.boq && data.budget && data.assumptions);
+  // Two independent ways in: the four input files above, or a workbook that
+  // carries its own data below. Each drives its own button.
+  const filesReady = !!(data.boq && data.budget && data.assumptions);
+  document.getElementById('generateBtn').disabled = !filesReady;
+  document.getElementById('cashflowBtn').disabled = !filesReady;
+
+  const refreshBtn = document.getElementById('refreshCashflowBtn');
+  if (refreshBtn) refreshBtn.disabled = !data.standalone;
 }
 
 function normalizePrimaveraHeader(value) {
   return String(value == null ? '' : value).trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
+// Workbooks are read with cellDates:true, and SheetJS builds those Date objects
+// from the 1899-12-30 epoch using the timezone offset in force back then. In any
+// zone whose historical offset differs from today's, the result lands a couple of
+// hours short of midnight — 1 Jan 2026 comes back as 2025-12-31T21:59:51 in Cairo.
+// Truncating that to a calendar day loses a whole day, and when it is the project
+// start date it shifts the entire cash flow a month. Round to the nearest midnight
+// instead: real dates are always within hours of one, never half a day away.
 function excelSerialFromDateValue(value) {
   if (value == null || value === '') return null;
   if (typeof value === 'number' && isFinite(value)) return value;
-  if (value instanceof Date && !isNaN(value)) {
-    return dateSerial(value.getFullYear(), value.getMonth() + 1, value.getDate());
-  }
-  const parsed = new Date(value);
-  if (!isNaN(parsed)) return dateSerial(parsed.getFullYear(), parsed.getMonth() + 1, parsed.getDate());
-  return null;
+  const d = value instanceof Date ? value : new Date(value);
+  if (isNaN(d)) return null;
+  const epoch = Date.UTC(1899, 11, 30);
+  const utcMidnight = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(),
+                               d.getHours(), d.getMinutes(), d.getSeconds());
+  return Math.round((utcMidnight - epoch) / 86400000);
+}
+
+// One code path for both a raw serial and a cellDates Date.
+function excelDateParts(value) {
+  const serial = excelSerialFromDateValue(value);
+  if (serial == null) return null;
+  const p = XLSX.SSF.parse_date_code(serial);
+  return p ? { year: p.y, month: p.m, day: p.d } : null;
 }
 
 function parsePrimavera(wb) {
@@ -1174,8 +1481,24 @@ function scheduleStartFinishMatch(startActivity, finishActivity, ruleName) {
   };
 }
 
+// When a Primavera file is loaded, every row must resolve to a Start ID and a
+// Finish ID — a blank pair used to zero the row's entire amount. Rows that no
+// rule can place fall back to the project span and are labelled as such, so the
+// gap is visible in the Mapping Review tab instead of silently costing money.
+function scheduleProjectRangeFallback(scheduleIndex, why) {
+  const match = scheduleStartFinishMatch(scheduleIndex.projectStart, scheduleIndex.projectFinish, why || 'Fallback - no confident rule match');
+  if (!match) return null;
+  match.status = 'Fallback - Project Range';
+  return match;
+}
+
 function resolveCashInScheduleMatch(scheduleIndex, context) {
   if (!scheduleIndex) return null;
+  return resolveCashInScheduleRule(scheduleIndex, context)
+    || scheduleProjectRangeFallback(scheduleIndex, 'Cash In fallback - no confident rule match');
+}
+
+function resolveCashInScheduleRule(scheduleIndex, context) {
   const kind = scheduleMilestoneKind(context.milestoneName);
   const packageText = schedulePackageText([context.trade, context.boq, context.category, context.description, context.milestoneName]);
 
@@ -1193,6 +1516,11 @@ function resolveCashInScheduleMatch(scheduleIndex, context) {
 
 function resolveCashOutScheduleMatch(scheduleIndex, context) {
   if (!scheduleIndex) return null;
+  return resolveCashOutScheduleRule(scheduleIndex, context)
+    || scheduleProjectRangeFallback(scheduleIndex, 'Cash Out fallback - no confident rule match');
+}
+
+function resolveCashOutScheduleRule(scheduleIndex, context) {
   const kind = scheduleMilestoneKind(context.milestoneName || context.description);
   const packageText = schedulePackageText([context.groupName, context.taskNum, context.description, context.milestoneName]);
   const budgetCat = normalizeScheduleText(context.budgetCat);
@@ -1208,6 +1536,21 @@ function resolveCashOutScheduleMatch(scheduleIndex, context) {
   if (kind === 'engineering') return scheduleRangeMatch(scheduleIndex.engineering, packageText, 'Cash Out Engineering range');
   if (kind === 'progress') return scheduleSameIdMatch(chooseMeaningMatch(scheduleIndex.activities, packageText, 4), 'Cash Out progress meaning match');
   return null;
+}
+
+// A planned line's own dates can stand in for a Primavera match, so the Progress
+// Dates columns are still filled when the run came from an uploaded workbook
+// rather than from a schedule file. Without this a regenerated workbook would
+// come out with empty dates and could not be reloaded.
+function cfMatchFromPlan(match, planned) {
+  if (match) return match;
+  if (!planned || (planned.schedStart == null && planned.schedFinish == null)) return null;
+  return {
+    startId: '', finishId: '',
+    startDate: planned.schedStart, finishDate: planned.schedFinish,
+    startActivityName: '', finishActivityName: '',
+    rule: 'From uploaded workbook', status: 'From workbook'
+  };
 }
 
 function writeScheduleMatch(ws, rowIdx, idStartCol, idFinishCol, dateStartCol, dateFinishCol, match, auditRows, auditContext) {
@@ -1978,12 +2321,9 @@ function monthEnd(year, month) {
 function generateDates(startDate, numMonths) {
   const dates = [];
   let year, month;
-  if (startDate instanceof Date) {
-    year = startDate.getFullYear();
-    month = startDate.getMonth() + 1;
-  } else if (typeof startDate === 'number') {
-    const d = XLSX.SSF.parse_date_code(startDate);
-    year = d.y; month = d.m;
+  const parts = excelDateParts(startDate);
+  if (parts) {
+    year = parts.year; month = parts.month;
   } else {
     year = 2024; month = 10;
   }
@@ -2326,6 +2666,727 @@ const TAB_COLORS = {
 };
 
 // ============================================================
+// CASHFLOW CALCULATION ENGINE
+// Single source of truth. Both the Excel workbook and the on-screen
+// Cash Flow dashboard read their figures from computeCashflowModel().
+// No DOM, no SheetJS — pure arithmetic over the parsed input files.
+// ============================================================
+
+const BETA_ALPHA = 2;
+const BETA_BETA  = 2;
+
+// Cash In payment terms for a currency. Extracted from buildCashInSheet so the
+// engine and the sheet writer can never drift apart.
+function getCashInTermsForCurrency(cur, assumptions) {
+  let milestones = [];
+  for (const [cat, terms] of Object.entries(assumptions.cashInTerms || {})) {
+    if (cat.toUpperCase().includes(cur)) { milestones = terms; break; }
+  }
+  if (milestones.length === 0 && cur === 'EGP') {
+    for (const [cat, terms] of Object.entries(assumptions.cashInTerms || {})) {
+      if (cat.toUpperCase().includes('EGP')) { milestones = terms; break; }
+    }
+  }
+  if (milestones.length === 0) {
+    return {
+      terms: [{ name: 'Progress', pct: 0.9, days: 45 }, { name: 'Retention', pct: 0.1, days: 45 }],
+      isDefault: true
+    };
+  }
+  return { terms: milestones, isDefault: false };
+}
+
+// Unnormalised beta density. The normalising constant cancels when we divide by
+// the total, so it is deliberately omitted.
+function betaKernel(t, a, b) {
+  if (!(t > 0) || !(t < 1)) return 0;
+  return Math.pow(t, a - 1) * Math.pow(1 - t, b - 1);
+}
+
+// Simpson's rule over [lo, hi] in t-space. Integrating the density across each
+// month's overlap — rather than sampling one point per month — is what keeps the
+// first and last months from collapsing to zero weight.
+function integrateBetaKernel(lo, hi, a, b, steps) {
+  if (!(hi > lo)) return 0;
+  let n = steps || 8;
+  if (n % 2) n += 1;
+  const h = (hi - lo) / n;
+  let sum = betaKernel(lo, a, b) + betaKernel(hi, a, b);
+  for (let k = 1; k < n; k++) sum += betaKernel(lo + k * h, a, b) * (k % 2 ? 4 : 2);
+  return sum * h / 3;
+}
+
+function monthFirstSerial(d) { return dateSerial(d.year, d.month, 1); }
+function monthLastSerial(d)  { return dateSerial(d.year, d.month, monthEnd(d.year, d.month)); }
+
+// Index of the grid month containing a serial, clamped to the grid.
+function monthIndexForSerial(dates, serial) {
+  for (let i = 0; i < dates.length; i++) {
+    if (serial <= monthLastSerial(dates[i])) return i;
+  }
+  return dates.length - 1;
+}
+
+/**
+ * Spread `amount` across the project month grid on a beta curve.
+ *
+ * Guarantees, in order of importance:
+ *   1. sum(monthly) === amount, exactly. Money is never lost.
+ *   2. A non-zero amount never produces an all-zero row.
+ *   3. Dates outside the grid are clamped into it rather than discarded.
+ *
+ * Returns { monthly, clamped, invalidDates, startSerial, finishSerial }.
+ */
+function distributeBeta(amount, startSerial, finishSerial, dates, alpha, beta) {
+  const N = dates.length;
+  const monthly = new Array(N).fill(0);
+  const result = { monthly, clamped: false, invalidDates: false, startSerial: null, finishSerial: null };
+  if (!amount || !isFinite(amount) || N === 0) return result;
+
+  const a = alpha || BETA_ALPHA;
+  const b = beta  || BETA_BETA;
+  const gridStart = monthFirstSerial(dates[0]);
+  const gridEnd   = monthLastSerial(dates[N - 1]);
+
+  // A serial at or below zero is Excel's way of saying "no date". Treat blank,
+  // non-numeric and epoch-adjacent values alike: fall back to the project span.
+  let s = Number(startSerial);
+  let f = Number(finishSerial);
+  if (!isFinite(s) || s <= 1) { s = gridStart; result.invalidDates = true; }
+  if (!isFinite(f) || f <= 1) { f = gridEnd;   result.invalidDates = true; }
+  if (f < s) { const tmp = s; s = f; f = tmp; }
+
+  // Clamp the window into the grid. If it falls entirely outside, snap it to the
+  // nearest edge month so the money still lands somewhere real.
+  let cs, cf;
+  if (s > gridEnd)        { cs = cf = gridEnd;   result.clamped = true; }
+  else if (f < gridStart) { cs = cf = gridStart; result.clamped = true; }
+  else {
+    cs = Math.max(s, gridStart);
+    cf = Math.min(f, gridEnd);
+    if (cs !== s || cf !== f) result.clamped = true;
+  }
+  result.startSerial = cs;
+  result.finishSerial = cf;
+
+  const span = cf - cs;
+
+  if (span <= 0) {
+    // Instantaneous milestone — the whole amount falls in one month.
+    monthly[monthIndexForSerial(dates, cs)] = amount;
+    return result;
+  }
+
+  const weights = new Array(N).fill(0);
+  let total = 0;
+  for (let i = 0; i < N; i++) {
+    const lo = Math.max(monthFirstSerial(dates[i]), cs);
+    const hi = Math.min(monthLastSerial(dates[i]) + 1, cf);
+    if (hi <= lo) continue;
+    const w = integrateBetaKernel((lo - cs) / span, (hi - cs) / span, a, b);
+    weights[i] = w;
+    total += w;
+  }
+
+  if (!(total > 0)) {
+    // Degenerate curve (a window narrower than the numerical resolution).
+    // Never return zeros — drop the amount in the month the window centres on.
+    monthly[monthIndexForSerial(dates, cs + span / 2)] = amount;
+    return result;
+  }
+
+  let running = 0;
+  let largest = 0;
+  for (let i = 0; i < N; i++) {
+    monthly[i] = amount * weights[i] / total;
+    running += monthly[i];
+    if (weights[i] > weights[largest]) largest = i;
+  }
+  // Push the floating-point residual into the largest bucket so the row total is
+  // exact rather than merely close.
+  monthly[largest] += amount - running;
+
+  return result;
+}
+
+// Identity of a single cash line, used to hand the engine's monthly split to the
+// sheet writer. Rows that collide on this key are interchangeable by definition
+// (same task, same milestone, same amount), so consuming them in queue order is
+// safe regardless of how each side orders its walk.
+function cfRowKey(cur, side, taskNum, description, milestone, amount) {
+  return cur + '|' + side + '|' + (taskNum || '') + '|' + (description || '') + '|' +
+         (milestone || '') + '|' + Math.round((amount || 0) * 100);
+}
+
+// Hands out each row's computed monthly split exactly once, so the workbook
+// writes the same numbers the dashboard shows.
+function makeDistributionPlanner(model) {
+  const q = new Map();
+  for (const cur of model.currencies) {
+    for (const r of model.perCurrency[cur].rows) {
+      if (!q.has(r.key)) q.set(r.key, []);
+      q.get(r.key).push({ monthly: r.monthly, schedStart: r.schedStart, schedFinish: r.schedFinish, lag: r.lag });
+    }
+  }
+  return {
+    take(key) {
+      const a = q.get(key);
+      return (a && a.length) ? a.shift() : null;
+    },
+    remaining() { let n = 0; for (const a of q.values()) n += a.length; return n; }
+  };
+}
+
+function emptySeries(N) { return new Array(N).fill(0); }
+
+function addInto(target, source) {
+  for (let i = 0; i < target.length; i++) target[i] += source[i] || 0;
+}
+
+function monthLabel(d) {
+  const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return MON[d.month - 1] + '-' + String(d.year).slice(2);
+}
+
+// Build one currency's Cash In rows.
+// Dates for one line: the re-uploaded sheet wins over the Primavera match, so a
+// schedule edited in Excel is what drives the cashflow.
+function cfResolveDates(sheetDates, key, match, lagDays, preferTermLag) {
+  const edit = sheetDates && sheetDates.get(key);
+  if (edit && (edit.start !== null || edit.finish !== null)) {
+    // The lag stored in the sheet is what this app wrote last time. An explicit
+    // edit to the payment terms on screen is a fresh instruction, so it wins.
+    const lag = (!preferTermLag && edit.days !== null && edit.days !== undefined)
+      ? Number(edit.days) : lagDays;
+    return {
+      // baseStart/baseFinish are the schedule dates before the payment lag —
+      // what the Progress Dates columns hold, and what gets written back so the
+      // workbook stays reloadable.
+      baseStart: edit.start, baseFinish: edit.finish,
+      start: edit.start !== null ? edit.start + lag : null,
+      finish: edit.finish !== null ? edit.finish + lag : null,
+      lag,
+      source: 'sheet'
+    };
+  }
+  const ms = match && typeof match.startDate === 'number' ? match.startDate : null;
+  const mf = match && typeof match.finishDate === 'number' ? match.finishDate : null;
+  return {
+    baseStart: ms, baseFinish: mf,
+    start: ms !== null ? ms + lagDays : null,
+    finish: mf !== null ? mf + lagDays : null,
+    lag: lagDays,
+    source: match ? 'schedule' : 'none'
+  };
+}
+
+function buildCashInRows(boqItems, cur, dates, assumptions, scheduleIndex, notes, sheetDates, preferTermLag) {
+  const termsInfo = getCashInTermsForCurrency(cur, assumptions);
+  if (termsInfo.isDefault) {
+    notes.push('No Cash In payment terms found for ' + cur + ' in the Assumptions file — defaulted to Progress 90% / Retention 10% at 45 days.');
+  }
+  const rows = [];
+  for (const item of boqItems) {
+    if (item.isHeader) continue;
+    const itemAmount = getCurrencyAmount(item, cur);
+    if (!itemAmount) continue;
+
+    for (const ms of termsInfo.terms) {
+      const amount = itemAmount * (ms.pct || 0);
+      if (!amount) continue;
+      const match = resolveCashInScheduleMatch(scheduleIndex, {
+        currency: cur, trade: item.trade, boq: item.boq, category: item.category,
+        taskNum: item.taskNum || '', description: item.description || '', milestoneName: ms.name
+      });
+      const d = cfResolveDates(sheetDates,
+        cfDateKey(cur, 'in', item.taskNum, item.description, ms.name),
+        match, Number(ms.days) || 0, preferTermLag);
+      const dist = distributeBeta(amount, d.start, d.finish, dates);
+      rows.push({
+        side: 'in', currency: cur,
+        key: cfRowKey(cur, 'in', item.taskNum, item.description, ms.name, amount),
+        path: [item.trade, item.boq, item.category].filter(Boolean).join(' / '),
+        taskNum: item.taskNum || '', description: item.description || '',
+        milestone: ms.name, pct: ms.pct || 0, amount, lag: d.lag, dateSource: d.source,
+        schedStart: d.baseStart, schedFinish: d.baseFinish,
+        monthly: dist.monthly, clamped: dist.clamped, unmatched: dist.invalidDates,
+        rule: d.source === 'sheet' ? 'From updated sheet' : (match ? (match.rule || '') : 'No schedule match')
+      });
+    }
+  }
+  return rows;
+}
+
+// Build one currency's Cash Out rows, including the three special sections.
+function buildCashOutRows(budgetItems, cur, dates, assumptions, scheduleIndex, sheetDates, preferTermLag) {
+  const rows = [];
+
+  const push = (ctx, amount, meta) => {
+    if (!amount) return;
+    const match = resolveCashOutScheduleMatch(scheduleIndex, ctx);
+    const d = cfResolveDates(sheetDates,
+      cfDateKey(cur, 'out', meta.taskNum, meta.description, meta.milestone),
+      match, Number(meta.days) || 0, preferTermLag);
+    const dist = distributeBeta(amount, d.start, d.finish, dates);
+    rows.push({
+      side: 'out', currency: cur, group: meta.group,
+      key: cfRowKey(cur, 'out', meta.taskNum, meta.description, meta.milestone, amount),
+      path: meta.path || meta.group,
+      taskNum: meta.taskNum || '', description: meta.description || '',
+      milestone: meta.milestone || '', pct: meta.pct != null ? meta.pct : 1, amount,
+      lag: d.lag, dateSource: d.source, schedStart: d.baseStart, schedFinish: d.baseFinish,
+      monthly: dist.monthly, clamped: dist.clamped, unmatched: dist.invalidDates,
+      rule: d.source === 'sheet' ? 'From updated sheet' : (match ? (match.rule || '') : 'No schedule match')
+    });
+  };
+
+  for (const item of budgetItems) {
+    if (item.isParent || !(item.amount > 0) || item.currency !== cur) continue;
+    const group = getCashOutGroup(item.budgetCat);
+    for (const ms of getPaymentTermsForItem(item, cur, assumptions)) {
+      push({
+        currency: cur, groupName: group, taskNum: item.taskNum || '',
+        budgetCat: item.budgetCat || '', description: item.description || '', milestoneName: ms.name
+      }, item.amount * (ms.pct || 0), {
+        group, path: [item.trade, item.boq, item.category].filter(Boolean).join(' / ') || group,
+        taskNum: item.taskNum || '', description: item.description || '',
+        milestone: ms.name, pct: ms.pct || 0, days: ms.days
+      });
+    }
+  }
+
+  for (const ic of (assumptions.indirectCostItems || [])) {
+    if (ic.currency !== cur || !(ic.value > 0)) continue;
+    push({ currency: cur, groupName: 'INDIRECT COST', description: ic.name, milestoneName: ic.name, forceProjectRange: true },
+      ic.value, { group: 'INDIRECT COST', description: ic.name, milestone: ic.name, days: 0 });
+  }
+  for (const oh of (assumptions.projectOverheads || [])) {
+    const amt = getCurrencyAmount(oh, cur);
+    if (!(amt > 0)) continue;
+    push({ currency: cur, groupName: 'PROJECT OVERHEADS', description: oh.name, milestoneName: oh.name, forceProjectRange: true },
+      amt, { group: 'PROJECT OVERHEADS', description: oh.name, milestone: oh.name, days: 0 });
+  }
+  for (const rc of (assumptions.risksContingencies || [])) {
+    const amt = getCurrencyAmount(rc, cur);
+    if (!(amt > 0)) continue;
+    push({ currency: cur, groupName: 'RISKS & CONTINGENCIES', description: rc.name, milestoneName: rc.name, forceProjectRange: true },
+      amt, { group: 'RISKS & CONTINGENCIES', description: rc.name, milestone: rc.name, days: 0 });
+  }
+
+  return rows;
+}
+
+// Cash In reaching the project is net of deductions. This mirrors the Cash In
+// Summary sheet exactly (rows 14-19), which is what the Cashflow tab reads —
+// without it the dashboard would read high against the workbook.
+function cashInDeductionRates(assumptions) {
+  const get = (name, fallback) =>
+    Object.prototype.hasOwnProperty.call(assumptions.deductions || {}, name)
+      ? assumptions.deductions[name] : fallback;
+  return {
+    vat:   get('VAT', 0.05),
+    ap:    get('Advanced Payment Deduction (AP)', 0.10),
+    stamp: get('Stamp Duties & Additional Stamp Duties', 0.0243),
+    gov:   get('Governmental Deductions', 0.009),
+    viva:  get('Viva Egypt', 0.01)
+  };
+}
+
+function applyCashInDeductions(gross, rates) {
+  const exVat = 1 / (1 + rates.vat);
+  const net = gross.map(g => g - (g * exVat * rates.vat) - (g * rates.ap) -
+                              (g * exVat * rates.stamp) - (g * exVat * rates.gov) - (g * exVat * rates.viva));
+  const totalGross = gross.reduce((a, b) => a + b, 0);
+  const totalNet = net.reduce((a, b) => a + b, 0);
+  return { net, totalGross, totalDeducted: totalGross - totalNet };
+}
+
+// Derive the cumulative series and the headline metrics from in/out series.
+function derivePosition(cashIn, cashOut, dates, currency) {
+  const N = dates.length;
+  const cumIn = emptySeries(N), cumOut = emptySeries(N);
+  const net = emptySeries(N), cumNet = emptySeries(N);
+  for (let i = 0; i < N; i++) {
+    cumIn[i]  = (i ? cumIn[i - 1]  : 0) + cashIn[i];
+    cumOut[i] = (i ? cumOut[i - 1] : 0) + cashOut[i];
+    net[i]    = cashIn[i] - cashOut[i];
+    cumNet[i] = cumIn[i] - cumOut[i];
+  }
+
+  let minI = 0, maxI = 0;
+  for (let i = 0; i < N; i++) {
+    if (cumNet[i] < cumNet[minI]) minI = i;
+    if (cumNet[i] > cumNet[maxI]) maxI = i;
+  }
+  const criticalMonths = [];
+  for (let i = 0; i < N; i++) if (cumNet[i] < 0) criticalMonths.push(i);
+
+  const totalIn  = cumIn[N - 1]  || 0;
+  const totalOut = cumOut[N - 1] || 0;
+
+  return {
+    currency, dates, cashIn, cashOut, cumIn, cumOut, net, cumNet,
+    totalIn, totalOut, netProfit: totalIn - totalOut,
+    // Max Deficit floors at zero: a project that never goes cash-negative has no
+    // deficit, rather than a positive number labelled "deficit".
+    maxDeficit: {
+      amount: Math.min(0, cumNet[minI] || 0),
+      monthIndex: cumNet[minI] < 0 ? minI : -1,
+      label: cumNet[minI] < 0 ? monthLabel(dates[minI]) : ''
+    },
+    maxSurplus: {
+      amount: Math.max(0, cumNet[maxI] || 0),
+      monthIndex: cumNet[maxI] > 0 ? maxI : -1,
+      label: cumNet[maxI] > 0 ? monthLabel(dates[maxI]) : ''
+    },
+    criticalMonths
+  };
+}
+
+/**
+ * The whole cashflow, computed. This is what the dashboard renders and what the
+ * Excel writer stamps into its cells as cached values.
+ */
+function computeCashflowModel(boqItems, budgetItems, assumptions, dates, currencies, scheduleIndex, sheetDates, preferTermLag) {
+  const N = dates.length;
+  const notes = [];
+  const perCurrency = {};
+  const allRows = [];
+  const rates = cashInDeductionRates(assumptions);
+  const dedTotal = rates.vat + rates.ap + rates.stamp + rates.gov + rates.viva;
+
+  for (const cur of currencies) {
+    const inRows  = buildCashInRows(boqItems, cur, dates, assumptions, scheduleIndex, notes, sheetDates, preferTermLag);
+    const outRows = buildCashOutRows(budgetItems, cur, dates, assumptions, scheduleIndex, sheetDates, preferTermLag);
+
+    const gross = emptySeries(N), cashOut = emptySeries(N);
+    for (const r of inRows)  addInto(gross, r.monthly);
+    for (const r of outRows) addInto(cashOut, r.monthly);
+
+    const ded = applyCashInDeductions(gross, rates);
+    const pos = derivePosition(ded.net, cashOut, dates, cur);
+    pos.cashInGross = gross;
+    pos.totalGrossIn = ded.totalGross;
+    pos.totalDeducted = ded.totalDeducted;
+    pos.rows = inRows.concat(outRows);
+    perCurrency[cur] = pos;
+    allRows.push.apply(allRows, pos.rows);
+  }
+
+  // EQU mirrors the workbook: every currency converted to EGP at its rate.
+  const equIn = emptySeries(N), equOut = emptySeries(N);
+  for (const cur of currencies) {
+    const rate = cur === 'EGP' ? 1 : ((assumptions.exchangeRates && assumptions.exchangeRates[cur]) || 0);
+    for (let i = 0; i < N; i++) {
+      equIn[i]  += perCurrency[cur].cashIn[i]  * rate;
+      equOut[i] += perCurrency[cur].cashOut[i] * rate;
+    }
+  }
+  const equ = derivePosition(equIn, equOut, dates, 'EQU');
+  equ.rows = [];
+  equ.isEquivalent = true;
+  equ.baseCurrency = 'EGP';
+
+  const clamped   = allRows.filter(r => r.clamped).length;
+  const unmatched = allRows.filter(r => r.unmatched).length;
+  const fromSheet = allRows.filter(r => r.dateSource === 'sheet').length;
+  if (unmatched) notes.push(unmatched + ' line(s) had no usable schedule dates and were spread across the full project duration.');
+  if (clamped)   notes.push(clamped + ' line(s) had dates outside the project timeline and were clamped into it.');
+  if (fromSheet) notes.push(fromSheet + ' line(s) took their dates from the uploaded workbook rather than from Primavera.');
+
+  return {
+    dates, currencies, perCurrency, equ, notes,
+    deductionRates: rates, deductionTotalPct: dedTotal,
+    assumptions,
+    projectName: assumptions.projectName || 'Project',
+    exchangeRates: assumptions.exchangeRates || {},
+    generatedAt: new Date().toISOString(),
+    stats: { rows: allRows.length, clamped, unmatched, fromSheet }
+  };
+}
+
+// Every row must place its full amount. This is the invariant the old formula
+// broke; it is asserted on every run rather than trusted.
+function verifyCashflowModel(model) {
+  const problems = [];
+  const check = (pos, label) => {
+    for (const r of (pos.rows || [])) {
+      const sum = r.monthly.reduce((a, b) => a + b, 0);
+      if (Math.abs(sum - r.amount) > 0.005) {
+        problems.push(label + ': "' + (r.description || r.milestone) + '" distributes ' + sum.toFixed(2) + ' of ' + r.amount.toFixed(2));
+      }
+    }
+    const inSum = pos.cashIn.reduce((a, b) => a + b, 0);
+    if (Math.abs(inSum - pos.totalIn) > 0.01) problems.push(label + ': monthly Cash In does not match the cumulative total.');
+    const outSum = pos.cashOut.reduce((a, b) => a + b, 0);
+    if (Math.abs(outSum - pos.totalOut) > 0.01) problems.push(label + ': monthly Cash Out does not match the cumulative total.');
+  };
+  for (const cur of model.currencies) check(model.perCurrency[cur], cur);
+  check(model.equ, 'EQU');
+  return problems;
+}
+
+// ============================================================
+// PAYMENT TERMS OVERRIDES
+// Edits made in the dashboard are held here and layered onto the parsed
+// Assumptions. Everything downstream — the engine and the sheet writers — reads
+// the merged result, so the chart and the workbook can never disagree.
+// ============================================================
+
+// { cashIn: { '<assumptions key>': [{name,pct,days}] }, cashOut: { ... } }
+let cfTermsOverride = { cashIn: {}, cashOut: {} };
+
+function cfHasTermsOverride() {
+  return Object.keys(cfTermsOverride.cashIn).length > 0 ||
+         Object.keys(cfTermsOverride.cashOut).length > 0;
+}
+
+function cfClearTermsOverride() {
+  cfTermsOverride = { cashIn: {}, cashOut: {} };
+}
+
+// A shallow copy of the assumptions with edited term sets swapped in.
+function applyTermsOverrides(assumptions) {
+  if (!cfHasTermsOverride()) return assumptions;
+  const merged = Object.assign({}, assumptions);
+  merged.cashInTerms = Object.assign({}, assumptions.cashInTerms, cfTermsOverride.cashIn);
+  merged.cashOutTerms = Object.assign({}, assumptions.cashOutTerms, cfTermsOverride.cashOut);
+  return merged;
+}
+
+// ============================================================
+// UPDATED-WORKBOOK DATE OVERRIDES
+// Re-reads the Progress Dates and Cash Duration Days from a workbook the user
+// has edited, so the cashflow can be refreshed from the sheet rather than from
+// Primavera. Rows are keyed by task + description + milestone.
+// ============================================================
+
+function cfDateKey(cur, side, taskNum, description, milestone) {
+  return cur + '|' + side + '|' + String(taskNum || '').trim() + '|' +
+         String(description || '').trim() + '|' + String(milestone || '').trim();
+}
+
+// Locate a column by the text in the header rows, so the reader survives a
+// different month count (which shifts every column to the right of the actuals).
+function cfFindHeaderCol(ws, rng, rowIdx, text) {
+  const want = String(text).trim().toLowerCase();
+  for (let c = 0; c <= rng.e.c; c++) {
+    const cell = ws[XLSX.utils.encode_cell({ r: rowIdx, c })];
+    if (cell && typeof cell.v === 'string' && cell.v.trim().toLowerCase() === want) return c;
+  }
+  return -1;
+}
+
+// The "Progress Dates" block spans two columns labelled Start / End on row 2.
+function cfLocateDateCols(ws, rng) {
+  const group = cfFindHeaderCol(ws, rng, 0, 'Progress Dates');
+  if (group < 0) return null;
+  let start = -1, end = -1;
+  for (let c = group; c <= Math.min(group + 4, rng.e.c); c++) {
+    const cell = ws[XLSX.utils.encode_cell({ r: 1, c })];
+    if (!cell || typeof cell.v !== 'string') continue;
+    const v = cell.v.trim().toLowerCase();
+    if (v === 'start' && start < 0) start = c;
+    else if (v === 'end' && end < 0) end = c;
+  }
+  if (start < 0 || end < 0) return null;
+  // Cash Duration Days sits immediately after the Progress Dates pair.
+  return { start, end, days: end + 1 };
+}
+
+const CF_NUM = v => (typeof v === 'number' && isFinite(v)) ? v : null;
+
+// Walk one Cash In / Cash Out sheet, pairing each milestone row with the item
+// header above it so the line can be identified.
+function cfReadSheetDates(ws, cur, side, out) {
+  if (!ws || !ws['!ref']) return 0;
+  const rng = XLSX.utils.decode_range(ws['!ref']);
+  const cols = cfLocateDateCols(ws, rng);
+  if (!cols) return 0;
+
+  // Cash In carries an extra "Sub Task" column, shifting description and value right.
+  const descCol = side === 'in' ? 5 : 4;
+  const amtCol  = side === 'in' ? 6 : 5;
+  const taskCol = 0;
+
+  const V = (r, c) => { const x = ws[XLSX.utils.encode_cell({ r, c })]; return x ? x.v : undefined; };
+
+  let parentDesc = '', parentTask = '', found = 0;
+  for (let r = 2; r <= rng.e.r; r++) {
+    const desc = V(r, descCol);
+    if (typeof desc !== 'string' || !desc.trim()) continue;
+    const text = desc.trim();
+
+    const hasAmount = CF_NUM(V(r, amtCol)) !== null;
+    // Workbooks are read with cellDates:true, so date cells arrive as Date objects.
+    const start = excelSerialFromDateValue(V(r, cols.start));
+    const finish = excelSerialFromDateValue(V(r, cols.end));
+    const days = CF_NUM(V(r, cols.days));
+
+    if (hasAmount) {
+      // A row carrying a value is either an item header (its milestones follow
+      // underneath) or one of the standalone Cash Out sections — Indirect Cost,
+      // Overheads, Risks — which is its own description and its own milestone.
+      // Record it as the parent either way, and also key it as a standalone row;
+      // an unmatched key simply goes unused.
+      parentDesc = text;
+      parentTask = String(V(r, taskCol) || '').trim();
+      if (start !== null || finish !== null) {
+        out.set(cfDateKey(cur, side, '', text, text), { start, finish, days });
+        found++;
+      }
+      continue;
+    }
+
+    if (start === null && finish === null) continue;
+
+    // A milestone row: no value of its own, named for the payment stage, and
+    // belonging to the item above it. Deliberately not keyed on the percentage —
+    // older workbooks wrote that as a formula with no stored result, which made
+    // these rows unrecognisable.
+    out.set(cfDateKey(cur, side, parentTask, parentDesc, text), { start, finish, days });
+    found++;
+  }
+  return found;
+}
+
+// Read every Cash In / Cash Out tab out of a re-uploaded workbook.
+function readUpdatedWorkbook(wb) {
+  const overrides = new Map();
+  const sheets = [];
+  let tabsSeen = 0;
+  for (const name of wb.SheetNames) {
+    const m = /\bcash\s*(in|out)\s+([A-Z]{3})\b/i.exec(name);
+    if (!m) continue;
+    if (/summary/i.test(name)) continue;
+    tabsSeen++;
+    const side = m[1].toLowerCase() === 'in' ? 'in' : 'out';
+    const cur = m[2].toUpperCase();
+    const n = cfReadSheetDates(wb.Sheets[name], cur, side, overrides);
+    if (n) sheets.push(name + ' (' + n + ')');
+  }
+  if (overrides.size === 0) {
+    throw new Error(tabsSeen
+      ? 'Found ' + tabsSeen + ' Cash In / Cash Out tab(s), but every Progress Dates cell is empty — there are no dates to read. Fill in the Start and End dates on those tabs, save, then upload again.'
+      : 'No Cash In / Cash Out tabs were found in that workbook. Upload a workbook this app generated.');
+  }
+  return { overrides, sheets };
+}
+
+// Parse the uploaded files and compute the model. Used by the Cash Flow
+// dashboard, which does not need to build a workbook to show the numbers.
+// ============================================================
+// EMBEDDED INPUTS
+// The workbook carries a hidden tab holding the parsed BOQ, Budget and
+// Assumptions as JSON. That makes a generated workbook self-sufficient: upload
+// it on its own and the cash flow rebuilds exactly, with no need to re-attach
+// the three source files. Reconstructing this from the visible tabs is not
+// possible — the budget category, the payment terms and the deduction rates are
+// never written out in a form that can be read back.
+// ============================================================
+
+const CF_DATA_SHEET = '_CashflowData';
+const CF_DATA_VERSION = 1;
+const CF_CHUNK = 30000;   // Excel caps a cell at 32,767 characters.
+
+function buildEmbeddedInputsSheet(boqItems, budgetItems, assumptions) {
+  const payload = JSON.stringify({
+    version: CF_DATA_VERSION,
+    savedAt: new Date().toISOString(),
+    boqItems, budgetItems, assumptions
+  });
+  const ws = {};
+  ws['A1'] = { v: 'Madkour Cashflow Generator — embedded input data. Do not edit.', t: 's' };
+  ws['A2'] = { v: CF_DATA_VERSION, t: 'n' };
+  let r = 2;
+  for (let i = 0; i < payload.length; i += CF_CHUNK) {
+    ws[XLSX.utils.encode_cell({ r, c: 0 })] = { v: payload.slice(i, i + CF_CHUNK), t: 's' };
+    r++;
+  }
+  ws['!ref'] = 'A1:A' + Math.max(r, 3);
+  ws['!cols'] = [{ wch: 90 }];
+  return ws;
+}
+
+function readEmbeddedInputs(wb) {
+  const ws = wb.Sheets[CF_DATA_SHEET];
+  if (!ws || !ws['!ref']) return null;
+  const rng = XLSX.utils.decode_range(ws['!ref']);
+  let json = '';
+  for (let r = 2; r <= rng.e.r; r++) {
+    const cell = ws[XLSX.utils.encode_cell({ r, c: 0 })];
+    if (cell && typeof cell.v === 'string') json += cell.v;
+  }
+  if (!json) return null;
+  let parsed;
+  try { parsed = JSON.parse(json); }
+  catch (e) { throw new Error('The embedded data in that workbook is damaged and could not be read.'); }
+  if (!parsed || !parsed.boqItems || !parsed.budgetItems || !parsed.assumptions) return null;
+  return parsed;
+}
+
+// Where the model's inputs come from: the three uploaded files, or a workbook
+// uploaded on its own.
+function resolveInputs() {
+  if (data.boq && data.budget && data.assumptions) {
+    return {
+      source: 'files',
+      assumptions: parseAssumptions(data.assumptions),
+      boqItems: parseBOQ(data.boq),
+      budgetItems: parseBudget(data.budget)
+    };
+  }
+  if (data.standalone) {
+    return {
+      source: 'workbook',
+      assumptions: data.standalone.assumptions,
+      boqItems: data.standalone.boqItems,
+      budgetItems: data.standalone.budgetItems
+    };
+  }
+  throw new Error('Upload the BOQ, Budget and Assumptions files, or a workbook this app generated.');
+}
+
+function prepareCashflowModel() {
+  const inputs = resolveInputs();
+  const parsed = inputs.assumptions;
+  const assumptions = applyTermsOverrides(parsed);
+  const boqItems = inputs.boqItems;
+  const budgetItems = inputs.budgetItems;
+  const currencies = detectCurrencies(boqItems, budgetItems, assumptions);
+  if (currencies.length === 0) throw new Error('No active currencies found in BOQ or Budget input files.');
+  const missingRates = currencies.filter(cur => cur !== 'EGP' && !(assumptions.exchangeRates && assumptions.exchangeRates[cur] > 0));
+  if (missingRates.length > 0) {
+    throw new Error('Missing exchange rate(s) in Assumptions: ' + missingRates.map(cur => cur + ' to EGP Exchange Rate').join(', '));
+  }
+  const dates = generateDates(assumptions.startDate, assumptions.numMonths);
+  const scheduleIndex = buildPrimaveraScheduleIndex(data.primaveraParsed);
+  const model = computeCashflowModel(boqItems, budgetItems, assumptions, dates, currencies, scheduleIndex, data.sheetDates, cfHasTermsOverride());
+  model.baseAssumptions = parsed;
+  model.termsEdited = cfHasTermsOverride();
+  model.fromUpdatedSheet = !!(data.sheetDates && data.sheetDates.size);
+  model.inputSource = inputs.source;
+
+  // With terms edited, also compute the untouched case so the analysis can say
+  // what the change actually did.
+  if (model.termsEdited) {
+    const base = computeCashflowModel(boqItems, budgetItems, parsed, dates, currencies, scheduleIndex, data.sheetDates, false);
+    model.baseline = {};
+    for (const cur of currencies) model.baseline[cur] = cfSlimPosition(base.perCurrency[cur]);
+    model.baseline.EQU = cfSlimPosition(base.equ);
+  }
+  return model;
+}
+
+function cfSlimPosition(p) {
+  return {
+    totalIn: p.totalIn, totalOut: p.totalOut, netProfit: p.netProfit,
+    maxDeficit: p.maxDeficit, maxSurplus: p.maxSurplus,
+    criticalMonths: p.criticalMonths.slice()
+  };
+}
+
+// ============================================================
 // MAIN GENERATE FUNCTION
 // ============================================================
 async function generate() {
@@ -2338,8 +3399,16 @@ async function generate() {
   setProgress(5);
 
   try {
-    log('Parsing Assumptions...');
-    const assumptions = parseAssumptions(data.assumptions);
+    log('Reading inputs...');
+    const inputs = resolveInputs();
+    log(inputs.source === 'workbook'
+      ? '  Rebuilding from the uploaded workbook\'s embedded data.'
+      : '  Using the uploaded BOQ, Budget and Assumptions files.', 'ok');
+    // Terms edited in the dashboard are layered on here, so the workbook is built
+    // from exactly what was on screen.
+    const assumptions = applyTermsOverrides(inputs.assumptions);
+    if (cfHasTermsOverride()) log('Using payment terms edited in the Cash Flow dashboard.', 'info');
+    if (data.sheetDates && data.sheetDates.size) log('Using dates from the uploaded workbook for ' + data.sheetDates.size + ' lines.', 'info');
     log('  Project: ' + (assumptions.projectName || 'Unnamed'), 'ok');
     log('  Months: ' + assumptions.numMonths + ', exchange rates: ' + Object.entries(assumptions.exchangeRates || {}).map(function(e){return e[0] + '/EGP=' + e[1]}).join(', '));
     log('  Cash In terms: ' + Object.keys(assumptions.cashInTerms).length + ' categories');
@@ -2354,13 +3423,11 @@ async function generate() {
     }
     setProgress(10);
 
-    log('Parsing BOQ...');
-    const boqItems = parseBOQ(data.boq);
-    log('  Found ' + boqItems.length + ' items', 'ok');
+    const boqItems = inputs.boqItems;
+    log('  BOQ: ' + boqItems.length + ' items', 'ok');
     setProgress(15);
 
-    log('Parsing Budget...');
-    const budgetItems = parseBudget(data.budget);
+    const budgetItems = inputs.budgetItems;
     const budgetDataItems = budgetItems.filter(item => !item.isParent && item.amount > 0);
     log('  Found ' + budgetDataItems.length + ' usable data items (' + budgetItems.length + ' rows parsed)', 'ok');
     setProgress(20);
@@ -2377,6 +3444,29 @@ async function generate() {
     log('Timeline: ' + dates[0].month + '/' + dates[0].year + ' to ' + dates[dates.length-1].month + '/' + dates[dates.length-1].year);
     setProgress(30);
 
+    const engineScheduleIndex = buildPrimaveraScheduleIndex(data.primaveraParsed);
+    log('Computing cashflow...', 'info');
+    const model = computeCashflowModel(boqItems, budgetItems, assumptions, dates, currencies, engineScheduleIndex, data.sheetDates, cfHasTermsOverride());
+    window.cashflowModel = model;
+    const modelProblems = verifyCashflowModel(model);
+    if (modelProblems.length) {
+      modelProblems.slice(0, 10).forEach(p => log('  DISTRIBUTION ERROR: ' + p, 'error'));
+      log('  ' + modelProblems.length + ' distribution problem(s) found — the cashflow totals are not trustworthy.', 'error');
+    } else {
+      log('  Distribution verified: every amount fully placed across the timeline.', 'ok');
+    }
+    for (const cur of currencies) {
+      const p = model.perCurrency[cur];
+      log('  ' + cur + ' — In ' + formatLogAmount(p.totalIn) + ', Out ' + formatLogAmount(p.totalOut) +
+          ', Net ' + formatLogAmount(p.netProfit) +
+          ', Max Deficit ' + formatLogAmount(p.maxDeficit.amount) + (p.maxDeficit.label ? ' (' + p.maxDeficit.label + ')' : '') +
+          ', Max Surplus ' + formatLogAmount(p.maxSurplus.amount) + (p.maxSurplus.label ? ' (' + p.maxSurplus.label + ')' : ''), 'info');
+    }
+    model.notes.forEach(n => log('  NOTE: ' + n, 'info'));
+    // The workbook writes the engine's monthly split, so the file and the on-screen
+    // dashboard report identical figures.
+    const planner = makeDistributionPlanner(model);
+
     const wb = XLSX.utils.book_new();
     wb.Props = {
       Title: 'Cashflow Baseline Workbook',
@@ -2387,7 +3477,7 @@ async function generate() {
     const N = assumptions.numMonths;
     const projName = assumptions.projectName || 'Project';
     const chartSheetNames = [];
-    const scheduleIndex = buildPrimaveraScheduleIndex(data.primaveraParsed);
+    const scheduleIndex = engineScheduleIndex;
     const scheduleAuditRows = [];
     if (scheduleIndex) log('Primavera schedule matching enabled: ' + data.primaveraParsed.activities.length + ' activities loaded', 'info');
 
@@ -2408,7 +3498,7 @@ async function generate() {
 
       // TAB 1: Cash In
       log('  Creating Cash In ' + cur + '...');
-      const ciSheet = buildCashInSheet(boqCur, cur, dates, assumptions, projName, ciTabName, scheduleIndex, scheduleAuditRows);
+      const ciSheet = buildCashInSheet(boqCur, cur, dates, assumptions, projName, ciTabName, scheduleIndex, scheduleAuditRows, planner);
       XLSX.utils.book_append_sheet(wb, ciSheet.ws, ciTabName);
       setTabColor(wb, ciTabName, TAB_COLORS[cur] || 'FFFF00');
       progress += progressPerCurrency * 0.25;
@@ -2424,7 +3514,7 @@ async function generate() {
 
       // TAB 3: Cash Out
       log('  Creating Cash Out ' + cur + '...');
-      const coSheet = buildCashOutSheet(budgetCur, cur, dates, assumptions, projName, coTabName, ciTabName, ciSheet.lastRow, scheduleIndex, scheduleAuditRows);
+      const coSheet = buildCashOutSheet(budgetCur, cur, dates, assumptions, projName, coTabName, ciTabName, ciSheet.lastRow, scheduleIndex, scheduleAuditRows, planner);
       XLSX.utils.book_append_sheet(wb, coSheet.ws, coTabName);
       setTabColor(wb, coTabName, TAB_COLORS[cur] || 'FFFF00');
       progress += progressPerCurrency * 0.25;
@@ -2464,10 +3554,32 @@ async function generate() {
       setTabColor(wb, 'Primavera Mapping Review', '7030A0');
     }
 
+    // Every computed line must have been consumed by exactly one sheet row. A
+    // leftover means a row the workbook did not write — i.e. the file and the
+    // dashboard would disagree.
+    const leftover = planner.remaining();
+    if (leftover > 0) {
+      log('  RECONCILIATION: ' + leftover + ' computed cash line(s) were not written to the workbook — the Excel figures may not match the Cash Flow dashboard.', 'error');
+    } else {
+      log('  Reconciled: the workbook writes the same figures as the Cash Flow dashboard.', 'ok');
+    }
+
     // Assumptions tab
     log('Adding Assumptions tab...');
     const aSheet = buildAssumptionsSheet(assumptions);
     XLSX.utils.book_append_sheet(wb, aSheet, 'Assumptions');
+
+    // Hidden data tab so this workbook can rebuild its own cash flow later
+    // without the three source files.
+    log('Embedding input data for standalone reload...');
+    XLSX.utils.book_append_sheet(wb, buildEmbeddedInputsSheet(boqItems, budgetItems, assumptions), CF_DATA_SHEET);
+    const dataIdx = wb.SheetNames.indexOf(CF_DATA_SHEET);
+    if (dataIdx >= 0) {
+      if (!wb.Workbook) wb.Workbook = {};
+      if (!wb.Workbook.Sheets) wb.Workbook.Sheets = [];
+      while (wb.Workbook.Sheets.length <= dataIdx) wb.Workbook.Sheets.push({});
+      wb.Workbook.Sheets[dataIdx].Hidden = 1;
+    }
     setProgress(92);
 
     // Download
@@ -2605,22 +3717,11 @@ function clearRowValuesKeepStyle(ws, rowIdx, lastCol, fallbackStyle) {
   }
 }
 
-function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName, scheduleIndex, scheduleAuditRows) {
+function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName, scheduleIndex, scheduleAuditRows, planner) {
   const ws = {};
   const N = dates.length;
 
-  let milestones = [];
-  for (const [cat, terms] of Object.entries(assumptions.cashInTerms)) {
-    if (cat.toUpperCase().includes(cur)) { milestones = terms; break; }
-  }
-  if (milestones.length === 0 && cur === 'EGP') {
-    for (const [cat, terms] of Object.entries(assumptions.cashInTerms)) {
-      if (cat.toUpperCase().includes('EGP')) { milestones = terms; break; }
-    }
-  }
-  if (milestones.length === 0) {
-    milestones = [{ name: 'Progress', pct: 0.9, days: 45 }, { name: 'Retention', pct: 0.1, days: 45 }];
-  }
+  const milestones = getCashInTermsForCurrency(cur, assumptions).terms;
   const milestoneNames = milestones.map(m => m.name);
 
   const actualStartCol = 10;
@@ -2723,16 +3824,22 @@ function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName, 
     tradeMap[t][b][c].push(item);
   }
 
-  function writeBetaAndValues(ws, ri, excelRow) {
+  function writeBetaAndValues(ws, ri, excelRow, planned) {
     for (let i = 0; i < N; i++) {
       const bc = colLetter(betaStartCol + i);
-      ws[XLSX.utils.encode_cell({r:ri,c:betaStartCol-1+i})] = {f: 'IFERROR(_xlfn.BETA.DIST(DATE(YEAR(' + bc + '$2),MONTH(' + bc + '$2),15),$' + AM + '$2,$' + AN + '$2,FALSE,DATE(YEAR($' + AM + excelRow + '),MONTH($' + AM + excelRow + '),1),DATE(YEAR($' + AN + excelRow + '),MONTH($' + AN + excelRow + '),28)),0)', t:'n', s: S.num};
+      ws[XLSX.utils.encode_cell({r:ri,c:betaStartCol-1+i})] = {f: 'IFERROR(_xlfn.BETA.DIST(DATE(YEAR(' + bc + '$2),MONTH(' + bc + '$2),15),$' + AM + '$2,$' + AN + '$2,FALSE,DATE(YEAR($' + AM + excelRow + '),MONTH($' + AM + excelRow + '),1),_xlfn.EOMONTH($' + AN + excelRow + ',0)),0)', t:'n', s: S.num};
     }
     ws[XLSX.utils.encode_cell({r:ri,c:bnCol-1})] = {f: 'SUM(' + colLetter(betaStartCol) + excelRow + ':' + colLetter(betaEndCol) + excelRow + ')', t:'n', s: S.num};
     for (let i = 0; i < N; i++) {
       const ac = colLetter(actualStartCol + i);
       const bc = colLetter(betaStartCol + i);
-      ws[XLSX.utils.encode_cell({r:ri,c:valStartCol-1+i})] = {f: 'IF(' + ac + excelRow + '<>0,' + ac + excelRow + ',IF($' + BN + excelRow + '=0,0,' + bc + excelRow + '/$' + BN + excelRow + '*$' + AI + excelRow + '))', t:'n', s: S.num};
+      // When the engine has a computed split for this row, it is the planned
+      // figure — so the workbook and the dashboard cannot disagree. Actuals still
+      // override it, so monthly updates keep working.
+      const plan = planned
+        ? String(planned.monthly[i])
+        : 'IF($' + BN + excelRow + '=0,0,' + bc + excelRow + '/$' + BN + excelRow + '*$' + AI + excelRow + ')';
+      ws[XLSX.utils.encode_cell({r:ri,c:valStartCol-1+i})] = {f: 'IF(' + ac + excelRow + '<>0,' + ac + excelRow + ',' + plan + ')', t:'n', s: S.num};
     }
     ws[XLSX.utils.encode_cell({r:ri,c:cmCol-1})] = {f: 'SUM(' + colLetter(valStartCol) + excelRow + ':' + colLetter(valEndCol) + excelRow + ')', t:'n', s: S.num};
   }
@@ -2794,7 +3901,7 @@ function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName, 
           for (const ms of milestones) {
             const mri = row - 1;
             ws[XLSX.utils.encode_cell({r:mri,c:0})] = {v: item.taskNum || '', t:'s', s: S.data};
-            ws[XLSX.utils.encode_cell({r:mri,c:4})] = {f: 'IFERROR(_xlfn.XLOOKUP(F' + row + ',Assumptions!B:B,Assumptions!C:C),0)', t:'n', s: S.pct};
+            ws[XLSX.utils.encode_cell({r:mri,c:4})] = {v: ms.pct, t:'n', s: S.pct};
             ws[XLSX.utils.encode_cell({r:mri,c:5})] = {v: ms.name, t:'s', s: S.data};
             ws[XLSX.utils.encode_cell({r:mri,c:7})] = {f: 'G' + itemHeaderRow + '*E' + row, t:'n', s: S.num};
             ws[XLSX.utils.encode_cell({r:mri,c:8})] = {f: 'H' + row + '*(1-0)', t:'n', s: S.num};
@@ -2802,10 +3909,12 @@ function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName, 
             const lastActual = colLetter(actualEndCol);
             ws[XLSX.utils.encode_cell({r:mri,c:ahCol-1})] = {f: 'SUM(' + firstActual + row + ':' + lastActual + row + ')', t:'n', s: S.num};
             ws[XLSX.utils.encode_cell({r:mri,c:aiCol-1})] = {f: 'I' + row + '-' + AH + row, t:'n', s: S.num};
-            ws[XLSX.utils.encode_cell({r:mri,c:alCol-1})] = {f: 'IFERROR(_xlfn.XLOOKUP(F' + row + ',Assumptions!B:B,Assumptions!D:D),0)', t:'n', s: S.num};
+            ws[XLSX.utils.encode_cell({r:mri,c:alCol-1})] = {v: ms.days, t:'n', s: S.num};
             ws[XLSX.utils.encode_cell({r:mri,c:amCol-1})] = {f: AJ + row + '+' + AL + row, t:'n', s: S.date};
             ws[XLSX.utils.encode_cell({r:mri,c:anCol-1})] = {f: AL + row + '+' + AK + row, t:'n', s: S.date};
-            writeScheduleMatch(ws, mri, 3, 4, ajCol, akCol, resolveCashInScheduleMatch(scheduleIndex, {
+            const plannedIn = planner &&
+              planner.take(cfRowKey(cur, 'in', item.taskNum, item.description, ms.name, itemAmount * (ms.pct || 0)));
+            writeScheduleMatch(ws, mri, 3, 4, ajCol, akCol, cfMatchFromPlan(resolveCashInScheduleMatch(scheduleIndex, {
               currency: cur,
               trade: tradeName,
               boq: boqName,
@@ -2813,7 +3922,7 @@ function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName, 
               taskNum: item.taskNum || '',
               description: item.description || '',
               milestoneName: ms.name
-            }), scheduleIndex ? scheduleAuditRows : null, {
+            }), plannedIn), scheduleIndex ? scheduleAuditRows : null, {
               sheetType: 'Cash In',
               sheetName: tabName,
               currency: cur,
@@ -2822,7 +3931,7 @@ function buildCashInSheet(boqItems, cur, dates, assumptions, projName, tabName, 
               taskDescription: item.description || '',
               milestoneName: ms.name
             });
-            writeBetaAndValues(ws, mri, row);
+            writeBetaAndValues(ws, mri, row, plannedIn);
             ws[XLSX.utils.encode_cell({r:mri,c:cmCol})] = {f: 'I' + row + '-' + CM + row, t:'n', s: S.num};
             writeZeroActuals(ws, mri, actualStartCol, actualEndCol, S.num);
             fillRow(ws, mri, cmCol, S.data);
@@ -3062,7 +4171,7 @@ function getCashOutGroup(budgetCat) {
 // ============================================================
 // BUILD CASH OUT SHEET (v2.8 — grouped by category with per-item payment terms)
 // ============================================================
-function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabName, ciTabName, ciLastRow, scheduleIndex, scheduleAuditRows) {
+function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabName, ciTabName, ciLastRow, scheduleIndex, scheduleAuditRows, planner) {
   const ws = {};
   const N = dates.length;
 
@@ -3136,16 +4245,19 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
   ws[XLSX.utils.encode_cell({r:1,c:gapCol-1})] = {v: '', t:'s', s: noFillStyle};
 
   // --- HELPER: Write BETA.DIST and value formulas for a row ---
-  function writeCOBetaValues(ws, ri, excelRow) {
+  function writeCOBetaValues(ws, ri, excelRow, planned) {
     for (let i = 0; i < N; i++) {
       const bc = colLetter(betaStartCol + i);
-      ws[XLSX.utils.encode_cell({r:ri,c:betaStartCol-1+i})] = {f: 'IFERROR(_xlfn.BETA.DIST(DATE(YEAR(' + bc + '$2),MONTH(' + bc + '$2),15),$' + AL + '$2,$' + AM + '$2,FALSE,DATE(YEAR($' + AL + excelRow + '),MONTH($' + AL + excelRow + '),1),DATE(YEAR($' + AM + excelRow + '),MONTH($' + AM + excelRow + '),28)),0)', t:'n', s: S.num};
+      ws[XLSX.utils.encode_cell({r:ri,c:betaStartCol-1+i})] = {f: 'IFERROR(_xlfn.BETA.DIST(DATE(YEAR(' + bc + '$2),MONTH(' + bc + '$2),15),$' + AL + '$2,$' + AM + '$2,FALSE,DATE(YEAR($' + AL + excelRow + '),MONTH($' + AL + excelRow + '),1),_xlfn.EOMONTH($' + AM + excelRow + ',0)),0)', t:'n', s: S.num};
     }
     ws[XLSX.utils.encode_cell({r:ri,c:bmCol-1})] = {f: 'SUM(' + colLetter(betaStartCol) + excelRow + ':' + colLetter(betaEndCol) + excelRow + ')', t:'n', s: S.num};
     for (let i = 0; i < N; i++) {
       const ac = colLetter(actualStartCol + i);
       const bc = colLetter(betaStartCol + i);
-      ws[XLSX.utils.encode_cell({r:ri,c:valStartCol-1+i})] = {f: 'IF(' + ac + excelRow + '<>0,' + ac + excelRow + ',IF($' + BM + excelRow + '=0,0,' + bc + excelRow + '/$' + BM + excelRow + '*$' + AH + excelRow + '))', t:'n', s: S.num};
+      const plan = planned
+        ? String(planned.monthly[i])
+        : 'IF($' + BM + excelRow + '=0,0,' + bc + excelRow + '/$' + BM + excelRow + '*$' + AH + excelRow + ')';
+      ws[XLSX.utils.encode_cell({r:ri,c:valStartCol-1+i})] = {f: 'IF(' + ac + excelRow + '<>0,' + ac + excelRow + ',' + plan + ')', t:'n', s: S.num};
     }
     ws[XLSX.utils.encode_cell({r:ri,c:clCol-1})] = {f: 'SUM(' + colLetter(valStartCol) + excelRow + ':' + colLetter(valEndCol) + excelRow + ')', t:'n', s: S.num};
   }
@@ -3242,14 +4354,16 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
         // Cash Out dates
         ws[XLSX.utils.encode_cell({r:mri,c:alCol-1})] = {f: AI + row + '+' + AK + row, t:'n', s: S.date};
         ws[XLSX.utils.encode_cell({r:mri,c:amCol-1})] = {f: AK + row + '+' + AJ + row, t:'n', s: S.date};
-        writeScheduleMatch(ws, mri, 2, 3, aiCol, ajCol, resolveCashOutScheduleMatch(scheduleIndex, {
+        const plannedOut = planner &&
+          planner.take(cfRowKey(cur, 'out', item.taskNum, item.description, ms.name, item.amount * (ms.pct || 0)));
+        writeScheduleMatch(ws, mri, 2, 3, aiCol, ajCol, cfMatchFromPlan(resolveCashOutScheduleMatch(scheduleIndex, {
           currency: cur,
           groupName,
           taskNum: item.taskNum || '',
           budgetCat: item.budgetCat || '',
           description: item.description || '',
           milestoneName: ms.name
-        }), scheduleIndex ? scheduleAuditRows : null, {
+        }), plannedOut), scheduleIndex ? scheduleAuditRows : null, {
           sheetType: 'Cash Out',
           sheetName: tabName,
           currency: cur,
@@ -3259,7 +4373,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
           milestoneName: ms.name
         });
         // BETA distribution and values
-        writeCOBetaValues(ws, mri, row);
+        writeCOBetaValues(ws, mri, row, plannedOut);
         // Variance
         ws[XLSX.utils.encode_cell({r:mri,c:clCol})] = {f: 'H' + row + '-' + CL + row, t:'n', s: S.num};
         writeZeroActuals(ws, mri, actualStartCol, actualEndCol, S.num);
@@ -3311,13 +4425,14 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
       ws[XLSX.utils.encode_cell({r:iri,c:6})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:iri,c:7})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:iri,c:ahCol-1})] = {f: 'H' + row + '-SUM(' + colLetter(actualStartCol) + row + ':' + colLetter(actualEndCol) + row + ')', t:'n', s: S.num};
-      writeScheduleMatch(ws, iri, 2, 3, aiCol, ajCol, resolveCashOutScheduleMatch(scheduleIndex, {
+      const plannedIc = planner && planner.take(cfRowKey(cur, 'out', '', ic.name, ic.name, ic.value));
+      writeScheduleMatch(ws, iri, 2, 3, aiCol, ajCol, cfMatchFromPlan(resolveCashOutScheduleMatch(scheduleIndex, {
         currency: cur,
         groupName: 'INDIRECT COST',
         description: ic.name,
         milestoneName: ic.name,
         forceProjectRange: true
-      }), scheduleIndex ? scheduleAuditRows : null, {
+      }), plannedIc), scheduleIndex ? scheduleAuditRows : null, {
         sheetType: 'Cash Out',
         sheetName: tabName,
         currency: cur,
@@ -3326,7 +4441,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
         taskDescription: ic.name,
         milestoneName: ic.name
       });
-      writeCOBetaValues(ws, iri, row);
+      writeCOBetaValues(ws, iri, row, plannedIc);
       writeZeroActuals(ws, iri, actualStartCol, actualEndCol, S.num);
       fillRow(ws, iri, lastCol, S.data);
       if (!ws['!rows'][iri]) ws['!rows'][iri] = {};
@@ -3373,13 +4488,14 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
       ws[XLSX.utils.encode_cell({r:ori,c:6})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:ori,c:7})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:ori,c:ahCol-1})] = {f: 'H' + row + '-SUM(' + colLetter(actualStartCol) + row + ':' + colLetter(actualEndCol) + row + ')', t:'n', s: S.num};
-      writeScheduleMatch(ws, ori, 2, 3, aiCol, ajCol, resolveCashOutScheduleMatch(scheduleIndex, {
+      const plannedOh = planner && planner.take(cfRowKey(cur, 'out', '', oh.name, oh.name, getCurrencyAmount(oh, cur)));
+      writeScheduleMatch(ws, ori, 2, 3, aiCol, ajCol, cfMatchFromPlan(resolveCashOutScheduleMatch(scheduleIndex, {
         currency: cur,
         groupName: 'PROJECT OVERHEADS',
         description: oh.name,
         milestoneName: oh.name,
         forceProjectRange: true
-      }), scheduleIndex ? scheduleAuditRows : null, {
+      }), plannedOh), scheduleIndex ? scheduleAuditRows : null, {
         sheetType: 'Cash Out',
         sheetName: tabName,
         currency: cur,
@@ -3388,7 +4504,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
         taskDescription: oh.name,
         milestoneName: oh.name
       });
-      writeCOBetaValues(ws, ori, row);
+      writeCOBetaValues(ws, ori, row, plannedOh);
       writeZeroActuals(ws, ori, actualStartCol, actualEndCol, S.num);
       fillRow(ws, ori, lastCol, S.data);
       if (!ws['!rows'][ori]) ws['!rows'][ori] = {};
@@ -3435,13 +4551,14 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
       ws[XLSX.utils.encode_cell({r:rci,c:6})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:rci,c:7})] = {f: 'F' + row, t:'n', s: S.num};
       ws[XLSX.utils.encode_cell({r:rci,c:ahCol-1})] = {f: 'H' + row + '-SUM(' + colLetter(actualStartCol) + row + ':' + colLetter(actualEndCol) + row + ')', t:'n', s: S.num};
-      writeScheduleMatch(ws, rci, 2, 3, aiCol, ajCol, resolveCashOutScheduleMatch(scheduleIndex, {
+      const plannedRc = planner && planner.take(cfRowKey(cur, 'out', '', rc.name, rc.name, getCurrencyAmount(rc, cur)));
+      writeScheduleMatch(ws, rci, 2, 3, aiCol, ajCol, cfMatchFromPlan(resolveCashOutScheduleMatch(scheduleIndex, {
         currency: cur,
         groupName: 'RISKS & CONTINGENCIES',
         description: rc.name,
         milestoneName: rc.name,
         forceProjectRange: true
-      }), scheduleIndex ? scheduleAuditRows : null, {
+      }), plannedRc), scheduleIndex ? scheduleAuditRows : null, {
         sheetType: 'Cash Out',
         sheetName: tabName,
         currency: cur,
@@ -3450,7 +4567,7 @@ function buildCashOutSheet(budgetItems, cur, dates, assumptions, projName, tabNa
         taskDescription: rc.name,
         milestoneName: rc.name
       });
-      writeCOBetaValues(ws, rci, row);
+      writeCOBetaValues(ws, rci, row, plannedRc);
       writeZeroActuals(ws, rci, actualStartCol, actualEndCol, S.num);
       fillRow(ws, rci, lastCol, S.data);
       if (!ws['!rows'][rci]) ws['!rows'][rci] = {};
@@ -3650,14 +4767,20 @@ function buildCashflowSheet(cur, dates, assumptions, projName, ciSumTabName, coS
   // Title (row 10)
   ws['B10'] = {v: projName + ' - Cash Flow ' + cur, t:'s', s: S.cfTitle};
 
-  // === METRICS BOX (rows 31-34) ===
-  ws['B31'] = {v: 'Max. Deficit:', t:'s', s: S.cfMboxLbl};
-  ws['C31'] = {f: 'MIN(C44:' + colLetter(2+N) + '44)', t:'n', s: S.cfMboxNeg};
+  // === METRICS BOX (rows 30-34) ===
+  // Row 44 holds the cumulative net position, so MIN/MAX across it give the peak
+  // deficit and peak surplus. Both are floored at zero: a project that never goes
+  // cash-negative has no deficit, and one never in surplus has no surplus.
+  const lastMonthCol = colLetter(2+N);
+  ws['B30'] = {v: 'Max. Deficit:', t:'s', s: S.cfMboxLbl};
+  ws['C30'] = {f: 'MIN(0,MIN(C44:' + lastMonthCol + '44))', t:'n', s: S.cfMboxNeg};
+  ws['B31'] = {v: 'Max. Surplus:', t:'s', s: S.cfMboxLbl};
+  ws['C31'] = {f: 'MAX(0,MAX(C44:' + lastMonthCol + '44))', t:'n', s: S.cfMboxPos};
   ws['B32'] = {v: 'Total Cash In:', t:'s', s: S.cfMboxLbl};
-  ws['C32'] = {f: colLetter(2+N) + '39', t:'n', s: S.cfMboxVal};
+  ws['C32'] = {f: lastMonthCol + '39', t:'n', s: S.cfMboxVal};
   ws['B33'] = {v: 'Total Cash Out:', t:'s', s: S.cfMboxLbl};
-  ws['C33'] = {f: colLetter(2+N) + '42', t:'n', s: S.cfMboxVal};
-  ws['B34'] = {v: 'Net Position:', t:'s', s: S.cfMboxLbl};
+  ws['C33'] = {f: lastMonthCol + '42', t:'n', s: S.cfMboxVal};
+  ws['B34'] = {v: 'Net Profit:', t:'s', s: S.cfMboxLbl};
   ws['C34'] = {f: 'C32-C33', t:'n', s: S.cfMboxPos};
 
   // Row 36: dates (was 61)
@@ -3712,7 +4835,7 @@ function buildCashflowSheet(cur, dates, assumptions, projName, ciSumTabName, coS
   }
 
   // Row 44: Net Cash Flow (was 69)
-  ws['B44'] = {v: 'Project Net Cash Flow "' + cur + '"', t:'s', s: S.cfNet};
+  ws['B44'] = {v: 'Cumulative Net Cash Position "' + cur + '"', t:'s', s: S.cfNet};
   for (let i = 0; i < N; i++) {
     const col = colLetter(3+i);
     ws[XLSX.utils.encode_cell({r:43,c:2+i})] = {f: '=' + col + '39-' + col + '42', t:'n', s: S.cfNet};
@@ -3726,7 +4849,8 @@ function buildCashflowSheet(cur, dates, assumptions, projName, ciSumTabName, coS
   ws['!rows'][4]  = { hpx: 20 }; // Currency/start
   ws['!rows'][5]  = { hpx: 20 }; // Duration/end
   ws['!rows'][9]  = { hpx: 42 }; // Main title
-  ws['!rows'][30] = { hpx: 24 }; // Metrics rows
+  ws['!rows'][29] = { hpx: 24 }; // Metrics rows
+  ws['!rows'][30] = { hpx: 24 };
   ws['!rows'][31] = { hpx: 24 };
   ws['!rows'][32] = { hpx: 24 };
   ws['!rows'][33] = { hpx: 24 };
@@ -3771,8 +4895,18 @@ function buildCashflowEQUSheet(currencies, dates, assumptions) {
 
   ws['B10'] = {v: projName + ' - Cash Flow Equivalent (EGP)', t:'s', s: S.cfTitle};
 
-  // === METRICS BOX (rows 31-34) ===
-  ws['B31'] = {v: 'Max. Deficit:', t:'s', s: S.cfMboxLbl};
+  // === METRICS BOX (rows 30-34) ===
+  const lastMonthColEqu = colLetter(2+N);
+  ws['B30'] = {v: 'Max. Deficit:', t:'s', s: S.cfMboxLbl};
+  ws['C30'] = {f: 'MIN(0,MIN(C44:' + lastMonthColEqu + '44))', t:'n', s: S.cfMboxNeg};
+  ws['B31'] = {v: 'Max. Surplus:', t:'s', s: S.cfMboxLbl};
+  ws['C31'] = {f: 'MAX(0,MAX(C44:' + lastMonthColEqu + '44))', t:'n', s: S.cfMboxPos};
+  ws['B32'] = {v: 'Total Cash In:', t:'s', s: S.cfMboxLbl};
+  ws['C32'] = {f: lastMonthColEqu + '39', t:'n', s: S.cfMboxVal};
+  ws['B33'] = {v: 'Total Cash Out:', t:'s', s: S.cfMboxLbl};
+  ws['C33'] = {f: lastMonthColEqu + '42', t:'n', s: S.cfMboxVal};
+  ws['B34'] = {v: 'Net Profit:', t:'s', s: S.cfMboxLbl};
+  ws['C34'] = {f: 'C32-C33', t:'n', s: S.cfMboxPos};
 
   ws['B36'] = {v: 'Overall', t:'s', s: S.cfOverall};
   for (let i = 0; i < N; i++) {
@@ -3785,7 +4919,7 @@ function buildCashflowEQUSheet(currencies, dates, assumptions) {
   ws['B39'] = {v: 'Cumulative Project Cash In "EQU"', t:'s', s: S.cfCum};
   ws['B41'] = {v: 'Project Cash Out "EQU"', t:'s', s: S.cfCashOut};
   ws['B42'] = {v: 'Cumulative Project Cash Out "EQU"', t:'s', s: S.cfCum};
-  ws['B44'] = {v: 'Project Net Cash Flow "EQU"', t:'s', s: S.cfNet};
+  ws['B44'] = {v: 'Cumulative Net Cash Position "EQU"', t:'s', s: S.cfNet};
 
   for (let i = 0; i < N; i++) {
     const col = colLetter(3+i);
@@ -3871,6 +5005,7 @@ function buildCashflowEQUSheet(currencies, dates, assumptions) {
   ws['!rows'][4]  = { hpx: 20 };
   ws['!rows'][5]  = { hpx: 20 };
   ws['!rows'][9]  = { hpx: 42 };
+  ws['!rows'][29] = { hpx: 24 };
   ws['!rows'][30] = { hpx: 24 };
   ws['!rows'][31] = { hpx: 24 };
   ws['!rows'][32] = { hpx: 24 };
@@ -3990,6 +5125,731 @@ function buildAssumptionsSheet(assumptions) {
   ws['!cols'] = [{wch:5},{wch:48},{wch:18},{wch:25},{wch:18},{wch:18},{wch:18}];
   ws['!ref'] = 'A1:G' + (r + 5);
   return ws;
+}
+
+// ============================================================
+// CASH FLOW DASHBOARD
+// Renders the model computed by computeCashflowModel(). Charts are hand-built
+// SVG — no charting library, no CDN, works with the network fully blocked.
+// ============================================================
+
+// Matched to the native Excel chart the workbook generates (buildCashflowChartXml),
+// so the on-screen chart and the one in the file read as the same picture.
+const CF_COLORS = {
+  in: '#5B9BD5', out: '#ED7D31', cumIn: '#0070C0', cumOut: '#70AD47',
+  net: '#041B5C', pos: '#16A34A', neg: '#DC2626',
+  grid: '#D9D9D9', axis: '#595959', frame: '#D9E2F3'
+};
+
+let cfState = { model: null, active: null, hover: -1, charts: [] };
+
+function cfNum(v) {
+  const n = Math.round(Number(v) || 0);
+  return n.toLocaleString('en-US');
+}
+function cfShort(v) {
+  const a = Math.abs(v);
+  if (a >= 1e9) return (v / 1e9).toFixed(a >= 1e10 ? 0 : 1) + 'B';
+  if (a >= 1e6) return (v / 1e6).toFixed(a >= 1e7 ? 0 : 1) + 'M';
+  if (a >= 1e3) return Math.round(v / 1e3) + 'K';
+  return String(Math.round(v));
+}
+function cfEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function cfNiceStep(range, target) {
+  if (!(range > 0)) return 1;
+  const raw = range / (target || 5);
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const norm = raw / mag;
+  const step = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10;
+  return step * mag;
+}
+function cfUnitLabel(pos) {
+  return pos.isEquivalent ? 'EGP equivalent' : pos.currency;
+}
+
+function showCashflow() {
+  const btn = document.getElementById('cashflowBtn');
+  btn.disabled = true;
+  try {
+    const model = prepareCashflowModel();
+    window.cashflowModel = model;
+    const problems = verifyCashflowModel(model);
+    model.problems = problems;
+    cfState.model = model;
+    cfState.active = model.currencies[0];
+    renderCashflowDashboard();
+    document.getElementById('cashflowDashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    alert('Could not build the cash flow: ' + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function hideCashflow() {
+  document.getElementById('cashflowDashboard').hidden = true;
+  cfState.charts = [];
+}
+
+function renderCashflowDashboard() {
+  const model = cfState.model;
+  const dash = document.getElementById('cashflowDashboard');
+  dash.hidden = false;
+
+  const d = model.dates;
+  document.getElementById('cfDashSub').textContent =
+    model.projectName + ' · ' + monthLabel(d[0]) + ' to ' + monthLabel(d[d.length - 1]) +
+    ' · ' + d.length + ' months · ' + model.stats.rows + ' cash lines';
+
+  const tabs = document.getElementById('cfTabs');
+  tabs.innerHTML = '';
+  const keys = model.currencies.concat(['EQU']);
+  for (const key of keys) {
+    const b = document.createElement('button');
+    b.className = 'cf-tab';
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', String(key === cfState.active));
+    b.textContent = key === 'EQU' ? 'EQU (all currencies)' : key;
+    b.onclick = () => { cfState.active = key; renderCashflowDashboard(); };
+    tabs.appendChild(b);
+  }
+
+  const pos = cfState.active === 'EQU' ? model.equ : model.perCurrency[cfState.active];
+  document.getElementById('cfBody').innerHTML = cfPanelHtml(pos, model);
+  cfState.charts = [];
+  cfBindChart('cfChart', pos);
+  cfBindTermsEditor();
+}
+
+// ---- payment terms editor ----
+// Every edit re-runs the engine, so the chart, the tiles and the analysis all
+// move together with the terms.
+function cfRecomputeFromTerms() {
+  try {
+    const model = prepareCashflowModel();
+    model.problems = verifyCashflowModel(model);
+    window.cashflowModel = model;
+    cfState.model = model;
+    renderCashflowDashboard();
+  } catch (err) {
+    alert('Could not apply those terms: ' + err.message);
+  }
+}
+
+function cfBindTermsEditor() {
+  const wrap = document.getElementById('cfTerms');
+  if (!wrap) return;
+
+  wrap.querySelectorAll('input[data-side]').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const side = inp.dataset.side;
+      const key = inp.dataset.key;
+      const idx = Number(inp.dataset.idx);
+      const field = inp.dataset.field;
+
+      const base = cfState.model.baseAssumptions;
+      const source = side === 'cashIn' ? base.cashInTerms : base.cashOutTerms;
+      const original = (source && source[key]) || [];
+
+      // An emptied box means "put this one back to the file".
+      if (inp.value.trim() === '') {
+        if (cfTermsOverride[side][key]) {
+          cfTermsOverride[side][key][idx][field] =
+            field === 'pct' ? (original[idx] ? original[idx].pct : 0) : (original[idx] ? original[idx].days : 0);
+        }
+      } else {
+        if (!cfTermsOverride[side][key]) {
+          cfTermsOverride[side][key] = original.map(t => ({ name: t.name, pct: t.pct, days: t.days }));
+        }
+        const raw = Number(inp.value);
+        if (!isFinite(raw)) return;
+        cfTermsOverride[side][key][idx][field] = field === 'pct' ? raw / 100 : Math.round(raw);
+      }
+
+      // If the set now matches the file exactly, stop overriding it.
+      const cur = cfTermsOverride[side][key];
+      if (cur && original.length === cur.length &&
+          cur.every((t, i) => Math.abs(t.pct - original[i].pct) < 1e-9 && Number(t.days) === Number(original[i].days))) {
+        delete cfTermsOverride[side][key];
+      }
+      cfRecomputeFromTerms();
+    });
+  });
+
+  const reset = document.getElementById('cfTermsReset');
+  if (reset) reset.addEventListener('click', () => { cfClearTermsOverride(); cfRecomputeFromTerms(); });
+}
+
+function cfTermsGroupHtml(side, key, terms, edited) {
+  const sum = terms.reduce((a, t) => a + (t.pct || 0), 0);
+  const off = Math.abs(sum - 1) > 0.0005;
+  const rows = terms.map((t, i) =>
+    '<tr>' +
+      '<td class="cf-term-name">' + cfEsc(t.name) + '</td>' +
+      '<td><input type="number" step="0.1" min="0" max="100" value="' + (Math.round((t.pct || 0) * 1000) / 10) +
+        '" data-side="' + side + '" data-key="' + cfEsc(key) + '" data-idx="' + i + '" data-field="pct" ' +
+        'aria-label="' + cfEsc(t.name + ' percentage') + '"><span class="cf-term-unit">%</span></td>' +
+      '<td><input type="number" step="1" min="0" value="' + (Number(t.days) || 0) +
+        '" data-side="' + side + '" data-key="' + cfEsc(key) + '" data-idx="' + i + '" data-field="days" ' +
+        'aria-label="' + cfEsc(t.name + ' days') + '"><span class="cf-term-unit">days</span></td>' +
+    '</tr>').join('');
+
+  return '<div class="cf-term-group' + (edited ? ' edited' : '') + '">' +
+    '<h4>' + cfEsc(key) + (edited ? '<em>edited</em>' : '') + '</h4>' +
+    '<table class="cf-term-table"><tbody>' + rows + '</tbody></table>' +
+    (off ? '<p class="cf-term-warn">These percentages total ' + (Math.round(sum * 1000) / 10) +
+           '% — not 100%, so this group does not pay out its full value.</p>' : '') +
+  '</div>';
+}
+
+function cfTermsHtml(model) {
+  const base = model.baseAssumptions || {};
+  const groups = [];
+  for (const [key, terms] of Object.entries(base.cashInTerms || {})) {
+    if (!Array.isArray(terms) || !terms.length) continue;
+    const edited = !!cfTermsOverride.cashIn[key];
+    groups.push({ side: 'cashIn', key, terms: (cfTermsOverride.cashIn[key] || terms), edited });
+  }
+  const inHtml = groups.filter(g => g.side === 'cashIn')
+    .map(g => cfTermsGroupHtml(g.side, g.key, g.terms, g.edited)).join('');
+
+  const outGroups = [];
+  for (const [key, terms] of Object.entries(base.cashOutTerms || {})) {
+    if (!Array.isArray(terms) || !terms.length) continue;
+    const edited = !!cfTermsOverride.cashOut[key];
+    outGroups.push({ key, terms: (cfTermsOverride.cashOut[key] || terms), edited });
+  }
+  const outHtml = outGroups.map(g => cfTermsGroupHtml('cashOut', g.key, g.terms, g.edited)).join('');
+
+  if (!inHtml && !outHtml) return '';
+
+  return '<details class="cf-terms-wrap"' + (model.termsEdited ? ' open' : '') + '>' +
+    '<summary>Payment terms' +
+      (model.termsEdited ? '<span class="cf-terms-badge">edited</span>' : '') +
+      '<span class="cf-terms-hint">Change a percentage or a lag to see the cash flow move</span>' +
+    '</summary>' +
+    '<div id="cfTerms" class="cf-terms">' +
+      (inHtml ? '<section><h3>Cash In — money from the client</h3><div class="cf-term-grid">' + inHtml + '</div></section>' : '') +
+      (outHtml ? '<section><h3>Cash Out — money to suppliers and subcontractors</h3><div class="cf-term-grid">' + outHtml + '</div></section>' : '') +
+      (model.termsEdited
+        ? '<button type="button" id="cfTermsReset" class="cf-terms-reset">Put every term back to the Assumptions file</button>'
+        : '') +
+    '</div></details>';
+}
+
+function cfPanelHtml(pos, model) {
+  const unit = cfUnitLabel(pos);
+  const tiles = [
+    { label: 'Total Cash In',  value: cfNum(pos.totalIn),
+      note: pos.totalDeducted > 0
+        ? unit + ' · net of ' + cfNum(pos.totalDeducted) + ' deductions'
+        : unit },
+    { label: 'Total Cash Out', value: cfNum(pos.totalOut), note: unit },
+    { label: 'Net Profit',     value: cfNum(pos.netProfit), note: unit,
+      cls: pos.netProfit >= 0 ? 'pos' : 'neg' },
+    { label: 'Max Deficit',    value: cfNum(pos.maxDeficit.amount), cls: pos.maxDeficit.amount < 0 ? 'neg' : '',
+      note: pos.maxDeficit.label ? 'peak funding need · ' + pos.maxDeficit.label : 'never cash-negative' },
+    { label: 'Max Surplus',    value: cfNum(pos.maxSurplus.amount), cls: pos.maxSurplus.amount > 0 ? 'pos' : '',
+      note: pos.maxSurplus.label ? 'peak balance · ' + pos.maxSurplus.label : 'never in surplus' }
+  ];
+
+  const tileHtml = tiles.map(t =>
+    '<div class="cf-tile ' + (t.cls || '') + '">' +
+      '<div class="cf-tile-label">' + cfEsc(t.label) + '</div>' +
+      '<div class="cf-tile-value">' + cfEsc(t.value) + '</div>' +
+      '<div class="cf-tile-note">' + cfEsc(t.note || '') + '</div>' +
+    '</div>').join('');
+
+  return '' +
+    '<div class="cf-tiles">' + tileHtml + '</div>' +
+    '<div class="cf-chart-wrap">' +
+      '<div class="cf-chart" id="cfChart">' + cfCashflowSvg(pos) + '<div class="cf-tip"></div></div>' +
+      cfChartLegend(pos) +
+    '</div>' +
+    cfTermsHtml(model) +
+    cfAnalysisHtml(pos, model);
+}
+
+// ---- chart geometry ----
+// The legend sits below the chart rather than beside it, so the plot keeps the
+// full width on a narrow screen. Everything else mirrors the Excel chart.
+const CF_W = 1120, CF_H = 440, CF_ML = 96, CF_MR = 28, CF_MT = 48, CF_MB = 84;
+const CF_PW = CF_W - CF_ML - CF_MR;
+const CF_PH = CF_H - CF_MT - CF_MB;
+
+function cfAxis(min, max) {
+  if (min === max) { max = min + 1; }
+  const step = cfNiceStep(max - min, 5);
+  const lo = Math.floor(min / step) * step;
+  const hi = Math.ceil(max / step) * step;
+  const ticks = [];
+  for (let v = lo; v <= hi + step * 0.001; v += step) ticks.push(v);
+  return { lo, hi, ticks };
+}
+function cfY(v, ax) { return CF_MT + CF_PH - ((v - ax.lo) / (ax.hi - ax.lo)) * CF_PH; }
+function cfXBand(i, n) { return CF_ML + (i + 0.5) * (CF_PW / n); }
+
+function cfFrame(ax, dates) {
+  let s = '';
+  const plotRight = CF_W - CF_MR;
+  for (const t of ax.ticks) {
+    const y = cfY(t, ax);
+    s += '<line x1="' + CF_ML + '" y1="' + y.toFixed(1) + '" x2="' + plotRight + '" y2="' + y.toFixed(1) +
+         '" stroke="' + (Math.abs(t) < 1e-9 ? CF_COLORS.axis : CF_COLORS.grid) + '" stroke-width="1"/>';
+    s += '<text x="' + (CF_ML - 12) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="13" fill="' +
+         CF_COLORS.axis + '">' + cfEsc(cfNum(t)) + '</text>';
+  }
+  // Category axis, labels rotated like the Excel chart so every month is readable.
+  const n = dates.length;
+  const baseY = CF_MT + CF_PH;
+  s += '<line x1="' + CF_ML + '" y1="' + baseY + '" x2="' + plotRight + '" y2="' + baseY +
+       '" stroke="' + CF_COLORS.axis + '" stroke-width="1"/>';
+  for (let i = 0; i < n; i++) {
+    const x = cfXBand(i, n);
+    s += '<line x1="' + x.toFixed(1) + '" y1="' + baseY + '" x2="' + x.toFixed(1) + '" y2="' + (baseY + 5) +
+         '" stroke="' + CF_COLORS.axis + '" stroke-width="1"/>';
+    s += '<text transform="translate(' + x.toFixed(1) + ',' + (baseY + 12) + ') rotate(-90)" ' +
+         'text-anchor="end" dominant-baseline="middle" font-size="12" fill="' + CF_COLORS.axis + '">' +
+         cfEsc(monthLabel(dates[i])) + '</text>';
+  }
+  return s;
+}
+
+// Legend below the chart, naming the four series exactly as the Excel chart does.
+function cfLegend(items) {
+  return '<div class="cf-legend">' + items.map(i =>
+    '<span><i class="cf-swatch' + (i.line ? ' line' : '') + '" style="background:' + i.c + '"></i>' +
+    cfEsc(i.t) + '</span>').join('') + '</div>';
+}
+
+function cfHoverLayer(n) {
+  return '<g class="cf-cross" opacity="0"><line y1="' + CF_MT + '" y2="' + (CF_MT + CF_PH) +
+         '" stroke="' + CF_COLORS.net + '" stroke-width="1" stroke-dasharray="4 3"/></g>' +
+         '<rect class="cf-hit" x="' + CF_ML + '" y="' + CF_MT + '" width="' + CF_PW + '" height="' + CF_PH + '" fill="transparent"/>';
+}
+
+function cfCashflowSvg(pos) {
+  const n = pos.dates.length;
+  let min = 0, max = 0;
+  for (let i = 0; i < n; i++) {
+    max = Math.max(max, pos.cashIn[i], pos.cashOut[i], pos.cumIn[i], pos.cumOut[i]);
+    min = Math.min(min, pos.cashIn[i], pos.cashOut[i], pos.cumIn[i], pos.cumOut[i]);
+  }
+  const ax = cfAxis(min, max);
+  const zero = cfY(0, ax);
+  const band = CF_PW / n;
+  // Two clustered bars per month, gap between groups as in the Excel chart.
+  const bw = Math.max(2, band * 0.30);
+
+  let bars = '';
+  for (let i = 0; i < n; i++) {
+    const cx = cfXBand(i, n);
+    const pair = [
+      { v: pos.cashIn[i],  c: CF_COLORS.in,  x: cx - bw - 1 },
+      { v: pos.cashOut[i], c: CF_COLORS.out, x: cx + 1 }
+    ];
+    for (const b of pair) {
+      const y = cfY(b.v, ax);
+      bars += '<rect x="' + b.x.toFixed(1) + '" y="' + Math.min(y, zero).toFixed(1) +
+              '" width="' + bw.toFixed(1) + '" height="' + Math.max(0, Math.abs(zero - y)).toFixed(1) +
+              '" fill="' + b.c + '"/>';
+    }
+  }
+
+  const poly = (arr, color) => '<polyline points="' +
+    arr.map((v, i) => cfXBand(i, n).toFixed(1) + ',' + cfY(v, ax).toFixed(1)).join(' ') +
+    '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linejoin="round"/>';
+
+  const title = '<text x="' + (CF_ML + CF_PW / 2) + '" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#1F2A44">' +
+                cfEsc('Cash Flow ' + (pos.isEquivalent ? 'EQU' : pos.currency)) + '</text>';
+
+  return '<svg viewBox="0 0 ' + CF_W + ' ' + CF_H + '" role="img" tabindex="0" ' +
+         'aria-label="Cash flow chart. Monthly cash in and cash out as bars, cumulative cash in and cash out as lines. Use arrow keys to step through months.">' +
+         title + cfFrame(ax, pos.dates) + bars +
+         poly(pos.cumIn, CF_COLORS.cumIn) + poly(pos.cumOut, CF_COLORS.cumOut) +
+         cfHoverLayer(n) + '</svg>';
+}
+
+function cfChartLegend(pos) {
+  const c = pos.isEquivalent ? 'EQU' : pos.currency;
+  return cfLegend([
+    { t: 'Project Cash In "' + c + '"',             c: CF_COLORS.in },
+    { t: 'Project Cash Out "' + c + '"',            c: CF_COLORS.out },
+    { t: 'Cumulative Project Cash In "' + c + '"',  c: CF_COLORS.cumIn,  line: true },
+    { t: 'Cumulative Project Cash Out "' + c + '"', c: CF_COLORS.cumOut, line: true }
+  ]);
+}
+
+// Pointing anywhere on the chart reads out that month's full detail.
+function cfBindChart(containerId, pos) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  const svg = box.querySelector('svg');
+  const tip = box.querySelector('.cf-tip');
+  const cross = svg.querySelector('.cf-cross');
+  const hit = svg.querySelector('.cf-hit');
+  const n = pos.dates.length;
+
+  const entry = { box, svg, tip, cross, pos, n };
+  cfState.charts.push(entry);
+
+  const indexFromEvent = (ev) => {
+    const r = svg.getBoundingClientRect();
+    const x = (ev.clientX - r.left) / r.width * CF_W;
+    const i = Math.floor((x - CF_ML) / (CF_PW / n));
+    return Math.max(0, Math.min(n - 1, i));
+  };
+
+  hit.addEventListener('pointermove', ev => cfSetHover(indexFromEvent(ev), entry));
+  hit.addEventListener('pointerdown', ev => cfSetHover(indexFromEvent(ev), entry));
+  box.addEventListener('pointerleave', () => cfSetHover(-1, null));
+  svg.addEventListener('keydown', ev => {
+    if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
+    ev.preventDefault();
+    const cur = cfState.hover < 0 ? 0 : cfState.hover;
+    cfSetHover(Math.max(0, Math.min(n - 1, cur + (ev.key === 'ArrowRight' ? 1 : -1))), entry);
+  });
+  svg.addEventListener('blur', () => cfSetHover(-1, null));
+}
+
+function cfSetHover(index, activeEntry) {
+  cfState.hover = index;
+  for (const c of cfState.charts) {
+    if (index < 0) {
+      c.cross.setAttribute('opacity', '0');
+      c.tip.classList.remove('on');
+      continue;
+    }
+    const x = cfXBand(index, c.n);
+    c.cross.setAttribute('opacity', '1');
+    c.cross.querySelector('line').setAttribute('x1', x.toFixed(1));
+    c.cross.querySelector('line').setAttribute('x2', x.toFixed(1));
+
+    if (c === activeEntry) {
+      c.tip.innerHTML = cfTipHtml(c.pos, index);
+      c.tip.classList.add('on');
+      // Position within the chart box, flipping side near the right edge.
+      const r = c.svg.getBoundingClientRect();
+      const px = (x / CF_W) * r.width + (c.svg.offsetLeft || 0);
+      const w = c.tip.offsetWidth || 220;
+      c.tip.style.left = Math.max(6, Math.min(px + 16, r.width - w - 6)) + 'px';
+      c.tip.style.top = '18px';
+    } else {
+      c.tip.classList.remove('on');
+    }
+  }
+}
+
+function cfTipHtml(pos, i) {
+  const row = (label, value, color) =>
+    '<div class="cf-tip-row"><span>' + cfEsc(label) + '</span><span' +
+    (color ? ' style="color:' + color + '"' : '') + '>' + cfEsc(value) + '</span></div>';
+  const bal = pos.cumNet[i];
+  return '<b>' + cfEsc(monthLabel(pos.dates[i])) + ' · ' + cfEsc(cfUnitLabel(pos)) + '</b>' +
+    row('Cash in', cfNum(pos.cashIn[i])) +
+    row('Cash out', cfNum(pos.cashOut[i])) +
+    row('Net this month', cfNum(pos.net[i]), pos.net[i] < 0 ? '#FCA5A5' : '#86EFAC') +
+    '<div class="cf-tip-sep"></div>' +
+    row('Cumulative in', cfNum(pos.cumIn[i])) +
+    row('Cumulative out', cfNum(pos.cumOut[i])) +
+    row('Balance', cfNum(bal), bal < 0 ? '#FCA5A5' : '#86EFAC') +
+    row(bal < 0 ? 'Deficit' : 'Surplus', cfNum(Math.abs(bal)), bal < 0 ? '#FCA5A5' : '#86EFAC');
+}
+
+// ---- written analysis ----
+function cfRanges(indices) {
+  const out = [];
+  for (const i of indices) {
+    const last = out[out.length - 1];
+    if (last && i === last[1] + 1) last[1] = i;
+    else out.push([i, i]);
+  }
+  return out;
+}
+
+
+// Contiguous month ranges, rendered as "Mar-26 to Sep-26".
+function cfRangeText(dates, indices) {
+  return cfRanges(indices).map(([a, b]) =>
+    a === b ? monthLabel(dates[a]) : monthLabel(dates[a]) + ' to ' + monthLabel(dates[b])).join(', ');
+}
+
+// The lines that land in a given month, largest first.
+function cfTopRowsForMonth(pos, monthIdx, side, limit) {
+  return (pos.rows || [])
+    .filter(r => r.side === side && r.monthly[monthIdx] > 0)
+    .sort((a, b) => b.monthly[monthIdx] - a.monthly[monthIdx])
+    .slice(0, limit || 3);
+}
+
+// How much of the exposure is timing rather than trade: what the position would
+// look like if money arrived the moment it was earned, with no payment lag.
+function cfLagProfile(pos) {
+  const rows = (pos.rows || []).filter(r => r.side === 'in');
+  if (!rows.length) return null;
+  let weighted = 0, total = 0;
+  for (const r of rows) { weighted += (Number(r.lag) || 0) * r.amount; total += r.amount; }
+  const outRows = (pos.rows || []).filter(r => r.side === 'out');
+  let ow = 0, ot = 0;
+  for (const r of outRows) { ow += (Number(r.lag) || 0) * r.amount; ot += r.amount; }
+  return {
+    inLag: total ? weighted / total : 0,
+    outLag: ot ? ow / ot : 0
+  };
+}
+
+function cfAnalysisHtml(pos, model) {
+  const unit = cfUnitLabel(pos);
+  const d = pos.dates;
+  const N = d.length;
+  const f = [];
+  const cur = pos.isEquivalent ? 'EQU' : pos.currency;
+  const base = model.baseline ? model.baseline[cur] : null;
+
+  // ---- 1. The funding requirement ----
+  if (pos.maxDeficit.monthIndex >= 0) {
+    const mi = pos.maxDeficit.monthIndex;
+    const gap = Math.abs(pos.maxDeficit.amount);
+    const pctOfTurnover = pos.totalIn > 0 ? (gap / pos.totalIn) * 100 : 0;
+    const drivers = cfTopRowsForMonth(pos, mi, 'out', 2)
+      .map(r => (r.description || r.milestone || r.group || 'unnamed line').slice(0, 60));
+    f.push({ cls: 'danger', h: 'Peak funding requirement',
+      p: 'The position bottoms out at ' + cfNum(gap) + ' ' + unit + ' in ' + pos.maxDeficit.label +
+         ' — that is ' + pctOfTurnover.toFixed(1) + '% of everything the project will ever collect, ' +
+         'and it is the size of facility the project must have in place to stay solvent. ' +
+         (drivers.length ? 'The heaviest spending that month is ' + drivers.join(' and ') + '.' : '') });
+  } else {
+    f.push({ cls: 'good', h: 'Peak funding requirement',
+      p: 'The project never goes cash-negative — every month is funded by money already collected. ' +
+         'No facility is needed, and the cash it throws off can be used elsewhere.' });
+  }
+
+  // ---- 2. How long the exposure lasts ----
+  if (pos.criticalMonths.length) {
+    const ranges = cfRanges(pos.criticalMonths);
+    const longest = ranges.reduce((a, b) => (b[1] - b[0] > a[1] - a[0] ? b : a));
+    const longestLen = longest[1] - longest[0] + 1;
+    const avg = pos.criticalMonths.reduce((a, i) => a + pos.cumNet[i], 0) / pos.criticalMonths.length;
+    f.push({ cls: 'warn', h: 'How long the money is tied up',
+      p: pos.criticalMonths.length + ' of ' + N + ' months carry a negative balance — ' +
+         cfRangeText(d, pos.criticalMonths) + '. The longest unbroken stretch is ' + longestLen +
+         ' month' + (longestLen === 1 ? '' : 's') + ', averaging ' + cfNum(Math.abs(avg)) + ' ' + unit +
+         ' out of pocket. Financing has to cover the whole stretch, not just the deepest month — ' +
+         'a facility sized to the peak but arranged for one month is no use.' });
+  } else {
+    f.push({ cls: 'good', h: 'How long the money is tied up',
+      p: 'No month carries a negative balance, so no financing window has to be arranged.' });
+  }
+
+  // ---- 3. What the payment terms are doing ----
+  const lag = cfLagProfile(pos);
+  if (lag && (lag.inLag > 0 || lag.outLag > 0)) {
+    const spread = lag.inLag - lag.outLag;
+    f.push({ cls: spread > 30 ? 'warn' : '', h: 'What the payment terms are doing',
+      p: 'Money comes in on average ' + Math.round(lag.inLag) + ' days after the work is certified, ' +
+         'and goes out ' + Math.round(lag.outLag) + ' days after it is incurred. ' +
+         (spread > 0
+           ? 'The project therefore funds a ' + Math.round(spread) + '-day gap out of its own pocket on every item it touches. ' +
+             'Closing that gap is the single cheapest way to reduce the peak — it costs nothing in margin, only in negotiation.'
+           : 'Payments out lag payments in, which works in the project’s favour: suppliers are effectively financing the work.') });
+  }
+
+  // ---- 4. Before and after the edited terms ----
+  if (base) {
+    const dBefore = Math.abs(base.maxDeficit.amount), dAfter = Math.abs(pos.maxDeficit.amount);
+    const delta = dAfter - dBefore;
+    const monthsBefore = base.criticalMonths.length, monthsAfter = pos.criticalMonths.length;
+    const better = delta < -0.005, worse = delta > 0.005;
+    f.push({ cls: better ? 'good' : (worse ? 'danger' : ''), h: 'Effect of the terms you changed',
+      p: 'With the terms from the Assumptions file the peak deficit was ' + cfNum(dBefore) + ' ' + unit +
+         ' across ' + monthsBefore + ' negative month' + (monthsBefore === 1 ? '' : 's') + '. ' +
+         'As you have set them now it is ' + cfNum(dAfter) + ' ' + unit + ' across ' + monthsAfter +
+         '. That is ' +
+         (better ? cfNum(Math.abs(delta)) + ' ' + unit + ' less to finance'
+                 : worse ? cfNum(delta) + ' ' + unit + ' more to finance'
+                         : 'no change to the peak') +
+         (monthsAfter < monthsBefore ? ', and ' + (monthsBefore - monthsAfter) + ' fewer months of exposure' :
+          monthsAfter > monthsBefore ? ', and ' + (monthsAfter - monthsBefore) + ' more months of exposure' : '') +
+         '. Net profit moves from ' + cfNum(base.netProfit) + ' to ' + cfNum(pos.netProfit) + ' ' + unit + '.' });
+  }
+
+  // ---- 5. Unusual movements ----
+  const swings = pos.net.map(Math.abs).filter(v => v > 0).sort((a, b) => a - b);
+  if (swings.length > 3) {
+    const median = swings[Math.floor(swings.length / 2)];
+    const spikes = [];
+    for (let i = 0; i < N; i++) if (Math.abs(pos.net[i]) > median * 3) spikes.push(i);
+    if (spikes.length) {
+      const top = spikes.sort((a, b) => Math.abs(pos.net[b]) - Math.abs(pos.net[a])).slice(0, 3);
+      const detail = top.map(i => {
+        const side = pos.net[i] < 0 ? 'out' : 'in';
+        const who = cfTopRowsForMonth(pos, i, side, 1)[0];
+        return monthLabel(d[i]) + ' (' + (pos.net[i] < 0 ? '−' : '+') + cfNum(Math.abs(pos.net[i])) + ')' +
+               (who ? ', mostly ' + (who.milestone || who.description || who.group) : '');
+      });
+      f.push({ cls: 'warn', h: 'Unusual movements',
+        p: detail.join('; ') + '. These months swing more than three times the typical amount. ' +
+           'A single milestone landing in the wrong month can create a deficit that is not real — ' +
+           'worth confirming those dates before sizing any facility around them.' });
+    }
+  }
+
+  // ---- 6. Concentration risk ----
+  const biggestIn = Math.max.apply(null, pos.cashIn.concat([0]));
+  if (pos.totalIn > 0 && biggestIn / pos.totalIn > 0.25) {
+    const mi = pos.cashIn.indexOf(biggestIn);
+    f.push({ cls: 'warn', h: 'Concentration risk',
+      p: Math.round((biggestIn / pos.totalIn) * 100) + '% of all money coming in arrives in a single month, ' +
+         monthLabel(d[mi]) + '. If that one certificate slips, the deficit deepens by roughly ' +
+         cfNum(biggestIn) + ' ' + unit + ' and stays open a month longer. This is the largest single ' +
+         'point of failure in the cash flow.' });
+  }
+
+  // ---- 7. Currency split, on the consolidated view ----
+  if (pos.isEquivalent) {
+    const parts = model.currencies.map(c => {
+      const p = model.perCurrency[c];
+      return c + ': net ' + cfNum(p.netProfit) +
+        (p.maxDeficit.amount < 0 ? ', short ' + cfNum(Math.abs(p.maxDeficit.amount)) + ' at ' + p.maxDeficit.label : ', never short');
+    });
+    const shortCurrencies = model.currencies.filter(c => model.perCurrency[c].maxDeficit.amount < 0);
+    f.push({ cls: shortCurrencies.length ? 'warn' : '', h: 'How the currencies compare',
+      p: parts.join('; ') + '. ' +
+         (shortCurrencies.length
+           ? 'The consolidated position can look comfortable while ' + shortCurrencies.join(' and ') +
+             ' ' + (shortCurrencies.length === 1 ? 'is' : 'are') + ' short — cash does not move between currencies on its own, ' +
+             'and converting to cover a gap means taking the exchange rate on the day.'
+           : 'Every currency stands on its own, so no cross-currency funding is needed.') });
+  }
+
+  // ---- 8. Recommendations ----
+  const rec = [];
+  if (pos.maxDeficit.monthIndex >= 0) {
+    const mi = pos.maxDeficit.monthIndex;
+    const gap = Math.abs(pos.maxDeficit.amount);
+    const startMonth = pos.criticalMonths.length ? monthLabel(d[pos.criticalMonths[0]]) : pos.maxDeficit.label;
+    rec.push('Arrange a facility of at least ' + cfNum(gap) + ' ' + unit + ', available from ' + startMonth +
+             ' and running past ' + pos.maxDeficit.label + '.');
+    const inBefore = cfTopRowsForMonth(pos, Math.max(0, mi - 1), 'in', 1)[0];
+    if (inBefore) {
+      rec.push('Pulling the "' + (inBefore.milestone || inBefore.description) + '" certificate forward into ' +
+               monthLabel(d[Math.max(0, mi - 1)]) + ' would cut the peak directly.');
+    }
+    const outAt = cfTopRowsForMonth(pos, mi, 'out', 1)[0];
+    if (outAt) {
+      rec.push('Deferring "' + (outAt.milestone || outAt.description) + '" by 30 days moves ' +
+               cfNum(outAt.monthly[mi]) + ' ' + unit + ' out of the worst month.');
+    }
+    if (lag && lag.inLag - lag.outLag > 30) {
+      rec.push('Negotiating the client’s ' + Math.round(lag.inLag) + '-day payment period down, or supplier terms up, ' +
+               'attacks the gap at its source rather than financing it.');
+    }
+  }
+  if (pos.netProfit < 0) {
+    rec.push('The project ends cash-negative overall. This is a commercial problem, not a timing one — ' +
+             'no rescheduling will fix it.');
+  }
+  if (model.stats.unmatched) {
+    rec.push(model.stats.unmatched + ' line(s) had no usable schedule dates and were spread across the whole project. ' +
+             'Matching them to real activities will sharpen the timing before you commit to a facility size.');
+  }
+  if (model.stats.clamped) {
+    rec.push(model.stats.clamped + ' line(s) fall outside the project timeline and were pulled into it. ' +
+             'Check the number of months in the Assumptions file covers the whole schedule.');
+  }
+  if (!rec.length) {
+    rec.push('The position is comfortable throughout — no financing action is needed. ' +
+             'The surplus is worth putting to work rather than leaving idle.');
+  }
+  f.push({ cls: '', h: 'Recommendations', p: rec.join(' ') });
+
+  // ---- 9. Data quality ----
+  const notes = (model.notes || []).concat((model.problems && model.problems.length)
+    ? ['Distribution problems were detected — these figures are not trustworthy: ' + model.problems.slice(0, 3).join('; ')] : []);
+  if (notes.length) f.push({ cls: 'warn', h: 'Data quality', p: notes.join(' ') });
+
+  return '<div class="cf-analysis"><h3>What this cash flow says</h3>' +
+    f.map(x => '<div class="cf-finding ' + x.cls + '"><h4>' + cfEsc(x.h) + '</h4><p>' + cfEsc(x.p) + '</p></div>').join('') +
+    '</div>';
+}
+
+// ---- share: one self-contained HTML file, no network needed to open it ----
+function shareCashflow() {
+  const model = cfState.model;
+  if (!model) return;
+
+  const slim = {
+    projectName: model.projectName, dates: model.dates, currencies: model.currencies,
+    notes: model.notes, stats: model.stats, generatedAt: model.generatedAt,
+    perCurrency: {}, equ: null
+  };
+  const trim = (p) => ({
+    currency: p.currency, dates: p.dates, cashIn: p.cashIn, cashOut: p.cashOut,
+    cumIn: p.cumIn, cumOut: p.cumOut, net: p.net, cumNet: p.cumNet,
+    totalIn: p.totalIn, totalOut: p.totalOut, netProfit: p.netProfit,
+    maxDeficit: p.maxDeficit, maxSurplus: p.maxSurplus, criticalMonths: p.criticalMonths,
+    isEquivalent: !!p.isEquivalent, rows: []
+  });
+  for (const c of model.currencies) slim.perCurrency[c] = trim(model.perCurrency[c]);
+  slim.equ = trim(model.equ);
+
+  // The shared page has no engine, so the analysis is written out here — with the
+  // full row detail still available — and the terms editor is left out.
+  slim.readOnly = true;
+  slim.analysisHtml = {};
+  for (const c of model.currencies) slim.analysisHtml[c] = cfAnalysisHtml(model.perCurrency[c], model);
+  slim.analysisHtml.EQU = cfAnalysisHtml(model.equ, model);
+
+  const fns = [monthLabel, cfNum, cfShort, cfEsc, cfNiceStep, cfUnitLabel, cfAxis, cfY, cfXBand,
+               cfFrame, cfLegend, cfChartLegend, cfHoverLayer, cfCashflowSvg, cfBindChart, cfSetHover, cfTipHtml,
+               cfPanelHtml].map(f => f.toString()).join('\n\n') +
+              '\nfunction cfTermsHtml(){return "";}\n' +
+              '\nfunction cfAnalysisHtml(pos,model){return model.analysisHtml[pos.isEquivalent?"EQU":pos.currency]||"";}\n';
+
+  const css = Array.from(document.styleSheets)
+    .filter(s => !s.href)
+    .map(s => { try { return Array.from(s.cssRules).map(r => r.cssText).join('\n'); } catch (e) { return ''; } })
+    .join('\n');
+
+  const html = '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>' + cfEsc(model.projectName) + ' — Cash Flow</title><style>' + css +
+    'body{margin:0;padding:28px;background:var(--cream,#F4F7FF);font-family:"Century Gothic",system-ui,sans-serif;color:#061642}' +
+    '.cf-dash{max-width:1180px;margin:0 auto}.cf-dash-actions{display:none}</style></head><body>' +
+    '<section id="cashflowDashboard" class="cf-dash">' +
+    '<header class="cf-dash-head"><div><h2 id="cfDashTitle">Cash Flow</h2>' +
+    '<p id="cfDashSub" class="cf-dash-sub"></p></div></header>' +
+    '<div id="cfTabs" class="cf-tabs" role="tablist"></div><div id="cfBody"></div></section>' +
+    '<script>\nvar CF_COLORS=' + JSON.stringify(CF_COLORS) + ';\n' +
+    'var CF_W=' + CF_W + ',CF_H=' + CF_H + ',CF_ML=' + CF_ML + ',CF_MR=' + CF_MR +
+    ',CF_MT=' + CF_MT + ',CF_MB=' + CF_MB + ',CF_PW=' + CF_PW + ',CF_PH=' + CF_PH + ';\n' +
+    'var cfState={model:null,active:null,hover:-1,charts:[]};\n' + fns + '\n' +
+    'var MODEL=' + JSON.stringify(slim) + ';\n' +
+    'cfState.model=MODEL;cfState.active=MODEL.currencies[0];\n' +
+    'function render(){var m=cfState.model,d=m.dates;' +
+    'document.getElementById("cfDashSub").textContent=m.projectName+" · "+monthLabel(d[0])+" to "+monthLabel(d[d.length-1])+" · "+d.length+" months";' +
+    'var tabs=document.getElementById("cfTabs");tabs.innerHTML="";' +
+    'm.currencies.concat(["EQU"]).forEach(function(k){var b=document.createElement("button");b.className="cf-tab";b.type="button";' +
+    'b.setAttribute("role","tab");b.setAttribute("aria-selected",String(k===cfState.active));' +
+    'b.textContent=k==="EQU"?"EQU (all currencies)":k;b.onclick=function(){cfState.active=k;render();};tabs.appendChild(b);});' +
+    'var pos=cfState.active==="EQU"?m.equ:m.perCurrency[cfState.active];' +
+    'document.getElementById("cfBody").innerHTML=cfPanelHtml(pos,m);' +
+    'cfState.charts=[];cfBindChart("cfChart",pos);}\nrender();\n' +
+    '<\/script></body></html>';
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (model.projectName || 'Project').replace(/[^\w\- ]+/g, '').trim() + '_Cashflow_Dashboard.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
 </script>
