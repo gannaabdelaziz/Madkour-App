@@ -335,29 +335,32 @@ body {
 /* ─────────── UPLOAD CARDS ─────────── */
 .upload-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
-/* Refresh from an edited workbook — deliberately outside the numbered upload
-   sequence, because it is an alternative way in, not a fifth required step. */
+/* Refresh from an edited workbook — a compact secondary action rather than a
+   fifth numbered upload step. */
 .refresh-panel {
-  margin-top: 22px; padding: 24px;
-  border: 1px dashed var(--brand-blue); border-radius: 18px;
-  background: linear-gradient(180deg, #F7F9FF, #EEF3FF);
+  margin-top: 28px; padding: 20px 22px;
+  border: 1px solid rgba(6,55,232,0.18); border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 12px 30px -28px rgba(4,27,92,0.5);
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: 20px;
 }
-.refresh-head { margin-bottom: 18px; }
+.refresh-symbol {
+  width: 54px; height: 54px; border-radius: 13px; flex: 0 0 54px;
+  display: grid; place-items: center; color: var(--brand-blue);
+  background: var(--brand-blue-soft);
+}
+.refresh-symbol svg { width: 30px; height: 30px; }
+.refresh-head { min-width: 0; }
+.refresh-head h3 { margin: 0 0 5px; font-size: 1.02rem; color: var(--navy); }
+.refresh-head p { margin: 0; font-size: 0.84rem; color: var(--ink-2); line-height: 1.5; }
 .refresh-body {
-  display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
 }
-.refresh-body .refresh-drop { flex: 0 0 250px; }
-.refresh-copy, .refresh-head { flex: 1 1 380px; }
-.refresh-tag {
-  display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--brand-blue); background: var(--white);
-  border: 1px solid var(--line); padding: 4px 11px; border-radius: 999px;
-}
-.refresh-copy h3 { margin: 11px 0 7px; font-size: 1.02rem; color: var(--navy); }
-.refresh-copy p { margin: 0; font-size: 0.87rem; color: var(--ink-2); line-height: 1.62; }
-.refresh-copy p b { color: var(--navy); }
-.refresh-note { margin-top: 9px !important; font-size: 0.81rem !important; color: var(--ink-3) !important; }
+.refresh-body .refresh-drop { width: 210px; }
+.refresh-body #refreshCashflowBtn { min-width: 190px; justify-content: center; }
 .refresh-notice {
+  grid-column: 1 / -1;
   margin-top: 14px; padding: 13px 16px; border-radius: 12px;
   font-size: 0.85rem; line-height: 1.6; border: 1px solid transparent;
 }
@@ -366,21 +369,15 @@ body {
 .refresh-notice.ok { background: #F0FDF4; border-color: #86EFAC; color: #14532D; }
 .refresh-notice.ok b { color: #14532D; }
 .refresh-drop {
-  position: relative; flex: 0 0 236px; min-height: 128px;
-  border: 1px solid var(--line); border-radius: 14px; background: var(--white);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px;
-  padding: 18px; cursor: pointer; transition: all 0.18s ease; text-align: center;
-}
-.refresh-drop:hover { border-color: var(--brand-blue); background: var(--brand-blue-soft); }
-.refresh-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.refresh-drop-icon {
-  width: 42px; height: 42px; border-radius: 11px; background: var(--brand-blue-soft);
-  color: var(--brand-blue); font-weight: 700; font-size: 0.82rem;
+  position: relative; min-height: 54px;
+  border: 1px solid var(--brand-blue); border-radius: 12px; background: var(--white);
   display: flex; align-items: center; justify-content: center;
+  padding: 10px 16px; cursor: pointer; transition: all 0.18s ease; text-align: center;
 }
-.refresh-drop .status { font-size: 0.79rem; color: var(--ink-2); word-break: break-word; }
+.refresh-drop:hover { background: var(--brand-blue-soft); box-shadow: 0 0 0 3px var(--brand-blue-soft); }
+.refresh-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.refresh-drop .status { min-width: 0; font-size: 0.82rem; font-weight: 700; color: var(--brand-blue); word-break: break-word; line-height: 1.4; }
 .refresh-drop.loaded { border-color: var(--success); background: #F2FBF5; }
-.refresh-drop.loaded .refresh-drop-icon { background: #DCFCE7; color: var(--success); }
 .refresh-drop.loaded .status { color: var(--success); font-weight: 600; }
 .upload-card {
   position: relative; padding: 28px 24px;
@@ -794,6 +791,9 @@ body {
   .upload-grid { grid-template-columns: 1fr; }
   .action-bar { flex-direction: column; align-items: stretch; }
   #generateBtn { justify-content: center; }
+  .refresh-panel { grid-template-columns: auto minmax(0, 1fr); gap: 16px; padding: 20px; }
+  .refresh-body { grid-column: 1 / -1; justify-content: flex-start; flex-wrap: wrap; }
+  .refresh-body .refresh-drop { flex: 1 1 260px; width: auto; }
   .generation-status {
     grid-template-columns: auto 1fr auto;
   }
@@ -803,6 +803,12 @@ body {
   #progressPct {
     text-align: left;
   }
+}
+
+@media (max-width: 520px) {
+  .refresh-body { flex-direction: column; align-items: stretch; }
+  .refresh-body .refresh-drop { flex: none; width: 100%; }
+  .refresh-body #refreshCashflowBtn { width: 100%; }
 }
 
 /* ─────────── ACCESSIBILITY ─────────── */
@@ -946,7 +952,7 @@ body {
           Generate Workbook
           <span class="arrow">›</span>
         </button>
-        <button id="cashflowBtn" class="secondary" onclick="showCashflow()" disabled>
+        <button id="cashflowBtn" class="secondary" onclick="showCashflow('inputs')" disabled>
           Cash Flow
           <span class="arrow">›</span>
         </button>
@@ -954,21 +960,23 @@ body {
     </div>
 
     <div class="refresh-panel" id="updatedCard">
+      <div class="refresh-symbol" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3h10l6 6v18a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
+          <path d="M18 3v7h7M10 15h10v8H10zM15 15v8M10 19h10"/>
+        </svg>
+      </div>
       <div class="refresh-head">
-        <span class="refresh-tag">Start from a workbook you already have</span>
-        <h3>Already have a workbook from this app?</h3>
-        <p>Drop it here on its own — <b>nothing else needed</b>. It carries its own copy of the BOQ,
-           Budget and Assumptions, so the cash flow rebuilds straight from the file, picking up any
-           <b>Progress Dates</b> or <b>Cash Duration Days</b> you edited in Excel.</p>
+        <h3>Continue from an existing workbook</h3>
+        <p>Reopen a workbook generated by this app and preserve your edited dates.</p>
       </div>
       <div class="refresh-body">
         <label class="refresh-drop">
-          <span class="refresh-drop-icon">CF</span>
-          <span class="status" role="status" aria-live="polite">Click or drop the workbook</span>
+          <span class="status" role="status" aria-live="polite">Choose workbook</span>
           <input type="file" accept=".xlsx,.xls" aria-label="Upload a cashflow workbook to rebuild from" onchange="handleFile(this,'updated')">
         </label>
-        <button id="refreshCashflowBtn" class="secondary" onclick="showCashflow()" disabled>
-          Cash Flow
+        <button id="refreshCashflowBtn" class="secondary" onclick="showCashflow('workbook')" disabled>
+          View Cash Flow
           <span class="arrow">›</span>
         </button>
       </div>
@@ -5170,8 +5178,14 @@ function cfUnitLabel(pos) {
   return pos.isEquivalent ? 'EGP equivalent' : pos.currency;
 }
 
-function showCashflow() {
-  const btn = document.getElementById('cashflowBtn');
+function showCashflow(source) {
+  const fromWorkbook = source === 'workbook';
+  const btn = document.getElementById(fromWorkbook ? 'refreshCashflowBtn' : 'cashflowBtn');
+  const dash = document.getElementById('cashflowDashboard');
+  const anchor = fromWorkbook
+    ? document.getElementById('updatedCard')
+    : document.querySelector('.action-bar');
+  if (anchor && dash) anchor.insertAdjacentElement('afterend', dash);
   btn.disabled = true;
   try {
     const model = prepareCashflowModel();
@@ -5181,7 +5195,7 @@ function showCashflow() {
     cfState.model = model;
     cfState.active = model.currencies[0];
     renderCashflowDashboard();
-    document.getElementById('cashflowDashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    dash.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) {
     alert('Could not build the cash flow: ' + err.message);
   } finally {
