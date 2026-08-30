@@ -2649,6 +2649,7 @@ const S = {
   // === SUMMARY TABS ===
   sumHeader:  { fill:{fgColor:{rgb:'2F75B5'}}, font:{bold:true,color:{rgb:'FFFFFF'},sz:12,name:'Times New Roman'}, alignment:{horizontal:'center',vertical:'center'}, border },
   sumTotal:   { fill:{fgColor:{rgb:'DDEBF7'}}, font:{bold:true,sz:10,name:'Times New Roman',color:{rgb:'000000'}}, border, numFmt:'#,##0' },
+  sumPct:     { fill:{fgColor:{rgb:'DDEBF7'}}, font:{bold:true,sz:10,name:'Times New Roman',color:{rgb:'000000'}}, border, numFmt:'0%' },
   sumDeduct:  { fill:{fgColor:{rgb:'DDEBF7'}}, font:{bold:true,sz:10,name:'Times New Roman',color:{rgb:'000000'}}, border, numFmt:'#,##0' },
   sumNet:     { fill:{fgColor:{rgb:'DDEBF7'}}, font:{bold:true,sz:12,name:'Times New Roman',color:{rgb:'000000'}}, border, numFmt:'#,##0' },
   sumItem:    { fill:{fgColor:{rgb:'DDEBF7'}}, font:{bold:true,sz:10,name:'Times New Roman',color:{rgb:'000000'}}, border, numFmt:'#,##0' },
@@ -4679,7 +4680,7 @@ function buildCashOutSummarySheet(cur, dates, assumptions, projName, cashOutLast
 
   ws['C2'] = {v: 'OUT - IN', t:'s', s: S.sumHeader};
   ws['D2'] = {f: "='" + ciSumSheetName + "'!E3", t:'n', s: S.sumTotal};
-  ws['E2'] = {f: '=1-D1/D2', t:'n', s: S.sumTotal};
+  ws['E2'] = {f: '=1-D1/D2', t:'n', s: S.sumPct};
 
   ws['C3'] = {v: 'Discipline', t:'s', s: S.sumSection};
   ws['D3'] = {v: 'Scope of Work', t:'s', s: S.sumSection};
